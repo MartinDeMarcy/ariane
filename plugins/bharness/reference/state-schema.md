@@ -33,6 +33,9 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `environments.supabase_prod` | texte | Référence du projet Supabase de production |
 | `environments.vercel_project` | texte | Nom du projet Vercel |
 | `environments.production_url` | texte | URL publique, après la première mise en production |
+| `wiki.status` | `null` · `published` · `needs_first_page` · `unavailable` · `declined` | Publication du wiki sur GitHub (voir `ariane.md`) ; `unavailable` quand GitHub ne le propose pas à ce compte, `declined` quand l'utilisateur ne veut pas créer la première page |
+| `wiki.url` | texte ou `null` | Adresse du wiki GitHub, une fois publié |
+| `wiki.published_at` | date ISO ou `null` | Dernière publication |
 | `releases[]` | liste | `{ "version", "date", "tag" }` |
 | `feedback.enabled` | booléen | L'utilisateur accepte-t-il le journal de retours d'expérience ? |
 | `feedback.asked_at` | date ISO ou `null` | Date à laquelle la question a été posée |

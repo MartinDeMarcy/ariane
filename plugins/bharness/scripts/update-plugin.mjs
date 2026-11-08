@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Met à jour le plugin Bharness : rafraîchit la marketplace puis met à jour le plugin.
-// Retrouve le programme `claude` même quand il n'est pas dans le PATH (application de bureau Claude sous Windows).
+// Retrouve le programme `claude` même quand il n'est pas dans le PATH (application de bureau Claude sous Windows,
+// dont le dossier d'installation a changé d'une version à l'autre).
 // Une fois terminé, il faut fermer la session et en rouvrir une pour charger la nouvelle version.
 // Usage : node update-plugin.mjs [--dry-run]
 import { existsSync, readdirSync } from 'node:fs';
@@ -19,26 +20,50 @@ const findOnPath = () => {
   return lines.find((l) => l.toLowerCase().endsWith('.exe')) || lines[0] || null;
 };
 
-// Dans l'application de bureau sous Windows : %APPDATA%\Claude\claude-code\<version>\<hash>\claude.exe
-const findDesktopBinary = () => {
-  const base = join(process.env.APPDATA || '', 'Claude', 'claude-code');
-  if (!process.env.APPDATA || !existsSync(base)) return null;
-  const versionKey = (v) => v.split('.').map((n) => String(Number(n) || 0).padStart(6, '0')).join('.');
-  const versions = readdirSync(base).sort((a, b) => versionKey(b).localeCompare(versionKey(a)));
-  for (const version of versions) {
-    const dir = join(base, version);
-    let hashes = [];
-    try {
-      hashes = readdirSync(dir);
-    } catch {
-      continue;
+// Dans l'application de bureau sous Windows, le programme se trouve dans un dossier `claude-code\<version>\<hash>\claude.exe`
+// dont l'emplacement a changé selon les versions de l'application : on regarde tous les endroits connus
+// et on garde la version la plus récente.
+const desktopBases = () => {
+  const bases = [];
+  const { APPDATA, LOCALAPPDATA } = process.env;
+  if (APPDATA) bases.push(join(APPDATA, 'Claude', 'claude-code'));
+  if (LOCALAPPDATA) {
+    // %LOCALAPPDATA%\Claude-Data\<identifiant>\claude-code
+    const data = join(LOCALAPPDATA, 'Claude-Data');
+    if (existsSync(data)) {
+      for (const d of readdirSync(data)) bases.push(join(data, d, 'claude-code'));
     }
-    for (const hash of hashes) {
-      const exe = join(dir, hash, 'claude.exe');
-      if (existsSync(exe)) return exe;
+    // Application installée depuis le Microsoft Store : %LOCALAPPDATA%\Packages\Claude_*\LocalCache\Roaming\Claude\claude-code
+    const packages = join(LOCALAPPDATA, 'Packages');
+    if (existsSync(packages)) {
+      for (const d of readdirSync(packages)) {
+        if (d.startsWith('Claude_')) bases.push(join(packages, d, 'LocalCache', 'Roaming', 'Claude', 'claude-code'));
+      }
     }
   }
-  return null;
+  return bases.filter((b) => existsSync(b));
+};
+
+const findDesktopBinary = () => {
+  const versionKey = (v) => v.split('.').map((n) => String(Number(n) || 0).padStart(6, '0')).join('.');
+  const found = [];
+  for (const base of desktopBases()) {
+    for (const version of readdirSync(base)) {
+      const dir = join(base, version);
+      let hashes = [];
+      try {
+        hashes = readdirSync(dir);
+      } catch {
+        continue;
+      }
+      for (const hash of hashes) {
+        const exe = join(dir, hash, 'claude.exe');
+        if (existsSync(exe)) found.push({ key: versionKey(version), exe });
+      }
+    }
+  }
+  found.sort((x, y) => y.key.localeCompare(x.key));
+  return found[0]?.exe ?? null;
 };
 
 const claude = findOnPath() || findDesktopBinary();

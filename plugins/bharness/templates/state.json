@@ -1,5 +1,5 @@
 {
-  "bharness": "0.10.0",
+  "bharness": "0.11.0",
   "project": {
     "name": "",
     "pitch": "",
@@ -50,6 +50,11 @@
     "supabase_prod": null,
     "vercel_project": null,
     "production_url": null
+  },
+  "wiki": {
+    "status": null,
+    "url": null,
+    "published_at": null
   },
   "releases": [],
   "feedback": {

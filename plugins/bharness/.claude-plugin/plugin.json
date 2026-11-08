@@ -1,7 +1,7 @@
 {
   "name": "bharness",
   "description": "Une équipe de onze agents qui accompagne un débutant motivé de l'idée à un MVP web en ligne : spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en production (Next.js, Supabase, Vercel).",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "author": {
     "name": "PRAS Martin",
     "url": "https://github.com/MartinDeMarcy"

@@ -73,6 +73,19 @@ L'app est une PWA : l'utilisateur doit pouvoir l'essayer sur son téléphone san
 
 Les envois automatiques vers WhatsApp ne sont pas pris en charge pour l'instant (il faudrait un compte entreprise) : si l'utilisateur le demande, explique-le simplement et propose le QR code.
 
+## Publier la documentation sur le wiki GitHub
+
+Diderot peut publier `docs/wiki` dans l'onglet « Wiki » du dépôt GitHub, mais seulement quand GitHub le propose à ce compte. **Si ce n'est pas possible, on ne change rien au parcours : tu n'en parles pas à l'utilisateur.**
+
+- **Quand** : après la fusion d'un lot dans `main`, après la fusion de la relecture finale du wiki, et quand l'utilisateur lance `/bharness:docs`. Pas quand `state.wiki.status` vaut `unavailable` ou `declined` (sauf sur une demande explicite de l'utilisateur : alors on revérifie).
+- **Comment** : vérifie que Clio a remis `main` à jour sur l'ordinateur, puis délègue à `bharness:diderot` la publication (consigne « Publier sur le wiki GitHub », avec le chemin du plugin). Il te rend le résultat du script.
+- **Selon le statut rendu** (enregistre-le dans `state.wiki` et note le détail dans le journal de bord) :
+  - `published` ou `unchanged` : à la première publication seulement, dis en une phrase que la documentation est aussi en ligne dans l'onglet Wiki du dépôt, avec le lien. Ensuite, ne dis rien.
+  - `unavailable` : **ne dis rien à l'utilisateur** (c'est le cas d'un dépôt privé en offre gratuite). Note-le dans le journal de bord.
+  - `needs_first_page` : GitHub n'ouvre le wiki qu'après la création de sa première page, que seul l'utilisateur peut faire. Demande-lui **une seule fois** avec AskUserQuestion : « Oui, guide-moi » ou « Non merci » (« Ta documentation peut aussi apparaître dans l'onglet Wiki de ton dépôt. Il faut que tu crées toi-même la première page sur GitHub, ça prend deux clics. »). S'il refuse, passe `state.wiki.status` à `declined` et n'insiste plus. S'il accepte, guide-le une étape à la fois : ouvre le lien du wiki, clique sur « Create the first page », puis « Save Page » sans rien changer, et préviens-moi. Puis relance la publication. Si elle ne passe toujours pas, excuse-toi en une phrase, passe à `unavailable` et continue.
+  - `wrong_branch`, `uncommitted`, `error` : ne dis rien à l'utilisateur ; note le problème dans le journal de bord et corrige la cause (par exemple faire revenir `main` à jour par Clio). Réessaie à la prochaine occasion.
+- **Jamais** : rendre le dépôt public, changer un réglage de compte ou demander une offre payante pour le wiki.
+
 ## Les mises à jour de Bharness
 
 Bharness évolue vite et Claude Code ne prévient pas l'utilisateur : c'est à toi de le faire, simplement.

@@ -4,7 +4,7 @@
 
 Bharness est un plugin pour [Claude Code](https://code.claude.com). Il s'adresse aux personnes qui ont un projet d'application web, l'envie de le mener, mais pas de formation de développeur. Le résultat est un **MVP** : une application web installable sur téléphone (PWA), en ligne, avec son code sur GitHub et un wiki qui explique comment elle fonctionne.
 
-> Statut : version 0.10.0, en cours de construction et de premiers tests.
+> Statut : version 0.11.0, en cours de construction et de premiers tests.
 
 ## Comment ça marche
 
@@ -123,6 +123,12 @@ mon-app/
 
 Next.js (App Router, TypeScript), Tailwind CSS, shadcn/ui, Supabase (un projet de test, un de production), PWA, Vitest, Playwright, GitHub Actions, Vercel. Le développement et la plupart des tests se font en local ; chaque fonctionnalité est vérifiée sur un environnement de test en ligne avant d'être intégrée.
 
+## La documentation sur GitHub
+
+Diderot garde la documentation dans le dossier `docs/wiki` de ton projet. Quand GitHub le permet, il la publie aussi dans l'onglet **Wiki** de ton dépôt, après chaque lot validé : les pages sont reliées entre elles, avec un menu et les images. La publication est à sens unique : ce qui est dans `docs/wiki` fait foi, et les changements faits directement sur le wiki sont écrasés.
+
+Sur GitHub, le wiki d'un dépôt **privé** demande une offre payante. Avec l'offre gratuite, rien ne change : la documentation reste dans `docs/wiki`, Diderot continue comme avant et personne ne te dérange. Pour un dépôt public, GitHub n'ouvre le wiki qu'après la création de sa première page : Ariane te guide, une seule fois, si tu le souhaites.
+
 ## Garde-fous
 
 Bharness installe des garde-fous actifs uniquement dans les projets Bharness :
@@ -154,7 +160,7 @@ plugins/bharness/
 ├── agents/        # les onze agents
 ├── skills/        # les commandes et les savoir-faire (stack, Git, tests, déploiement)
 ├── reference/     # le parcours et le format du fichier d'état
-├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes)
+├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes, wiki)
 ├── templates/     # modèles de documents et de projet
 └── hooks/         # garde-fous Git et anti-secrets (Node.js, compatibles Windows)
 ```

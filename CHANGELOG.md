@@ -2,6 +2,24 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.11.0] – 2026-11-08
+
+### Ajouté
+
+- Publication du wiki sur GitHub : Diderot publie `docs/wiki` dans l'onglet Wiki du dépôt (`scripts/publish-wiki.mjs`, Node.js, sans dépendance), après chaque lot validé, après la relecture finale du wiki et avec `/bharness:docs`. Le dossier `docs/wiki` reste la source de vérité ; la publication est à sens unique.
+- Mise en forme pour GitHub : page d'accueil `Home`, une page par fonctionnalité et une liste des fonctionnalités, liens entre pages réécrits, images copiées, liens vers les fichiers du projet transformés en liens vers le dépôt, barre latérale et pied de page générés.
+- Garde-fous : seulement depuis la branche principale et sur du contenu enregistré ; jamais de force push ; jamais de suppression d'une page que le script n'a pas écrite (liste `.bharness-wiki.json` dans le wiki) ; une fusion qui garde nos pages si le wiki a été modifié à la main.
+- État `state.wiki` (`status`, `url`, `published_at`).
+
+### Corrigé
+
+- `/bharness:update` et la mise à jour proposée par Ariane retrouvent de nouveau le programme `claude` de l'application de bureau Windows : son dossier a changé avec une mise à jour de l'application (`%LOCALAPPDATA%\Claude-Data\…`), et le script ne regardait que l'ancien. Il examine maintenant tous les emplacements connus et garde la version la plus récente.
+
+### Modifié
+
+- **Rien ne change quand le wiki n'est pas disponible** : sur un dépôt privé en offre gratuite (ou d'offre inconnue), le script répond `unavailable` et Ariane n'en parle pas à l'utilisateur ; Diderot continue comme avant. Bharness ne rend jamais un dépôt public ni ne demande d'offre payante pour cela.
+- Pour un dépôt public (ou privé en offre payante), GitHub n'ouvre le wiki qu'après la création de sa première page : Ariane le propose une seule fois et guide l'utilisateur pas à pas, ou n'insiste plus s'il refuse.
+
 ## [0.10.0] – 2026-10-11
 
 ### Ajouté

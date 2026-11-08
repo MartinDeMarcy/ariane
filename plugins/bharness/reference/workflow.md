@@ -80,6 +80,7 @@ Quand toutes les stories du lot sont `in_lot` :
 3. **Ariane** présente la démo : l'URL de test et son QR code, ce qui a été livré (une ligne par story), le scénario à essayer, quelques captures. **Validation 3** (statut du lot `demo`).
    - Refusée : les remarques deviennent de nouvelles stories de correction **dans le même lot** (Poucet les crée), le lot repasse à `in_progress` et on relance le cycle sur ces stories, puis la fin du lot.
 4. **Clio** ouvre la pull request du lot **vers `main`**, la fusionne une fois la CI verte, et supprime la branche du lot. Les stories et le lot passent à `done`.
+5. **Diderot** publie le wiki dans l'onglet Wiki du dépôt GitHub, si GitHub le propose à ce compte (sinon, rien ne change).
 
 Une story n'est jamais `done` sans lot validé, wiki à jour et fusion dans `main`.
 

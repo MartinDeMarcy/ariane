@@ -106,6 +106,10 @@ git switch main && git pull --ff-only
 
 Note la pull request dans `lots[].pull_request`. Si la CI échoue : ne fusionne pas, la correction revient à Ada sur une story de correction du lot.
 
+## Le wiki GitHub
+
+Le wiki d'un dépôt GitHub est un dépôt Git séparé (`<dépôt>.wiki.git`), qui n'existe qu'après la création de sa première page sur le site. Ce n'est pas ton rôle : Diderot le met à jour avec `scripts/publish-wiki.mjs` (jamais de force push, jamais de suppression de pages qu'il n'a pas écrites). Sur un dépôt privé en offre gratuite, GitHub ne propose pas le wiki : on ne change rien, et on ne rend jamais un dépôt public pour cela.
+
 ## Mise en production
 
 ```bash

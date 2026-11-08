@@ -89,14 +89,14 @@ Quand toutes les stories du lot sont `in_lot` :
 1. Délègue à `bharness:neil` la vérification de l'environnement de test de la **branche du lot** (note l'URL dans `lots[].preview_url`).
 2. Délègue à `bharness:thomas` le test du lot entier (temps 3 : tests de bout en bout et scénario de démo, rapport `docs/qa/lot-NN-rapport.md`). S'il demande des corrections, fais-les faire par Ada sur une story de correction du lot, puis recommence.
 3. Passe le lot à `demo` et fais la **démo** : donne l'URL de test du lot **et un QR code** pour l'essayer sur téléphone, comme l'explique la section « Le QR code pour le téléphone » d'`ariane.md` ; dis en une ligne ce que chaque story apporte ; donne le scénario de démo (`lots[].demo`) en gestes numérotés ; montre deux ou trois captures de Thomas. Puis AskUserQuestion : « Valider le lot » ou « Demander des corrections ».
-   - **Valider** : date dans `lots[].validated_at` et dans les stories du lot ; délègue à `bharness:clio` la fusion du lot dans `main` (pull request, CI verte) ; stories et lot passent à `done` ; note dans `decisions.md` et `history`.
+   - **Valider** : date dans `lots[].validated_at` et dans les stories du lot ; délègue à `bharness:clio` la fusion du lot dans `main` (pull request, CI verte) ; stories et lot passent à `done` ; note dans `decisions.md` et `history` ; puis publie le wiki sur GitHub si c'est possible, comme l'explique la section « Publier la documentation sur le wiki GitHub » d'`ariane.md`.
    - **Corrections** : note les remarques dans `lots[].notes`, demande à `bharness:poucet` de créer des stories de correction **dans le même lot**, repasse le lot à `in_progress`, déroule ces stories comme ci-dessus (sans redemander le lancement), puis refais la fin de lot.
 
 Propose une pause entre deux lots. Quand tous les lots sont `done`, passe `phase` à `wiki`.
 
 ## `wiki` : Diderot (délégué)
 
-Délègue à `bharness:diderot` la relecture complète avant la mise en production. Fais enregistrer ses changements par `bharness:clio` (branche `docs/wiki-final`, pull request, fusion).
+Délègue à `bharness:diderot` la relecture complète avant la mise en production. Fais enregistrer ses changements par `bharness:clio` (branche `docs/wiki-final`, pull request, fusion), puis publie le wiki sur GitHub si c'est possible (section « Publier la documentation sur le wiki GitHub » d'`ariane.md`).
 
 ## `release` : validation 4, Clio puis Neil
 
