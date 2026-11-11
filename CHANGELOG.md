@@ -2,6 +2,17 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.5] – 2026-11-11
+
+### Modifié
+
+- **Les derniers pas** disent quand, comme on le dirait : « il y a 15 min », « il y a 3 h » (jusqu’à six heures), « aujourd’hui à 9h05 », « hier à 18h30 », puis la date seule. Le panneau se redessine chaque minute pour rester juste.
+- **L’historique est daté avec l’heure** : Ariane et Clio écrivent `date` au format `2026-11-11T14:32` dans `state.history`. Les lignes déjà écrites sans heure affichent « aujourd’hui », « hier » ou la date.
+
+### Retiré
+
+- **Le fondu d’ouverture des fenêtres**, qui rendait mal. Le trait qui se trace sous le titre est gardé.
+
 ## [0.20.4] – 2026-11-11
 
 ### Modifié

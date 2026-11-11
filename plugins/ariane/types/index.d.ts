@@ -11,8 +11,8 @@ declare module 'claude-code' {
       ideasOpen: Shaped<boolean>
       // La fenêtre des accès rapides est ouverte par-dessus le panneau.
       linksOpen: Shaped<boolean>
-      // 1 tant que le voile du fondu d'ouverture est posé sur une fenêtre, sinon 0.
-      modalStep: Shaped<number>
+      // L'heure qu'il est, en minutes depuis 1970 : le panneau suit le temps qui passe.
+      minute: Shaped<number>
       // La démo de test du panneau, dans le dépôt d'Ariane : affichée ou non,
       // le jeu d'essai montré et le niveau de densité forcé (null : automatique).
       demo: Shaped<{ on: boolean; fixture: number; level: number | null }>

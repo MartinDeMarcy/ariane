@@ -25,12 +25,11 @@ const ideasOpen = atom({ plugin: 'ariane', key: 'ideasOpen' } as const, false, {
 const linksOpen = atom({ plugin: 'ariane', key: 'linksOpen' } as const, false, {
   shape: 'links-open-1',
 })
-// L'ouverture d'une fenêtre : 1 tant que le voile du fondu est posé dessus,
-// 0 une fois le fondu fini.
-const modalStep = atom({ plugin: 'ariane', key: 'modalStep' } as const, 0, {
-  shape: 'modal-step-1',
+// L'heure qu'il est, arrondie à la minute : le panneau se redessine quand elle
+// change, pour que « il y a 15 min » reste juste.
+const minute = atom({ plugin: 'ariane', key: 'minute' } as const, 0, {
+  shape: 'minute-1',
 })
-const VEIL_MS = 260 // durée du fondu
 const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixture: 1, level: null }, {
   shape: 'demo-1',
 })
@@ -257,17 +256,6 @@ const SWEEP =
   '<animate attributeName="width" from="0" to="2000" dur="0.4s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0 0 1"/>' +
   '</rect></svg>'
 
-// Le fondu d'ouverture d'une fenêtre : un voile de la couleur du fond, posé
-// sur la fenêtre, qui s'efface. Tout se joue dans l'image, sans redessiner le
-// panneau, donc sans saccade. La couleur suit le thème clair ou sombre de
-// l'app ; un léger écart avec le vrai fond ne se voit pas, le voile s'efface.
-const VEIL =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2000" viewBox="0 0 2000 2000" preserveAspectRatio="none">' +
-  '<style>@media (prefers-color-scheme: light){rect{fill:#ffffff}}</style>' +
-  '<rect width="2000" height="2000" fill="#1f1f1e">' +
-  `<animate attributeName="opacity" from="1" to="0" dur="${VEIL_MS}ms" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.3 0 0.2 1"/>` +
-  '</rect></svg>'
-
 // La barre en cinq segments arrondis, dessinée en SVG pour la largeur voulue.
 const bar = (width: number, filled: number, current: boolean) => {
   const gap = 5
@@ -321,6 +309,46 @@ async function openUrl($: Dollar, href: string) {
     }
   }
   $.ui.toast(`Impossible d’ouvrir ${href}`)
+}
+
+// Une date de l'historique, avec ou sans heure (« 2026-11-11T14:32 », heure
+// locale, ou « 2026-11-11 »), lue comme un moment de la journée d'ici.
+const moment = (iso?: string | null): { at: Date; hasTime: boolean } | null => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/.exec(iso ?? '')
+  if (!m) return null
+  const hasTime = m[4] !== undefined
+  // Une date complète avec fuseau (« …Z », « …+01:00 ») est convertie telle quelle.
+  const zoned = hasTime && /(Z|[+-]\d{2}:?\d{2})$/.test(iso ?? '') ? new Date(iso as string) : null
+  const at =
+    zoned && !Number.isNaN(zoned.getTime())
+      ? zoned
+      : new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4] ?? 0), Number(m[5] ?? 0))
+  return { at, hasTime }
+}
+const two = (n: number) => String(n).padStart(2, '0')
+const stamp = (d: Date) =>
+  `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}T${two(d.getHours())}:${two(d.getMinutes())}`
+const RECENT_H = 6 // en deçà, « il y a 3 h » plutôt que l'heure
+
+// Quand un pas a eu lieu, dit comme on le dirait : « il y a 15 min », « il y a
+// 3 h », « aujourd'hui à 9h05 », « hier à 18h30 », puis la date seule.
+const when = (iso: string | null | undefined, nowMs: number): string => {
+  const parsed = moment(iso)
+  if (!parsed) return ''
+  const { at, hasTime } = parsed
+  const now = new Date(nowMs)
+  const midnight = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  const days = Math.round((midnight(now) - midnight(at)) / 86400000)
+  const clock = `${at.getHours()}h${two(at.getMinutes())}`
+  if (hasTime) {
+    const minutes = Math.floor((nowMs - at.getTime()) / 60000)
+    if (minutes >= 0 && minutes < 1) return 'À l’instant'
+    if (minutes >= 0 && minutes < 60) return `Il y a ${minutes} min`
+    if (minutes >= 0 && minutes < RECENT_H * 60) return `Il y a ${Math.floor(minutes / 60)} h`
+  }
+  if (days === 0) return hasTime ? `Aujourd’hui à ${clock}` : 'Aujourd’hui'
+  if (days === 1) return hasTime ? `Hier à ${clock}` : 'Hier'
+  return `${two(at.getDate())}/${two(at.getMonth() + 1)}`
 }
 
 const day = (iso?: string | null) =>
@@ -404,7 +432,13 @@ async function load($: Dollar) {
     await update($, demo, value => ({ ...value, on: isDemoOn }))
   }
   await loadIdeas($)
+  const now = Math.floor((await $.clock.now()) / 60000)
+  if (now !== lastMinute) {
+    lastMinute = now
+    await update($, minute, () => now)
+  }
 }
+let lastMinute: number | undefined
 
 // Ouvre le panneau, avec le titre de la démo quand c'est elle qui s'affiche.
 async function openPane($: Dollar) {
@@ -614,7 +648,15 @@ export const register: Register = on => {
     const lotIndex = lot ? lots.findIndex(one => one.id === lot.id) + 1 : 0
     const lotStories = lot ? stories.filter(s => lot.stories?.includes(s.id)) : []
     const readyCount = lotStories.filter(s => s.status === 'in_lot' || s.status === 'done').length
-    const history = state.history ?? []
+    const nowMs = ((await read($, minute)) || Math.floor((await $.clock.now()) / 60000)) * 60000
+    // Dans la démo, les derniers pas sont datés par rapport à maintenant, pour
+    // montrer chaque façon de dire quand.
+    const DEMO_AGO = [12, 3 * 60, 9 * 60, 26 * 60, 4 * 24 * 60] // minutes, du plus récent
+    const history = (state.history ?? []).map((step, i, all) => {
+      const back = DEMO_AGO[all.length - 1 - i]
+      return isDemo && back !== undefined ? { ...step, date: stamp(new Date(nowMs - back * 60000)) } : step
+    })
+    const whenWidth = (labels: string[]) => Math.ceil(Math.max(0, ...labels.map(l => l.length)) * 0.8) + 1
     const waiting = Object.keys(phases).find(p => phases[p] === 'waiting_validation')
     const inDemo = lots.find(one => one.status === 'demo')
     const working = lotStories.find(s => s.status === 'in_progress')
@@ -785,15 +827,11 @@ export const register: Register = on => {
       </Box>
     ) : null
 
-    // Ouvre une fenêtre par-dessus le panneau, sous un voile qui s'efface. Le
-    // voile est retiré une fois transparent, pour ne plus retenir les clics.
+    // Ouvre une fenêtre par-dessus le panneau.
     const openModal = (which: 'ideas' | 'links') => {
       void update($, ideasOpen, () => which === 'ideas')
       void update($, linksOpen, () => which === 'links')
-      void update($, modalStep, () => 1)
-      $.clock.after(VEIL_MS + 60, () => void update($, modalStep, () => 0))
     }
-    const isVeiled = (await read($, modalStep)) > 0
     // Le petit bouton carré, à droite du statut, qui ouvre les accès rapides.
     const linksButton =
       links.length > 0 ? (
@@ -1029,11 +1067,6 @@ export const register: Register = on => {
           {Svg ? <Svg source={SWEEP} alt="séparateur" height={2} /> : hr()}
           {body}
         </Box>
-        {isVeiled && Svg && (
-          <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
-            <Svg source={VEIL} alt="ouverture" height={2000} />
-          </Box>
-        )}
       </Box>
     )
 
@@ -1115,6 +1148,8 @@ export const register: Register = on => {
     const nextText =
       phase === 'done' ? 'Rien à faire, c’est en ligne.' : `Prochaine étape : ${PHASE_LABEL[phase] ?? phase}.`
     const steps = history.slice(cfg.foot === 'full4' ? -4 : -2).reverse()
+    // Une colonne de même largeur pour tous, à la mesure du libellé le plus long.
+    const stepsWidth = whenWidth(steps.map(step => when(step.date, nowMs)))
 
     const footer = cfg.foot === 'full4' || cfg.foot === 'full2' ? (
       <Box flexDirection="column" gap={1} borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1}>
@@ -1124,11 +1159,15 @@ export const register: Register = on => {
             <Box flexDirection="column">
               {steps.map(step => (
                 <Box flexDirection="row" gap={1}>
-                  <Text dimColor size="caption">{day(step.date)}</Text>
-                  <Text size="footnote" wrap="truncate-end">
-                    {step.agent ? `${step.agent} · ` : ''}
-                    {step.event}
-                  </Text>
+                  <Box width={stepsWidth} flexShrink={0}>
+                    <Text dimColor size="caption" wrap="truncate-end">{when(step.date, nowMs)}</Text>
+                  </Box>
+                  <Box flexShrink={1}>
+                    <Text size="footnote" wrap="truncate-end">
+                      {step.agent ? `${step.agent} · ` : ''}
+                      {step.event}
+                    </Text>
+                  </Box>
                 </Box>
               ))}
             </Box>
