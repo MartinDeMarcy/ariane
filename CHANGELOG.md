@@ -2,6 +2,23 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.21.0] – 2026-11-11
+
+### Ajouté
+
+- **Le parcours du lot dans le panneau** : sous le titre du lot, cinq étapes (Stories, Test du lot, Démo, Documentation, Version stable), cochées, en cours ou à venir. La phrase du haut dit qui travaille (« Diderot met la documentation à jour », « Clio le verse dans la version stable »), et la pastille du lot passe à « Validé » puis « Dans la version stable ».
+- **`lots[].step` dans l'état** : Ariane y note l'étape du lot au moment où elle commence (`stories`, `test`, `demo`, `wiki`, `merge`, `done`). Sans cette note (lots anciens), le panneau la déduit du statut.
+
+### Modifié
+
+- **Les maquettes d'Iris montrent l'application telle qu'elle sera** : vrais composants de la stack, vrai contenu, états vide, erreur et réussite, écrans qui réagissent et s'enchaînent, cadre de téléphone. Sur une application qui existe déjà, Iris part de son thème, de ses composants et de ses captures. Les maquettes sont publiées en artefact dans l'application quand c'est possible, sinon ouvertes dans le navigateur.
+- **Ada construit d'après la maquette validée** : même disposition, mêmes libellés, mêmes états ; elle signale tout écart.
+- **« Construire » reste l'étape en cours jusqu'à la fusion du lot** : la documentation et la fusion, après la validation, font partie du lot. Le lot ne passe à `done` qu'une fois versé dans `main`.
+
+### Corrigé
+
+- **Un lot fini avant la conception** (le lot d'entretien d'une nouvelle version) : la phrase du haut ne dit plus « Le lot 07 avance » une fois le lot validé, elle annonce l'étape en cours. La carte « Construire », encore « À venir », n'affiche plus « Tous les lots validés » en vert mais « D'autres lots à venir ».
+
 ## [0.20.10] – 2026-11-11
 
 ### Corrigé

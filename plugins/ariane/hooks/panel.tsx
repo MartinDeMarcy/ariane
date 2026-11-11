@@ -47,7 +47,18 @@ const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixtu
 // ---------- Ce que le panneau lit dans .ariane/state.json ----------
 
 type Story = { id: string; title?: string; lot?: string; status?: string }
-type Lot = { id: string; title?: string; goal?: string; stories?: string[]; status?: string }
+type Lot = { id: string; title?: string; goal?: string; stories?: string[]; status?: string; step?: string | null }
+
+// Le parcours d'un lot, du développement à la version stable. Ariane note où
+// il en est dans `lots[].step` ; sans cette note (lots anciens), on le déduit
+// du statut.
+const LOT_STEPS = [
+  { key: 'stories', label: 'Stories' },
+  { key: 'test', label: 'Test du lot' },
+  { key: 'demo', label: 'Démo' },
+  { key: 'wiki', label: 'Documentation' },
+  { key: 'merge', label: 'Version stable' },
+] as const
 type Step = { date?: string; agent?: string; event?: string; short?: string }
 type ProjectState = {
   project?: { name?: string }
@@ -719,11 +730,25 @@ export const register: Register = on => {
     // « écrans » ou « architecture » (le lot d'entretien d'une nouvelle version
     // part avant la fin de la conception) : l'étape en cours est « Construire ».
     const statedPhase = state.phase ?? 'onboarding'
-    const building =
-      !!lot && !!lot.status && lot.status !== 'todo' && lot.status !== 'done' && !['build', 'done', 'stopped'].includes(statedPhase)
+    const lotStoriesAll = lot ? stories.filter(s => lot.stories?.includes(s.id)) : []
+    // Où en est le lot : l'étape notée, sinon celle que le statut laisse deviner.
+    const lotStep = (one: Lot, its: Story[]): string => {
+      if (one.step && (one.step === 'done' || LOT_STEPS.some(s => s.key === one.step))) return one.step
+      if (one.status === 'done') return 'done'
+      if (one.status === 'demo') return 'demo'
+      if (one.status === 'in_progress') {
+        return its.length > 0 && its.every(s => s.status === 'in_lot' || s.status === 'done') ? 'test' : 'stories'
+      }
+      return 'todo'
+    }
+    const step = lot ? lotStep(lot, lotStoriesAll) : 'todo'
+    // Le lot est en route tant qu'il n'est pas versé dans la version stable :
+    // la documentation et la fusion, après la validation, en font partie.
+    const lotActive = !!lot && step !== 'todo' && step !== 'done'
+    const building = lotActive && !['build', 'done', 'stopped'].includes(statedPhase)
     const phase = building ? 'build' : statedPhase
     const lotIndex = lot ? lots.findIndex(one => one.id === lot.id) + 1 : 0
-    const lotStories = lot ? stories.filter(s => lot.stories?.includes(s.id)) : []
+    const lotStories = lotStoriesAll
     const readyCount = lotStories.filter(s => s.status === 'in_lot' || s.status === 'done').length
     const nowMs = ((await read($, minute)) || Math.floor((await $.clock.now()) / 60000)) * 60000
     // Dans la démo, les derniers pas sont datés par rapport à maintenant, pour
@@ -735,7 +760,7 @@ export const register: Register = on => {
     })
     const whenWidth = (labels: string[]) => Math.ceil(Math.max(0, ...labels.map(l => l.length)) * 0.8) + 1
     const waiting = Object.keys(phases).find(p => phases[p] === 'waiting_validation')
-    const inDemo = lots.find(one => one.status === 'demo')
+    const inDemo = lots.find(one => one.status === 'demo' && (!one.step || one.step === 'demo'))
     const working = lotStories.find(s => s.status === 'in_progress')
     const readyText = `${readyCount} sur ${lotStories.length} prête${readyCount > 1 ? 's' : ''}`
 
@@ -757,7 +782,10 @@ export const register: Register = on => {
       stage.name === 'Construire' && lots.length > 0
         ? lots.map(one => ({
             label: `Lot ${one.id}`,
-            status: one.status === 'done' ? 'done' : one.status === 'todo' || !one.status ? 'todo' : 'in_progress',
+            status: (() => {
+              const at = lotStep(one, stories.filter(s => one.stories?.includes(s.id)))
+              return at === 'done' ? 'done' : at === 'todo' ? 'todo' : 'in_progress'
+            })(),
           }))
         : phasesOf(stage).map(p => ({
             label: PHASE_LABEL[p] ?? p,
@@ -777,6 +805,11 @@ export const register: Register = on => {
       }
       if (inDemo) return { text: `Démo du lot ${inDemo.id} à essayer`, color: 'warning', mark: '◔' }
       const done = lots.filter(one => one.status === 'done').length
+      // Des lots finis avant le découpage (le lot d'entretien d'une nouvelle
+      // version) : la construction n'est pas finie, le gros des lots reste à venir.
+      if (lots.length > 0 && done === lots.length && phases.planning !== undefined && phases.planning !== 'done') {
+        return { text: 'D’autres lots à venir', color: 'inactive', mark: '○' }
+      }
       if (lots.length > 0 && done === lots.length) return { text: 'Tous les lots validés', color: 'success', mark: '✓' }
       // Étape finie sans lot à montrer (état ancien ou allégé) : rester cohérent
       // avec la pastille « Terminé ».
@@ -807,7 +840,13 @@ export const register: Register = on => {
       sentence = `J’attends ta validation : ${(PHASE_LABEL[waiting] ?? waiting).toLowerCase()}.`
     } else if (working) {
       sentence = `En route : « ${working.title ?? working.id} ».`
-    } else if (lot) {
+    } else if (lot && step === 'test') {
+      sentence = `Thomas teste le lot ${lot.id} en entier.`
+    } else if (lot && step === 'wiki') {
+      sentence = `Lot ${lot.id} validé : Diderot met la documentation à jour.`
+    } else if (lot && step === 'merge') {
+      sentence = `Lot ${lot.id} validé : Clio le verse dans la version stable.`
+    } else if (lot && lotActive) {
       sentence = `Le lot ${lot.id} avance : ${readyText}.`
     }
 
@@ -892,8 +931,8 @@ export const register: Register = on => {
       else parts.push(L_FOOT)
       if (lot) {
         const rowsFull = n * (1 + U + 2 * L_FOOT) + (n - 1) * U
-        if (d.lot === 'goal') parts.push(FRAME + L_BODY + (lot.goal ? L_FOOT : 0) + U + rowsFull)
-        else if (d.lot === 'full') parts.push(FRAME + L_BODY + U + rowsFull)
+        if (d.lot === 'goal') parts.push(FRAME + L_BODY + (lot.goal ? L_FOOT : 0) + U + L_FOOT + U + rowsFull)
+        else if (d.lot === 'full') parts.push(FRAME + L_BODY + U + L_FOOT + U + rowsFull)
         else if (d.lot === 'single') parts.push(FRAME + L_BODY + U + n * L_FOOT)
         else if (d.lot === 'summary') parts.push(FRAME + L_BODY)
       }
@@ -1086,12 +1125,34 @@ export const register: Register = on => {
       )
     }
 
+    // Le parcours du lot : fait, en cours, à venir.
+    const stepAt = step === 'done' ? LOT_STEPS.length : LOT_STEPS.findIndex(s => s.key === step)
+    const lotTrail = (
+      <Box flexDirection="row" flexWrap="wrap" gap={2}>
+        {LOT_STEPS.map((one, i) => {
+          const st = i < stepAt ? 'done' : i === stepAt ? 'current' : 'todo'
+          return (
+            <Text size="caption" color={tone(st)}>
+              {mark(st)} {one.label}
+            </Text>
+          )
+        })}
+      </Box>
+    )
+    const lotChip =
+      step === 'done'
+        ? chip('Dans la version stable', 'success')
+        : step === 'wiki' || step === 'merge'
+          ? chip('Validé', 'success')
+          : chip(readyText, 'info')
+
     const lotBlock = !lot || cfg.lot === 'none' ? null : cfg.lot === 'goal' || cfg.lot === 'full' ? (
       <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
         <Box flexDirection="column">
-          {header(`Lot ${lot.id} · ${lot.title ?? ''}`, chip(readyText, 'info'))}
+          {header(`Lot ${lot.id} · ${lot.title ?? ''}`, lotChip)}
           {cfg.lot === 'goal' && lot.goal && <Text dimColor size="footnote" wrap="truncate-end">{lot.goal}</Text>}
         </Box>
+        {lotTrail}
         <Box flexDirection="column" gap={1}>
           {lotStories.map(s => {
             const status = s.status ?? 'todo'
@@ -1113,7 +1174,7 @@ export const register: Register = on => {
       </Box>
     ) : cfg.lot === 'single' ? (
       <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
-        {header(`Lot ${lot.id} · ${lot.title ?? ''}`, chip(readyText, 'info'))}
+        {header(`Lot ${lot.id} · ${lot.title ?? ''}`, lotChip)}
         <Box flexDirection="column">
           {lotStories.map(s => (
             <Box flexDirection="row" justifyContent="space-between" alignItems="center" gap={2}>
@@ -1127,7 +1188,7 @@ export const register: Register = on => {
       </Box>
     ) : (
       <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1}>
-        {header(`Lot ${lot.id} · ${lot.title ?? ''}`, chip(readyText, 'info'))}
+        {header(`Lot ${lot.id} · ${lot.title ?? ''}`, lotChip)}
       </Box>
     )
 

@@ -84,6 +84,7 @@ Statuts, dans l'ordre : `todo` → `in_progress` → `local_ok` → `in_lot` →
   "stories": ["001", "002"],
   "demo": ["Ouvrir le lien de test", "Créer un compte", "Se déconnecter puis se reconnecter"],
   "status": "todo",
+  "step": null,
   "branch": "lot/01-socle-et-inscription",
   "preview_url": null,
   "pull_request": null,
@@ -92,7 +93,9 @@ Statuts, dans l'ordre : `todo` → `in_progress` → `local_ok` → `in_lot` →
 }
 ```
 
-Statuts, dans l'ordre : `todo` → `in_progress` → `demo` → `done`. Un lot refusé à la démo repasse à `in_progress`, avec les remarques dans `notes` et de nouvelles stories de correction. Un lot qui s'arrête sur un blocage reste `in_progress`, avec la raison dans `notes`.
+Statuts, dans l'ordre : `todo` → `in_progress` → `demo` → `done`. Le lot ne passe à `done` qu'une fois versé dans `main`, pas à la validation.
+
+`step` dit où en est le lot dans son parcours, pour le panneau : `stories` (les stories se développent) → `test` (Neil et Thomas vérifient le lot entier) → `demo` (la démo attend l'utilisateur) → `wiki` (lot validé, Diderot met la documentation à jour) → `merge` (Clio verse le lot dans `main`) → `done`. Mets-le à jour **au moment où l'étape commence**, avant de déléguer. Un lot refusé à la démo repasse à `stories`. Absent ou `null` (lots anciens) : le panneau le déduit du statut. Un lot refusé à la démo repasse à `in_progress`, avec les remarques dans `notes` et de nouvelles stories de correction. Un lot qui s'arrête sur un blocage reste `in_progress`, avec la raison dans `notes`.
 
 Projets créés avant les lots : si `lots` est vide alors que des stories existent, Ariane crée un lot par story non terminée (`lots[].stories` = une seule story) avant de continuer.
 

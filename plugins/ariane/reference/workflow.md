@@ -17,7 +17,7 @@ Un sous-agent délégué ne voit pas la conversation : le message de délégatio
 | 1 | `maturity` | Ariane | incarné | `state.maturity` | l'utilisateur confirme le niveau |
 | 2 | `brief` | Socrate, puis Cassandre | incarné (Socrate), délégué (Cassandre) | `docs/01-brief.md`, `state.challenge.brief` | — |
 | 3 | `prd` | Maxime, puis Cassandre | incarné (Maxime), délégué (Cassandre) | `docs/02-prd.md`, `state.challenge.prd` | **Validation 1 : le PRD** |
-| 4 | `ux` | Iris | incarné | `docs/03-ux.md` + maquettes | **Validation 2 : les écrans** |
+| 4 | `ux` | Iris | incarné | `docs/03-ux.md` + maquettes fidèles et cliquables | **Validation 2 : les écrans** |
 | 5 | `architecture` | Gustave | délégué | `docs/04-architecture.md`, projet Next.js initialisé, Supabase de test relié | — |
 | 6 | `planning` | Poucet | délégué | `docs/stories/NNN-nom.md`, `state.stories`, `state.lots` | — |
 | 7 | `build` | Ada, Thomas, Clio, Neil, Diderot | délégué | code, tests, branches, environnements de test, wiki | **Validation 3 : démo de chaque lot** |
