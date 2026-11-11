@@ -693,10 +693,16 @@ export const register: Register = on => {
 
     // ----- L'état du projet -----
     const phases = state.phases ?? {}
-    const phase = state.phase ?? 'onboarding'
     const lots = state.lots ?? []
     const stories = state.stories ?? []
     const lot = lots.find(one => one.id === state.current_lot)
+    // Un lot en route, c'est de la construction, même si l'état dit encore
+    // « écrans » ou « architecture » (le lot d'entretien d'une nouvelle version
+    // part avant la fin de la conception) : l'étape en cours est « Construire ».
+    const statedPhase = state.phase ?? 'onboarding'
+    const building =
+      !!lot && !!lot.status && lot.status !== 'todo' && lot.status !== 'done' && !['build', 'done', 'stopped'].includes(statedPhase)
+    const phase = building ? 'build' : statedPhase
     const lotIndex = lot ? lots.findIndex(one => one.id === lot.id) + 1 : 0
     const lotStories = lot ? stories.filter(s => lot.stories?.includes(s.id)) : []
     const readyCount = lotStories.filter(s => s.status === 'in_lot' || s.status === 'done').length
@@ -720,6 +726,8 @@ export const register: Register = on => {
     const stageState = (stage: Stage): 'done' | 'current' | 'todo' => {
       const statuses = phasesOf(stage).map(p => phases[p] ?? 'todo')
       if (statuses.every(s => s === 'done')) return 'done'
+      // Pendant qu'un lot avance, une seule étape est « en cours » : Construire.
+      if (building && !phasesOf(stage).includes('build')) return 'todo'
       if (phasesOf(stage).includes(phase) || statuses.some(s => s !== 'todo')) return 'current'
       return 'todo'
     }
@@ -732,7 +740,11 @@ export const register: Register = on => {
             label: `Lot ${one.id}`,
             status: one.status === 'done' ? 'done' : one.status === 'todo' || !one.status ? 'todo' : 'in_progress',
           }))
-        : phasesOf(stage).map(p => ({ label: PHASE_LABEL[p] ?? p, status: phases[p] ?? 'todo' }))
+        : phasesOf(stage).map(p => ({
+            label: PHASE_LABEL[p] ?? p,
+            // Une phase laissée ouverte pendant qu'un lot avance attend son tour.
+            status: building && phases[p] === 'in_progress' ? 'todo' : (phases[p] ?? 'todo'),
+          }))
 
     const gate = (stage: Stage, st: 'done' | 'current' | 'todo'): { text: string; color: string; mark: string } => {
       if (stage.gate !== null) {
@@ -792,8 +804,23 @@ export const register: Register = on => {
     const nextLabel = inDemo ? 'Essayer la démo' : waiting ? 'Valider' : 'Continuer'
     // Dans la démo, les boutons ne lancent rien et aucune idée n'est écrite.
     const inert = () => $.ui.toast('Démo de test : rien n’est lancé ni écrit.')
-    const press = () => (isDemo ? inert() : void $.prompt.submit({ text: '/ariane:next' }))
-    const pressStatus = () => (isDemo ? inert() : void $.prompt.submit({ text: '/ariane:status' }))
+    // Lance une commande d'Ariane comme si elle était tapée. Un prompt envoyé
+    // par le panneau n'est pas lu comme une commande : il faut $.command.run.
+    // Notre propre crochet « command.run » ne voit pas cet appel, d'où le
+    // rangement de la conversation fait ici.
+    const launch = async (command: string) => {
+      try {
+        if (command === 'ariane:next') await tidy($)
+        await $.command.run({ command })
+      } catch {
+        const sent = await $.prompt
+          .submit({ text: `Lance la commande /${command}.` })
+          .catch(() => ({ drop: 'erreur' }))
+        if (sent.drop) $.ui.toast(`Impossible de lancer /${command} d’ici : tape-la dans la conversation.`)
+      }
+    }
+    const press = () => (isDemo ? inert() : void launch('ariane:next'))
+    const pressStatus = () => (isDemo ? inert() : void launch('ariane:status'))
     const hasButtons = phase !== 'done'
 
     const links = projectLinks(state)

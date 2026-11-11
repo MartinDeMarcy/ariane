@@ -2,6 +2,13 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.8] – 2026-11-11
+
+### Corrigé
+
+- **Boutons « Continuer » et « Où on en est »** : ils lancent maintenant la commande d'Ariane pour de bon (`$.command.run`). Avant, le panneau envoyait `/ariane:next` comme un simple message, qui n'était pas lu comme une commande. Si le lancement échoue, le panneau le dit.
+- **Étape en cours quand un lot avance** : dès qu'un lot est en route, l'étape en cours est « Construire », même si l'état dit encore « écrans » ou « architecture » (cas du lot d'entretien d'une nouvelle version, lancé avant la fin de la conception).
+
 ## [0.20.7] – 2026-11-11
 
 ### Modifié
