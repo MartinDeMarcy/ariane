@@ -6,7 +6,7 @@ Ariane s'adresse à toute personne qui a un projet d'application web, **qu'elle 
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.20.9, en cours de construction et de premiers tests.
+> Statut : version 0.20.10, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 

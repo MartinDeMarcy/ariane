@@ -2,6 +2,13 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.10] – 2026-11-11
+
+### Corrigé
+
+- **Dates des derniers pas** : un pas noté sans heure s'affichait « Aujourd'hui » au-dessus de pas datés « Il y a 13 min », alors qu'il est plus récent. Le panneau le borne maintenant par le dernier pas daté qui le précède : « Moins de 13 min », « Moins de 3 h ».
+- **Heure dans le journal** : la commande `/ariane:next` et le déroulé rappellent qu'une ligne de `history` porte toujours l'heure et un résumé court, pour qu'Ariane ne note plus la date seule.
+
 ## [0.20.9] – 2026-11-11
 
 ### Ajouté

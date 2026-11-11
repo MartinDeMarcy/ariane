@@ -342,7 +342,9 @@ const RECENT_H = 6 // en deçà, « il y a 3 h » plutôt que l'heure
 
 // Quand un pas a eu lieu, dit comme on le dirait : « il y a 15 min », « il y a
 // 3 h », « aujourd'hui à 9h05 », « hier à 18h30 », puis la date seule.
-const when = (iso: string | null | undefined, nowMs: number): string => {
+// Un pas noté sans heure n'est pas perdu pour autant : écrit après un pas
+// d'aujourd'hui dont on connaît l'heure (`after`), il a moins que son âge.
+const when = (iso: string | null | undefined, nowMs: number, after?: string | null): string => {
   const parsed = moment(iso)
   if (!parsed) return ''
   const { at, hasTime } = parsed
@@ -355,6 +357,13 @@ const when = (iso: string | null | undefined, nowMs: number): string => {
     if (minutes >= 0 && minutes < 1) return 'À l’instant'
     if (minutes >= 0 && minutes < 60) return `Il y a ${minutes} min`
     if (minutes >= 0 && minutes < RECENT_H * 60) return `Il y a ${Math.floor(minutes / 60)} h`
+  }
+  const bound = !hasTime && days === 0 ? moment(after) : null
+  if (bound?.hasTime && midnight(bound.at) === midnight(at)) {
+    const minutes = Math.floor((nowMs - bound.at.getTime()) / 60000)
+    if (minutes >= 0 && minutes < 2) return 'À l’instant'
+    if (minutes >= 0 && minutes < 60) return `Moins de ${minutes} min`
+    if (minutes >= 0 && minutes < RECENT_H * 60) return `Moins de ${Math.floor(minutes / 60) + 1} h`
   }
   if (days === 0) return hasTime ? `Aujourd’hui à ${clock}` : 'Aujourd’hui'
   if (days === 1) return hasTime ? `Hier à ${clock}` : 'Hier'
@@ -1253,7 +1262,14 @@ export const register: Register = on => {
       phase === 'done' ? 'Rien à faire, c’est en ligne.' : `Prochaine étape : ${PHASE_LABEL[phase] ?? phase}.`
     const steps = history.slice(cfg.foot === 'full4' ? -4 : -2).reverse()
     // Une colonne de même largeur pour tous, à la mesure du libellé le plus long.
-    const stepsWidth = whenWidth(steps.map(step => when(step.date, nowMs)))
+    // Pour un pas sans heure : l'heure du dernier pas daté qui le précède.
+    const timedBefore = (step: Step) =>
+      history
+        .slice(0, history.indexOf(step))
+        .reverse()
+        .find(one => moment(one.date)?.hasTime)?.date
+    const stepWhen = (step: Step) => when(step.date, nowMs, timedBefore(step))
+    const stepsWidth = whenWidth(steps.map(stepWhen))
 
     const footer = cfg.foot === 'full4' || cfg.foot === 'full2' ? (
       <Box flexDirection="column" gap={1} borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1}>
@@ -1264,7 +1280,7 @@ export const register: Register = on => {
               {steps.map(step => (
                 <Box flexDirection="row" gap={1}>
                   <Box width={stepsWidth} flexShrink={0}>
-                    <Text dimColor size="caption" wrap="truncate-end">{when(step.date, nowMs)}</Text>
+                    <Text dimColor size="caption" wrap="truncate-end">{stepWhen(step)}</Text>
                   </Box>
                   <Box flexShrink={1}>
                     <Text size="footnote" wrap="truncate-end">

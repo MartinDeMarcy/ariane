@@ -166,7 +166,7 @@ Règles :
 - Toujours commencer une session en lisant `.ariane/state.json` et en disant où on en est, avec le rituel d'Ariane (trois lignes courtes, voir `ariane-voice.md`).
 - Une seule chose à la fois ; jamais de jargon sans explication.
 - Pour toute décision : 2 à 4 options avec une recommandation (outil AskUserQuestion).
-- Mettre à jour `state.json` après chaque étape, et ajouter une ligne dans `history`.
+- Mettre à jour `state.json` après chaque étape, et ajouter une ligne dans `history`. Chaque ligne de `history` porte l’heure (`date +%Y-%m-%dT%H:%M`, jamais la date seule) et un résumé `short` de six mots au plus : le panneau s’en sert pour dire « il y a 15 min ».
 - Noter chaque décision validée par l'utilisateur dans `.ariane/decisions.md`, et chaque changement qui remplace une décision déjà consignée (avec la date, l'ancien choix, le nouveau, qui l'a décidé et pourquoi). Un spécialiste qui s'écarte d'une décision le dit dans sa fiche de passage ; Ariane demande alors confirmation à l'utilisateur.
 - Noter chaque risque accepté « pour l'instant » dans `decisions.md` et dans le registre des correctifs (`.ariane/issues.md`), pour le représenter avant chaque mise en ligne.
 - Ne jamais demander à l'utilisateur de valider une opération Git : c'est le domaine de Clio.
