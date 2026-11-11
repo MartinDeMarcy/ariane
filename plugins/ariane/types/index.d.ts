@@ -11,6 +11,8 @@ declare module 'claude-code' {
       ideasOpen: Shaped<boolean>
       // La fenêtre des accès rapides est ouverte par-dessus le panneau.
       linksOpen: Shaped<boolean>
+      // Les crans qu'il reste à une fenêtre pour remonter à sa place (0 : posée).
+      modalStep: Shaped<number>
       // La démo de test du panneau, dans le dépôt d'Ariane : affichée ou non,
       // le jeu d'essai montré et le niveau de densité forcé (null : automatique).
       demo: Shaped<{ on: boolean; fixture: number; level: number | null }>

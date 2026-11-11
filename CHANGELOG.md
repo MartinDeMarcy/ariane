@@ -2,6 +2,14 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.3] – 2026-11-11
+
+### Modifié
+
+- **Fenêtre de la boîte à idées** : elle contient une zone pour noter une idée, au-dessus de la liste.
+- **Accès rapides** : le bouton devient un petit bouton « ↗ » en haut du panneau, à droite du statut, au lieu d'être dans la rangée du bas.
+- **Ouverture des fenêtres** : la fenêtre remonte à sa place en trois crans, et un trait se trace sous son titre.
+
 ## [0.20.2] – 2026-11-11
 
 ### Modifié

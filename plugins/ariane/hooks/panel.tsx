@@ -25,6 +25,13 @@ const ideasOpen = atom({ plugin: 'ariane', key: 'ideasOpen' } as const, false, {
 const linksOpen = atom({ plugin: 'ariane', key: 'linksOpen' } as const, false, {
   shape: 'links-open-1',
 })
+// L'ouverture d'une fenêtre : le nombre de crans qu'il lui reste à remonter
+// avant d'être en place (0 : posée).
+const modalStep = atom({ plugin: 'ariane', key: 'modalStep' } as const, 0, {
+  shape: 'modal-step-1',
+})
+const SLIDE = 3 // crans de départ, un cran valant une ligne
+const SLIDE_MS = 45 // durée d'un cran
 const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixture: 1, level: null }, {
   shape: 'demo-1',
 })
@@ -241,6 +248,15 @@ const pill = (label: string, t: Tone) => {
 // Le trait de séparation : 2000 px de large, aplati à la place disponible.
 const RULE =
   '<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1" viewBox="0 0 2000 1" preserveAspectRatio="none"><rect width="2000" height="1" fill="#8a8a8a" fill-opacity="0.3"/></svg>'
+
+// Le trait sous le titre d'une fenêtre : il se trace de gauche à droite à
+// l'ouverture. L'animation est dans l'image, donc fluide.
+const SWEEP =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2" viewBox="0 0 2000 2" preserveAspectRatio="none">' +
+  '<rect width="2000" height="2" fill="#8a8a8a" fill-opacity="0.3"/>' +
+  '<rect width="0" height="2" fill="#d97757">' +
+  '<animate attributeName="width" from="0" to="2000" dur="0.4s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0 0 1"/>' +
+  '</rect></svg>'
 
 // La barre en cinq segments arrondis, dessinée en SVG pour la largeur voulue.
 const bar = (width: number, filled: number, current: boolean) => {
@@ -677,7 +693,6 @@ export const register: Register = on => {
     const hasButtons = phase !== 'done'
 
     const links = projectLinks(state)
-    const hasRow = hasButtons || links.length > 0
 
     // ----- Choisir la densité : le niveau le plus riche qui tient en hauteur -----
     // 0 complet · 1 resserré · 2 cartes réduites · 3 listes · 4 résumé · 5 minimal
@@ -694,7 +709,7 @@ export const register: Register = on => {
     // Les derniers pas sur toute la largeur, un trait, puis la suite dessous.
     const pairH = (count: number, b: number) =>
       count > 0 ? L_FOOT + U + count * L_FOOT + U + 1 + U + b : b
-    const suiteH = L_FOOT + U + L_FOOT + (hasRow ? U + BUTTONS : 0)
+    const suiteH = L_FOOT + U + L_FOOT + (hasButtons ? U + BUTTONS : 0)
 
     const height = (index: number): number => {
       const d = LEVELS[index]
@@ -716,8 +731,8 @@ export const register: Register = on => {
       if (d.idea) parts.push(FRAME + BUTTONS + U + 36 + L_BODY)
       if (d.foot === 'full4') parts.push(FRAME + pairH(Math.min(4, history.length), suiteH))
       else if (d.foot === 'full2') parts.push(FRAME + pairH(Math.min(2, history.length), suiteH))
-      else if (d.foot === 'suite') parts.push(FRAME + L_FOOT + (hasRow ? U + BUTTONS : 0))
-      else if (d.foot === 'buttons' && hasRow) parts.push(BUTTONS)
+      else if (d.foot === 'suite') parts.push(FRAME + L_FOOT + (hasButtons ? U + BUTTONS : 0))
+      else if (d.foot === 'buttons' && hasButtons) parts.push(BUTTONS)
       return parts.reduce((sum, part) => sum + part, 0) + (parts.length - 1) * gap
     }
 
@@ -760,6 +775,23 @@ export const register: Register = on => {
       </Box>
     ) : null
 
+    // Ouvre une fenêtre par-dessus le panneau : elle part quelques lignes plus
+    // bas et remonte cran par cran jusqu'à sa place.
+    const openModal = (which: 'ideas' | 'links') => {
+      void update($, ideasOpen, () => which === 'ideas')
+      void update($, linksOpen, () => which === 'links')
+      void update($, modalStep, () => SLIDE)
+      for (let i = 1; i <= SLIDE; i += 1) {
+        $.clock.after(i * SLIDE_MS, () => void update($, modalStep, () => SLIDE - i))
+      }
+    }
+    const slide = Math.max(0, Math.min(SLIDE, await read($, modalStep)))
+    // Le petit bouton carré, à droite du statut, qui ouvre les accès rapides.
+    const linksButton =
+      links.length > 0 ? (
+        <Button key="links-open" variant="secondary" label="↗" onPress={() => openModal('links')} />
+      ) : null
+
     const header = (title: string, right?: unknown) => (
       <Box flexDirection="row" justifyContent="space-between" alignItems="center" gap={1}>
         <Text weight="semibold" wrap="truncate-end">{title}</Text>
@@ -777,6 +809,7 @@ export const register: Register = on => {
             <Text dimColor size="footnote" wrap="truncate-end">{sentence}</Text>
           </Box>
           {cols >= 40 && badge}
+          {linksButton}
         </Box>
       ) : (
         <Box flexDirection="row" alignItems="center" gap={1}>
@@ -785,6 +818,7 @@ export const register: Register = on => {
             <Text size="footnote" wrap="truncate-end">{sentence}</Text>
           </Box>
           {cols >= 40 && badge}
+          {linksButton}
         </Box>
       )
 
@@ -944,10 +978,7 @@ export const register: Register = on => {
                 key="ideas-toggle"
                 variant="secondary"
                 label={`${waitingIdeas} en attente`}
-                onPress={() => {
-                  void update($, linksOpen, () => false)
-                  void update($, ideasOpen, () => true)
-                }}
+                onPress={() => openModal('ideas')}
               />
             ) : undefined,
           )}
@@ -978,7 +1009,7 @@ export const register: Register = on => {
     const modal = (title: string, closeKey: string, close: () => void, body: unknown) => (
       <Box
         position="absolute"
-        top={0}
+        top={slide}
         left={0}
         right={0}
         bottom={0}
@@ -987,7 +1018,7 @@ export const register: Register = on => {
       >
         <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
           {header(title, <Button key={closeKey} variant="secondary" label="Fermer" onPress={close} />)}
-          {hr()}
+          {Svg ? <Svg source={SWEEP} alt="séparateur" height={2} /> : hr()}
           {body}
         </Box>
       </Box>
@@ -999,6 +1030,24 @@ export const register: Register = on => {
           'ideas-close',
           () => void update($, ideasOpen, () => false),
           <Box flexDirection="column" gap={1}>
+            {Input && (
+              <Box flexDirection="column" alignItems="stretch" width="100%">
+                <Input
+                  key="idea-modal"
+                  placeholder="Note une idée pour plus tard…"
+                  submitLabel="noter"
+                  rows={2}
+                  value={draft}
+                  onInput={(value: string) => {
+                    draft = value
+                  }}
+                  onSubmit={(value: string) => {
+                    if (isDemo) inert()
+                    else void addIdea($, value, subtitle.toLowerCase())
+                  }}
+                />
+              </Box>
+            )}
             {shownIdeas.map(idea => (
               <Box flexDirection="row" gap={1}>
                 <Text dimColor size="caption">{day(idea.date) || '·'}</Text>
@@ -1043,21 +1092,10 @@ export const register: Register = on => {
           )
         : null
 
-    const buttons = hasRow ? (
+    const buttons = hasButtons ? (
       <Box flexDirection="row" flexWrap="wrap" gap={1}>
         {hasButtons && <Button key="next" variant="primary" label={nextLabel} onPress={press} />}
         {hasButtons && <Button key="status" variant="secondary" label="Où on en est" onPress={pressStatus} />}
-        {links.length > 0 && (
-          <Button
-            key="links-open"
-            variant="secondary"
-            label="Accès rapides"
-            onPress={() => {
-              void update($, ideasOpen, () => false)
-              void update($, linksOpen, () => true)
-            }}
-          />
-        )}
       </Box>
     ) : null
 
