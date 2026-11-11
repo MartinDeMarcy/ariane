@@ -2,6 +2,12 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.6] – 2026-11-11
+
+### Modifié
+
+- **Les derniers pas tiennent en quelques mots** : le panneau affiche un résumé de chaque pas au lieu d’un texte long coupé. Ariane et Clio écrivent ce résumé dans `state.history` (`short`, six mots au plus) ; pour les lignes plus anciennes, le panneau garde le début de l’événement, jusqu’à sa première précision.
+
 ## [0.20.5] – 2026-11-11
 
 ### Modifié

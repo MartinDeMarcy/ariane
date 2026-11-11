@@ -38,7 +38,7 @@ const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixtu
 
 type Story = { id: string; title?: string; lot?: string; status?: string }
 type Lot = { id: string; title?: string; goal?: string; stories?: string[]; status?: string }
-type Step = { date?: string; agent?: string; event?: string }
+type Step = { date?: string; agent?: string; event?: string; short?: string }
 type ProjectState = {
   project?: { name?: string }
   phase?: string
@@ -349,6 +349,18 @@ const when = (iso: string | null | undefined, nowMs: number): string => {
   if (days === 0) return hasTime ? `Aujourd’hui à ${clock}` : 'Aujourd’hui'
   if (days === 1) return hasTime ? `Hier à ${clock}` : 'Hier'
   return `${two(at.getDate())}/${two(at.getMonth() + 1)}`
+}
+
+// Un pas en quelques mots : le résumé écrit par l'équipe (`short`) quand il
+// existe ; sinon le début de l'événement, jusqu'à sa première précision
+// (deux-points, parenthèse, point-virgule…), sans jamais le couper au hasard.
+const SHORT_MAX = 48
+const condense = (step: Step): string => {
+  const short = (step.short ?? '').replace(/\s+/g, ' ').trim()
+  const text = short || (step.event ?? '').replace(/\s+/g, ' ').trim()
+  const stop = short ? -1 : text.search(/ : | ; | \(|\. | — | – /)
+  const head = stop > 12 ? text.slice(0, stop) : text
+  return head.length > SHORT_MAX ? `${head.slice(0, SHORT_MAX - 1).trimEnd()}…` : head
 }
 
 const day = (iso?: string | null) =>
@@ -1165,7 +1177,7 @@ export const register: Register = on => {
                   <Box flexShrink={1}>
                     <Text size="footnote" wrap="truncate-end">
                       {step.agent ? `${step.agent} · ` : ''}
-                      {step.event}
+                      {condense(step)}
                     </Text>
                   </Box>
                 </Box>

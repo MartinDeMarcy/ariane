@@ -46,7 +46,7 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `phases.ideation` | comme les autres phases | La préparation d'une version ; n'existe qu'après le MVP |
 | `feedback.enabled` | booléen | L'utilisateur accepte-t-il le journal de retours d'expérience ? |
 | `feedback.asked_at` | date ISO ou `null` | Date à laquelle la question a été posée |
-| `history[]` | liste | `{ "date", "agent", "event" }`, une ligne par étape. `date` porte le jour **et l’heure locale**, au format `2026-11-11T14:32` (lis l’heure avec `date +%Y-%m-%dT%H:%M`, ne la devine pas) : le panneau s’en sert pour dire « il y a 15 min » ou « hier à 18h30 ». Une date sans heure reste acceptée ; seules les 20 dernières restent ici, les plus anciennes sont rangées dans `.ariane/history/` à la fin de chaque lot |
+| `history[]` | liste | `{ "date", "agent", "event", "short" }`, une ligne par étape. `short` résume l’étape en six mots au plus, sans détail (« Story 004 vérifiée », « Cahier des charges validé », « Lot 02 mis en démo ») : c’est ce que le panneau affiche, `event` garde le détail. `date` porte le jour **et l’heure locale**, au format `2026-11-11T14:32` (lis l’heure avec `date +%Y-%m-%dT%H:%M`, ne la devine pas) : le panneau s’en sert pour dire « il y a 15 min » ou « hier à 18h30 ». Une date sans heure reste acceptée ; seules les 20 dernières restent ici, les plus anciennes sont rangées dans `.ariane/history/` à la fin de chaque lot |
 
 Projets en version 0.13.0 : `challenge.status`, `rounds`, `raised` et `at` étaient alors à plat ; lis-les comme `challenge.brief`, et crée `challenge.prd` vide.
 
