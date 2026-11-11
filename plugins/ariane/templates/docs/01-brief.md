@@ -28,4 +28,8 @@ Outils proches, et ce qui différencie ce projet.
 
 Délai, langue, données sensibles, public particulier, appareils.
 
+## Points de vigilance
+
+Les risques sérieux soulevés avant de construire, et ce que l'utilisateur a décidé pour chacun.
+
 ## Questions encore ouvertes

@@ -5,7 +5,7 @@ Ce document est la référence commune à toutes les commandes et à tous les ag
 ## Deux façons de faire travailler un agent
 
 - **Incarné (dialogue)** : la conversation principale *devient* l'agent. Elle lit sa fiche (`agents/<nom>.md`), adopte sa personnalité et dialogue directement avec l'utilisateur. Utilisé quand il faut poser des questions : Ariane, Socrate, Maxime, Iris.
-- **Délégué (autonome)** : la conversation principale lance le sous-agent `ariane:<nom>` avec l'outil Agent, en lui donnant tout le contexte nécessaire (chemins des documents, story en cours, fichiers de savoir-faire à lire). Le sous-agent travaille seul et rend un compte rendu. Utilisé pour : Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil.
+- **Délégué (autonome)** : la conversation principale lance le sous-agent `ariane:<nom>` avec l'outil Agent, en lui donnant tout le contexte nécessaire (chemins des documents, story en cours, fichiers de savoir-faire à lire). Le sous-agent travaille seul et rend un compte rendu. Utilisé pour : Cassandre, Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil.
 
 Un sous-agent délégué ne voit pas la conversation : le message de délégation doit tout contenir. Après chaque délégation, Ariane résume le résultat à l'utilisateur en une à trois phrases simples.
 
@@ -15,7 +15,7 @@ Un sous-agent délégué ne voit pas la conversation : le message de délégatio
 |---|---|---|---|---|---|
 | 0 | `onboarding` | Ariane | incarné | `.ariane/state.json`, `CLAUDE.md`, `.claude/settings.json`, dépôt GitHub | — |
 | 1 | `maturity` | Ariane | incarné | `state.maturity` | l'utilisateur confirme le niveau |
-| 2 | `brief` | Socrate | incarné | `docs/01-brief.md` | — |
+| 2 | `brief` | Socrate, puis Cassandre | incarné (Socrate), délégué (Cassandre) | `docs/01-brief.md`, `state.challenge` | — |
 | 3 | `prd` | Maxime | incarné | `docs/02-prd.md` | **Validation 1 : le PRD** |
 | 4 | `ux` | Iris | incarné | `docs/03-ux.md` + maquettes | **Validation 2 : les écrans** |
 | 5 | `architecture` | Gustave | délégué | `docs/04-architecture.md`, projet Next.js initialisé, Supabase de test relié | — |
@@ -39,6 +39,15 @@ Elle recommande un niveau (MVP, alpha, bêta, production) et l'explique en une o
 
 - **MVP** : on continue.
 - **Autre niveau** : Ariane explique qu'elle ne prend en charge que les MVP pour l'instant, propose de viser d'abord un MVP, et si l'utilisateur refuse, met `phase` à `stopped` et s'arrête là.
+
+## Phase 2 : le brief, et la contradiction
+
+1. **Socrate** mène la conversation et résume l'idée en cinq lignes ; l'utilisateur confirme.
+2. **Ariane lance Cassandre** (délégué, en lecture seule) avec ce résumé. Cassandre rend cinq objections au maximum, classées par gravité.
+3. **Socrate répond** à chaque objection ; Ariane transmet à Cassandre, qui a **une seule réplique** (levée, maintenue, aggravée). Un seul tour.
+4. **Ariane juge** : elle ne remonte à l'utilisateur que ce qui passe ses quatre filtres (grave, propre à cette idée, tranchable maintenant, pas déjà réglé), au plus trois questions, une à la fois, souvent une seule, parfois aucune. Voir « Faire contredire l'idée par Cassandre, et trancher » dans `ariane.md`.
+5. **Socrate écrit le brief** en tenant compte des décisions de l'utilisateur, avec la section « Points de vigilance ».
+6. `state.challenge` est renseigné (`status`, `rounds`, `raised`, `at`) ; le détail du débat va dans le journal de bord, les décisions dans `decisions.md`. L'utilisateur peut refuser la contradiction (`skipped`).
 
 ## Phase 6 : le découpage en lots
 

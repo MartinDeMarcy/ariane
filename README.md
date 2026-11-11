@@ -1,12 +1,12 @@
 # Ariane
 
-**Ariane tient le fil, de ton idée à ton application en ligne. Elle dirige une équipe de dix spécialistes et gère tout, de A à Z.**
+**Ariane tient le fil, de ton idée à ton application en ligne. Elle dirige une équipe de onze spécialistes et gère tout, de A à Z.**
 
 Ariane s'adresse aux personnes qui ont un projet d'application web, l'envie de le mener, mais pas de formation de développeur. Tu ne parles qu'à elle : c'est elle qui envoie le bon spécialiste au bon moment, relit son travail et te raconte simplement où on en est. Le résultat est un **MVP** : une application web installable sur téléphone (PWA), en ligne, avec son code sur GitHub et un wiki qui explique comment elle fonctionne.
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.12.0, en cours de construction et de premiers tests.
+> Statut : version 0.13.0, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 
@@ -16,6 +16,7 @@ Comme dans le mythe, Ariane te donne le fil pour ne jamais te perdre dans le lab
 - **Elle briefe** chaque spécialiste avec tout le contexte dont il a besoin.
 - **Elle relit** ce qu'il rend, vérifie que ça tient avec le reste, relance si besoin.
 - **Elle traduit** : tu ne lis jamais le compte rendu brut d'un spécialiste, seulement l'essentiel, en mots de tous les jours.
+- **Elle tranche** : Cassandre, la contradictrice de l'équipe, conteste ton idée avant qu'on construise et débat avec Socrate ; Ariane juge ce qui mérite de te remonter, sans jamais te décourager.
 - **Elle assume** : si quelque chose coince, c'est son équipe, donc elle qui corrige.
 - **Elle tient le fil** : où on en est, la suite, combien de temps ça prend, au début de chaque session.
 
@@ -23,7 +24,7 @@ Comme dans le mythe, Ariane te donne le fil pour ne jamais te perdre dans le lab
 
 Le parcours compte quatre étapes et quatre validations : rien n'avance sans ton accord.
 
-1. **Cadrer** : Ariane te passe Socrate, qui t'aide à préciser ton idée, puis Maxime, qui choisit avec toi ce qui entre dans le MVP. → *Validation 1 : le PRD*
+1. **Cadrer** : Ariane te passe Socrate, qui t'aide à préciser ton idée, pendant que Cassandre cherche en coulisses ce qui pourrait mal tourner (Ariane te remonte seulement ce qui compte), puis Maxime, qui choisit avec toi ce qui entre dans le MVP. → *Validation 1 : le PRD*
 2. **Concevoir** : Iris dessine les écrans, Gustave pose les fondations techniques, Poucet découpe le travail en petites étapes regroupées en lots. → *Validation 2 : les écrans*
 3. **Construire**, un lot à la fois : tu lances un lot, puis Ariane déroule : Ada code en local, Thomas teste en local puis en ligne, Clio range tout dans GitHub et Diderot met le wiki à jour, fonctionnalité après fonctionnalité, sans te déranger. → *Validation 3 : la démo de chaque lot, à la fin du lot*
 4. **Livrer** : Diderot relit le wiki, Clio crée la version, Neil met l'app en ligne. → *Validation 4 : la mise en ligne*
@@ -34,6 +35,7 @@ Le parcours compte quatre étapes et quatre validations : rien n'avance sans ton
 |---|---|---|
 | **Ariane** | Guide et cheffe d'équipe | Complice enjouée, directe quand il le faut, elle tient le fil de A à Z |
 | **Socrate** | Analyste | Curieux, fait naître l'idée par les questions |
+| **Cassandre** | Contradictrice | Lucide et franche, voit ce qui ira mal avant tout le monde, comme la prophétesse qu'on ne croyait pas |
 | **Maxime** | Product Manager | Pragmatique, maximise la valeur, sait dire « pas pour le MVP » |
 | **Iris** | Designer UX | Empathique et visuelle, pense à l'utilisateur final |
 | **Gustave** | Architecte | Méthodique, comme Eiffel : des fondations solides |
@@ -177,7 +179,7 @@ Structure du dépôt :
 .claude-plugin/marketplace.json   # la marketplace (un seul plugin : Ariane)
 plugins/ariane/
 ├── .claude-plugin/plugin.json
-├── agents/        # Ariane et ses dix spécialistes
+├── agents/        # Ariane et ses onze spécialistes
 ├── skills/        # les commandes et les savoir-faire (stack, Git, tests, déploiement)
 ├── reference/     # le parcours, la voix d'Ariane et le format du fichier d'état
 ├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes, wiki)

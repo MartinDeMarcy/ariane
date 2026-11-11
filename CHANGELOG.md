@@ -2,6 +2,18 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.13.0] – 2026-11-11
+
+### Ajouté
+
+- **Cassandre, la contradictrice** (`agents/cassandre.md`), onzième spécialiste de l'équipe d'Ariane. Pendant l'idéation, elle conteste l'idée et imagine ce qui pourrait mal tourner : le problème est-il réel, qui sont vraiment les utilisateurs, ce qui existe déjà, la faisabilité d'un MVP, les données et les règles, l'adoption, les coûts, la mesure de la réussite. Elle travaille en lecture seule, avec une recherche web pour vérifier plutôt que deviner, et ne parle jamais à l'utilisateur.
+- **Un débat avec Socrate, jugé par Ariane.** Une fois le résumé de l'idée confirmé, Ariane lance Cassandre (cinq objections au maximum, classées par gravité) ; Socrate répond objection par objection ; Cassandre a une seule réplique. Ariane tranche : elle ne remonte à l'utilisateur que ce qui est grave, propre à cette idée, tranchable maintenant et pas déjà réglé, au plus trois questions, une à la fois, souvent une seule. Le détail du débat va dans le journal de bord ; les décisions de l'utilisateur dans `decisions.md`.
+- Section « Points de vigilance » dans le modèle de brief ; état `state.challenge` (`status`, `rounds`, `raised`, `at`) pour ne pas relancer la contradiction à la reprise d'une session. L'utilisateur peut la refuser.
+
+### Modifié
+
+- L'équipe d'Ariane compte maintenant onze spécialistes ; le README, `/ariane:help`, la voix d'Ariane et le parcours (`reference/workflow.md`, phase 2) en tiennent compte.
+
 ## [0.12.0] – 2026-11-11
 
 ### Modifié

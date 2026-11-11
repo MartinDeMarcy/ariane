@@ -1,7 +1,7 @@
 {
   "name": "ariane",
-  "description": "Ariane, cheffe d'équipe : elle dirige dix spécialistes et accompagne un débutant motivé de l'idée à un MVP web en ligne, de A à Z : spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en production (Next.js, Supabase, Vercel).",
-  "version": "0.12.0",
+  "description": "Ariane, cheffe d'équipe : elle dirige onze spécialistes et accompagne un débutant motivé de l'idée à un MVP web en ligne, de A à Z : spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en production (Next.js, Supabase, Vercel).",
+  "version": "0.13.0",
   "author": {
     "name": "PRAS Martin",
     "url": "https://github.com/MartinDeMarcy"

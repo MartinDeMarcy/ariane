@@ -22,6 +22,9 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `maturity.answers` | objet | Réponses aux trois questions |
 | `phase` | texte | Phase en cours (voir `workflow.md`), ou `stopped` / `done` |
 | `phases.<phase>` | `todo` · `in_progress` · `waiting_validation` · `done` | Avancement de chaque phase |
+| `challenge.status` | `null` · `done` · `skipped` | La contradiction de l'idée par Cassandre a-t-elle eu lieu (voir `workflow.md`, phase 2) ? |
+| `challenge.rounds` / `challenge.raised` | nombre | Nombre de tours de débat (un seul) et de questions remontées à l'utilisateur |
+| `challenge.at` | date ISO ou `null` | Date de la contradiction |
 | `gates.prd` / `gates.ux` / `gates.release` | date ISO ou `null` | Date de chaque validation |
 | `lots[]` | liste | Une entrée par lot de stories (voir ci-dessous) |
 | `current_lot` | texte ou `null` | Identifiant du lot en cours |

@@ -1,5 +1,5 @@
 {
-  "ariane": "0.12.0",
+  "ariane": "0.13.0",
   "project": {
     "name": "",
     "pitch": "",
@@ -31,6 +31,12 @@
     "build": "todo",
     "wiki": "todo",
     "release": "todo"
+  },
+  "challenge": {
+    "status": null,
+    "rounds": 0,
+    "raised": 0,
+    "at": null
   },
   "gates": {
     "prd": null,

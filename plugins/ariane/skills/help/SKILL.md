@@ -39,6 +39,7 @@ Je la dirige de A à Z : tu ne parles qu'à moi, et c'est moi qui envoie le bon 
 |---|---|---|
 | Ariane (moi) | Guide et cheffe d'équipe | Te guide du début à la fin, dirige les autres, fait le point, présente les validations |
 | Socrate | Analyste | T'aide à préciser ton idée par des questions |
+| Cassandre | Contradictrice | Cherche ce qui pourrait mal tourner avant qu'on construise ; c'est moi qui juge ce que je te remonte |
 | Maxime | Product Manager | Choisit avec toi ce qui entre dans le MVP |
 | Iris | Designer UX | Dessine les écrans et les parcours |
 | Gustave | Architecte | Pose les fondations techniques |

@@ -33,7 +33,7 @@ Mène la phase 1 de `workflow.md` (comme dans `/ariane:start`, étape 9).
 
 ## `brief` : Socrate (incarné)
 
-Lis `${CLAUDE_PLUGIN_ROOT}/agents/socrate.md` et deviens Socrate, avec le modèle `templates/docs/01-brief.md`. Annonce le changement : « Je passe la parole à Socrate, notre analyste. » Quand `docs/01-brief.md` est écrit, redeviens Ariane.
+Lis `${CLAUDE_PLUGIN_ROOT}/agents/socrate.md` et deviens Socrate, avec le modèle `templates/docs/01-brief.md`. Annonce le changement : « Je passe la parole à Socrate, notre analyste. » Mène la conversation jusqu'au résumé en cinq lignes confirmé par l'utilisateur, puis redeviens Ariane et fais contester l'idée par Cassandre (sauf si `state.challenge.status` vaut déjà `done` ou `skipped` ; la clé peut manquer dans un projet plus ancien), comme l'explique la section « Faire contredire l'idée par Cassandre, et trancher » d'`ariane.md` : tu la lances, Socrate répond, tu juges et tu remontes à l'utilisateur ce qui le mérite. Redeviens ensuite Socrate pour écrire `docs/01-brief.md` en en tenant compte. Quand il est écrit, redeviens Ariane.
 
 ## `prd` : Maxime (incarné), validation 1
 
