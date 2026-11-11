@@ -15,8 +15,8 @@ Un sous-agent délégué ne voit pas la conversation : le message de délégatio
 |---|---|---|---|---|---|
 | 0 | `onboarding` | Ariane | incarné | `.ariane/state.json`, `CLAUDE.md`, `.claude/settings.json`, dépôt GitHub | — |
 | 1 | `maturity` | Ariane | incarné | `state.maturity` | l'utilisateur confirme le niveau |
-| 2 | `brief` | Socrate, puis Cassandre | incarné (Socrate), délégué (Cassandre) | `docs/01-brief.md`, `state.challenge` | — |
-| 3 | `prd` | Maxime | incarné | `docs/02-prd.md` | **Validation 1 : le PRD** |
+| 2 | `brief` | Socrate, puis Cassandre | incarné (Socrate), délégué (Cassandre) | `docs/01-brief.md`, `state.challenge.brief` | — |
+| 3 | `prd` | Maxime, puis Cassandre | incarné (Maxime), délégué (Cassandre) | `docs/02-prd.md`, `state.challenge.prd` | **Validation 1 : le PRD** |
 | 4 | `ux` | Iris | incarné | `docs/03-ux.md` + maquettes | **Validation 2 : les écrans** |
 | 5 | `architecture` | Gustave | délégué | `docs/04-architecture.md`, projet Next.js initialisé, Supabase de test relié | — |
 | 6 | `planning` | Poucet | délégué | `docs/stories/NNN-nom.md`, `state.stories`, `state.lots` | — |
@@ -47,7 +47,16 @@ Elle recommande un niveau (MVP, alpha, bêta, production) et l'explique en une o
 3. **Socrate répond** à chaque objection ; Ariane transmet à Cassandre, qui a **une seule réplique** (levée, maintenue, aggravée). Un seul tour.
 4. **Ariane juge** : elle ne remonte à l'utilisateur que ce qui passe ses quatre filtres (grave, propre à cette idée, tranchable maintenant, pas déjà réglé), au plus trois questions, une à la fois, souvent une seule, parfois aucune. Voir « Faire contredire l'idée par Cassandre, et trancher » dans `ariane.md`.
 5. **Socrate écrit le brief** en tenant compte des décisions de l'utilisateur, avec la section « Points de vigilance ».
-6. `state.challenge` est renseigné (`status`, `rounds`, `raised`, `at`) ; le détail du débat va dans le journal de bord, les décisions dans `decisions.md`. L'utilisateur peut refuser la contradiction (`skipped`).
+6. `state.challenge.brief` est renseigné (`status`, `rounds`, `raised`, `at`) ; le détail du débat va dans le journal de bord, les décisions dans `decisions.md`. L'utilisateur peut refuser la contradiction (`skipped`).
+
+## Phase 3 : le PRD, et la relecture de Cassandre
+
+1. **Maxime** classe les fonctionnalités avec l'utilisateur et écrit `docs/02-prd.md` **en brouillon**.
+2. **Ariane lance Cassandre** (délégué, en lecture seule) avec les chemins du brief et du PRD. Elle rend cinq objections au maximum : périmètre, critères vérifiables, parcours, cas limites, cohérence avec le brief, droits et données, dépendances.
+3. **Maxime répond** à chaque objection ; Ariane transmet à Cassandre, qui a **une seule réplique**. Un seul tour.
+4. **Ariane juge**, avec les mêmes filtres que pour l'idée : au plus trois questions, une à la fois, souvent une seule, parfois aucune. Les simples précisions de rédaction, Maxime les corrige sans déranger l'utilisateur.
+5. **Maxime met à jour le PRD** (section « Points de vigilance »), l'envoie à l'utilisateur et demande la **Validation 1**. Ariane peut dire en une phrase que Cassandre a relu le PRD et ce que ça a changé, si ça a changé quelque chose.
+6. `state.challenge.prd` est renseigné (`status`, `rounds`, `raised`, `at`) ; le détail du débat va dans le journal de bord. Un refus de la contradiction (`skipped`) vaut pour tout le projet.
 
 ## Phase 6 : le découpage en lots
 

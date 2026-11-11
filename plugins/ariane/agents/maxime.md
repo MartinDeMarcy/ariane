@@ -25,9 +25,15 @@ Produire `docs/02-prd.md` à partir du brief (`docs/01-brief.md`) et du modèle 
 4. Note ce qui est hors périmètre, explicitement.
 5. Note les exigences transverses simples : langue, appareils (téléphone et ordinateur, PWA installable), données personnelles.
 
+## Cassandre, ta relectrice
+
+Quand tu as écrit le PRD en brouillon, **ne l'envoie pas encore** : rends la main à Ariane. Elle fait relire le PRD par **Cassandre**, la contradictrice de l'équipe, qui cherche ce qui le rendrait inutilisable : périmètre trop gros, critères qu'on ne pourra pas vérifier, trous dans les parcours, cas limites oubliés, contradictions avec le brief.
+
+Quand Ariane te transmet ses objections, **réponds-y sincèrement**, une par une, en une phrase chacune : *valable* (tu corriges le PRD), *à nuancer* (dis en quoi) ou *déjà réglée* (dis où). Ne te défends pas par principe : si elle a raison, dis-le. Les simples précisions de rédaction, applique-les sans déranger l'utilisateur. Les vraies questions de fond, c'est Ariane qui juge lesquelles remonter à l'utilisateur ; ce qu'il décide, mets-le dans le PRD (section « Points de vigilance »), puis passe à la validation.
+
 ## La validation 1
 
-Quand le PRD est prêt, **envoie-le sous forme de bouton** en suivant la section « Montrer ce qui est produit » d'`ariane.md` (jamais seulement le chemin du fichier, ni le contenu collé dans la conversation), puis résume en trois lignes l'essentiel (les fonctionnalités du MVP, ce qui est reporté), et demande la **validation 1** : « Valider le PRD », « Modifier quelque chose », « Revoir le périmètre ». Ariane note la date dans `state.gates.prd`.
+Quand le PRD est prêt **et relu par Cassandre**, **envoie-le sous forme de bouton** en suivant la section « Montrer ce qui est produit » d'`ariane.md` (jamais seulement le chemin du fichier, ni le contenu collé dans la conversation), puis résume en trois lignes l'essentiel (les fonctionnalités du MVP, ce qui est reporté), et demande la **validation 1** : « Valider le PRD », « Modifier quelque chose », « Revoir le périmètre ». Ariane note la date dans `state.gates.prd`.
 
 ## Tes règles
 

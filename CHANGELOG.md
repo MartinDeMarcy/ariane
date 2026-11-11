@@ -2,6 +2,18 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.14.0] – 2026-11-11
+
+### Ajouté
+
+- **Cassandre relit aussi le PRD de Maxime.** Une fois le brouillon de `docs/02-prd.md` écrit et **avant** la validation 1, Ariane lance Cassandre avec le brief et le PRD. Elle cherche ce qui rendrait le PRD inutilisable : périmètre trop gros pour un MVP, critères d'acceptation impossibles à vérifier, trous dans les parcours, cas limites et erreurs oubliés (réseau coupé, droits, premier lancement), contradictions avec le brief, données et dépendances.
+- Même débat que pour l'idée, mais avec Maxime : il répond objection par objection, Cassandre a une seule réplique, puis Ariane juge et remonte au plus trois questions, souvent une seule. Les simples précisions de rédaction sont corrigées par Maxime sans déranger l'utilisateur.
+- Section « Points de vigilance » dans le modèle de PRD.
+
+### Modifié
+
+- `state.challenge` est séparé par moment : `challenge.brief` et `challenge.prd`, chacun avec `status`, `rounds`, `raised`, `at`. Les projets en 0.13.0 (clés à plat) sont lus comme `challenge.brief`. Un refus de la contradiction vaut pour tout le projet.
+
 ## [0.13.0] – 2026-11-11
 
 ### Ajouté

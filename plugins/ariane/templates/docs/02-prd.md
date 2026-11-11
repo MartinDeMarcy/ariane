@@ -29,6 +29,10 @@ Une phrase : ce que le MVP permet de vérifier.
 
 Ce que l'app ne fera pas.
 
+## Points de vigilance
+
+Les risques sérieux soulevés à la relecture, et ce que l'utilisateur a décidé pour chacun.
+
 ## Exigences transverses
 
 - Langue :

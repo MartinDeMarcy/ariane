@@ -6,7 +6,7 @@ Ariane s'adresse aux personnes qui ont un projet d'application web, l'envie de l
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.13.0, en cours de construction et de premiers tests.
+> Statut : version 0.14.0, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 
@@ -16,7 +16,7 @@ Comme dans le mythe, Ariane te donne le fil pour ne jamais te perdre dans le lab
 - **Elle briefe** chaque spécialiste avec tout le contexte dont il a besoin.
 - **Elle relit** ce qu'il rend, vérifie que ça tient avec le reste, relance si besoin.
 - **Elle traduit** : tu ne lis jamais le compte rendu brut d'un spécialiste, seulement l'essentiel, en mots de tous les jours.
-- **Elle tranche** : Cassandre, la contradictrice de l'équipe, conteste ton idée avant qu'on construise et débat avec Socrate ; Ariane juge ce qui mérite de te remonter, sans jamais te décourager.
+- **Elle tranche** : Cassandre, la contradictrice de l'équipe, conteste ton idée puis relit le cahier des charges avant qu'on construise, et débat avec Socrate et Maxime ; Ariane juge ce qui mérite de te remonter, sans jamais te décourager.
 - **Elle assume** : si quelque chose coince, c'est son équipe, donc elle qui corrige.
 - **Elle tient le fil** : où on en est, la suite, combien de temps ça prend, au début de chaque session.
 
@@ -24,7 +24,7 @@ Comme dans le mythe, Ariane te donne le fil pour ne jamais te perdre dans le lab
 
 Le parcours compte quatre étapes et quatre validations : rien n'avance sans ton accord.
 
-1. **Cadrer** : Ariane te passe Socrate, qui t'aide à préciser ton idée, pendant que Cassandre cherche en coulisses ce qui pourrait mal tourner (Ariane te remonte seulement ce qui compte), puis Maxime, qui choisit avec toi ce qui entre dans le MVP. → *Validation 1 : le PRD*
+1. **Cadrer** : Ariane te passe Socrate, qui t'aide à préciser ton idée, pendant que Cassandre cherche en coulisses ce qui pourrait mal tourner (Ariane te remonte seulement ce qui compte), puis Maxime, qui choisit avec toi ce qui entre dans le MVP et dont Cassandre relit le cahier des charges avant ta validation. → *Validation 1 : le PRD*
 2. **Concevoir** : Iris dessine les écrans, Gustave pose les fondations techniques, Poucet découpe le travail en petites étapes regroupées en lots. → *Validation 2 : les écrans*
 3. **Construire**, un lot à la fois : tu lances un lot, puis Ariane déroule : Ada code en local, Thomas teste en local puis en ligne, Clio range tout dans GitHub et Diderot met le wiki à jour, fonctionnalité après fonctionnalité, sans te déranger. → *Validation 3 : la démo de chaque lot, à la fin du lot*
 4. **Livrer** : Diderot relit le wiki, Clio crée la version, Neil met l'app en ligne. → *Validation 4 : la mise en ligne*

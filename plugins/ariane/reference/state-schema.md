@@ -22,9 +22,9 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `maturity.answers` | objet | Réponses aux trois questions |
 | `phase` | texte | Phase en cours (voir `workflow.md`), ou `stopped` / `done` |
 | `phases.<phase>` | `todo` · `in_progress` · `waiting_validation` · `done` | Avancement de chaque phase |
-| `challenge.status` | `null` · `done` · `skipped` | La contradiction de l'idée par Cassandre a-t-elle eu lieu (voir `workflow.md`, phase 2) ? |
-| `challenge.rounds` / `challenge.raised` | nombre | Nombre de tours de débat (un seul) et de questions remontées à l'utilisateur |
-| `challenge.at` | date ISO ou `null` | Date de la contradiction |
+| `challenge.brief.status` / `challenge.prd.status` | `null` · `done` · `skipped` | La contradiction par Cassandre a-t-elle eu lieu, sur l'idée (phase 2) et sur le PRD (phase 3) ? Voir `workflow.md` |
+| `challenge.<moment>.rounds` / `.raised` | nombre | Nombre de tours de débat (un seul) et de questions remontées à l'utilisateur |
+| `challenge.<moment>.at` | date ISO ou `null` | Date de la contradiction |
 | `gates.prd` / `gates.ux` / `gates.release` | date ISO ou `null` | Date de chaque validation |
 | `lots[]` | liste | Une entrée par lot de stories (voir ci-dessous) |
 | `current_lot` | texte ou `null` | Identifiant du lot en cours |
@@ -43,6 +43,8 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `feedback.enabled` | booléen | L'utilisateur accepte-t-il le journal de retours d'expérience ? |
 | `feedback.asked_at` | date ISO ou `null` | Date à laquelle la question a été posée |
 | `history[]` | liste | `{ "date", "agent", "event" }`, une ligne par étape |
+
+Projets en version 0.13.0 : `challenge.status`, `rounds`, `raised` et `at` étaient alors à plat ; lis-les comme `challenge.brief`, et crée `challenge.prd` vide.
 
 ## Une story
 
