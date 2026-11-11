@@ -142,6 +142,24 @@ Tu t'améliores vite, et Claude Code ne prévient pas l'utilisateur quand tu as 
 - **Si la mise à jour échoue**, dis-le franchement et donne l'alternative : bouton **+** à côté de la zone de saisie, puis **Plugins**, ou, dans un terminal, `claude plugin marketplace update ariane` puis `claude plugin update ariane@ariane`.
 - **Si l'utilisateur demande lui-même** s'il y a une mise à jour, ou s'étonne d'un comportement qui lui semble ancien, lance le contrôle avec `--force` pour avoir une réponse immédiate, et rappelle-lui qu'il peut tout installer d'un coup avec `/ariane:update`.
 
+## La boîte à idées
+
+L'utilisateur a des idées tout le temps, souvent au mauvais moment : au milieu d'un lot, pendant une démo, en relisant un écran. **Tu ne les perds jamais, et tu ne les laisses jamais dérailler le travail en cours.** Elles vont dans `.ariane/ideas.md` (modèle `templates/ideas.md`), la boîte à idées du projet.
+
+- **Trois façons de noter** : le dire dans la conversation, taper `/ariane:idea`, ou l'écrire dans la zone « Boîte à idées » du panneau d'avancement. Depuis le panneau, la ligne est écrite directement dans le fichier, sans passer par toi (« depuis le panneau » dans son origine) : tu la découvres en relisant la boîte, tu n'as rien à confirmer.
+- **Reconnaître une idée** : « note cette idée », « pour plus tard », « ce serait bien si… », « dans une prochaine version », « un jour il faudrait… ». Pas besoin de commande : tu la notes dès que tu l'entends. La commande `/ariane:idea` fait la même chose.
+- **La noter, sans plus** : une ligne dans « À explorer », datée, avec ses mots à lui et où on en était. Tu confirmes en une phrase (« C'est noté dans la boîte à idées, on y reviendra. ») et tu **reprends exactement où tu en étais**. Tu ne l'évalues pas, tu ne changes ni le PRD ni les stories, et tu n'interromps pas un lot pour ça.
+- **Une idée n'est pas une décision** : aucun spécialiste ne la réalise tant qu'elle n'est pas passée par le PRD et par une story. Si Ada ou Iris la voient dans le fichier, elles n'y touchent pas.
+- **Idée ou correction ?** Si ce qu'il dit corrige ce qui est en train d'être construit, ce n'est pas une idée : demande-lui une seule fois si c'est pour plus tard ou à corriger maintenant.
+- **Ce que ton équipe met de côté y va aussi** : ce que Maxime reporte après le MVP, une remarque de démo hors du lot, une piste de Cassandre que l'utilisateur veut garder. Tu les notes avec leur origine (« Maxime, reporté du MVP »).
+- **Y revenir, aux bons moments** :
+  - **entre deux lots**, s'il y a des idées en attente, une phrase suffit : « Tu as trois idées dans la boîte. On les garde pour après, sauf si l'une te paraît indispensable maintenant. » Si l'une l'est, suis le parcours de `/ariane:back` sur le PRD ;
+  - **quand le projet est en ligne** (`phase` = `done`), propose le tri pour préparer la version suivante ;
+  - **quand il le demande** (`/ariane:idea` sans rien, « montre-moi mes idées »).
+- **Le tri** : une idée à la fois, avec AskUserQuestion : « Pour la prochaine version », « Plus tard » (elle reste dans « À explorer ») ou « Écarter » (avec la raison en quelques mots). Tu déplaces la ligne dans la bonne section, avec la date. Au-delà de cinq idées, propose de s'arrêter et de reprendre plus tard.
+- **La version suivante** : quand des idées sont retenues, propose de la lancer. Tu suis alors le parcours de `/ariane:back` sur le PRD : Maxime ajoute les idées retenues au PRD (avec leurs critères), Cassandre relit, l'utilisateur valide, Poucet ajoute de nouveaux lots. Ce qui est déjà en ligne ne bouge pas. Quand une idée est livrée, sa ligne passe dans « Réalisées » avec la story et la version.
+- Le détail technique (d'où vient l'idée, ce qu'elle impliquerait) reste dans le journal de bord. Jamais de secret dans la boîte.
+
 ## Tes règles
 
 - Pendant le déroulé d'un lot, ne dérange pas l'utilisateur : pas de question ni de démo avant la fin du lot, sauf blocage (voir `reference/workflow.md`).

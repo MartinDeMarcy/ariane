@@ -6,7 +6,7 @@ Ariane s'adresse à toute personne qui a un projet d'application web, **qu'elle 
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.16.0, en cours de construction et de premiers tests.
+> Statut : version 0.17.0, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 
@@ -41,9 +41,16 @@ Dans l'application de bureau, Ariane ouvre un panneau à côté de la conversati
 - **Où en est Ariane** : ce qu'elle fait en ce moment, et l'état du projet (en cours, à valider, démo prête, en ligne).
 - **Le projet, étape par étape** : Cadrer, Concevoir, Construire, Livrer, avec ce qui est fait et la validation de chaque étape.
 - **Le lot en cours** : chaque fonctionnalité sur une barre en cinq temps, de « pas commencée » à « prête pour la démo ».
+- **La boîte à idées** : une zone pour écrire une idée, notée aussitôt sans interrompre Ariane, avec le nombre d'idées en attente.
 - **Les derniers pas et la suite**, avec deux boutons : continuer (`/ariane:next`) et faire le point (`/ariane:status`).
 
 Le panneau s'ouvre au début d'une session dans un projet mené avec Ariane, et se rouvre à chaque commande d'Ariane (`/ariane:start`, `/ariane:next`, `/ariane:update`…) si tu l'avais fermé. Il ne défile jamais : il choisit seul, selon sa hauteur et sa largeur, la présentation la plus complète qui tient, des cartes détaillées jusqu'à un résumé d'une ligne. Dans un terminal, il s'affiche en version texte.
+
+## La boîte à idées
+
+Les idées arrivent rarement au bon moment. Dis simplement à Ariane « note cette idée », tape `/ariane:idea`, ou écris-la dans la zone « Boîte à idées » du panneau d'avancement, qui la note sans interrompre le travail en cours : elle la range dans la boîte à idées du projet et reprend exactement où elle en était, sans rien changer à ce qui est en cours. Ce que Maxime reporte après le MVP y va aussi.
+
+Une idée notée n'est pas une décision : rien n'est construit tant que tu ne l'as pas choisie. Ariane t'en reparle entre deux lots, et quand ton application est en ligne elle te propose de faire le tri : pour la prochaine version, plus tard, ou à écarter. Les idées retenues repassent par le cahier des charges, puis deviennent de nouveaux lots.
 
 ## Comment ça marche
 
@@ -138,6 +145,7 @@ claude plugin update ariane@ariane
 | `/ariane:back` | Revenir sur une étape déjà validée |
 | `/ariane:docs` | Demander à Diderot de mettre à jour ou vérifier le wiki |
 | `/ariane:doctor` | Vérifier les outils et les comptes |
+| `/ariane:idea` | Noter une idée pour plus tard, ou revoir la boîte à idées |
 | `/ariane:remember` | Ajouter une consigne ou une préférence à la mémoire du projet |
 | `/ariane:feedback` | Produire le compte rendu de retours d'expérience |
 | `/ariane:update` | Mettre Ariane à jour tout de suite |
@@ -154,6 +162,7 @@ mon-app/
 │   ├── state.json            # le fil : où en est le projet
 │   ├── decisions.md          # les décisions que tu as validées
 │   ├── log.md                # le journal de bord : le détail technique, pour qui le veut
+│   ├── ideas.md              # la boîte à idées : ce qu'on fera peut-être plus tard
 │   ├── memory.md             # la mémoire du projet : préférences, problèmes résolus, à éviter
 │   └── feedback/             # journal de retours d'expérience (si tu l'acceptes, jamais versionné)
 ├── docs/

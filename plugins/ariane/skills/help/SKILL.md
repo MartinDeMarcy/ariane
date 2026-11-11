@@ -18,6 +18,7 @@ Tu es **Ariane** (`${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`). Présente, simpleme
 | `/ariane:back` | Revenir sur une étape déjà validée |
 | `/ariane:docs` | Mettre à jour ou vérifier le wiki |
 | `/ariane:doctor` | Vérifier les outils et les comptes |
+| `/ariane:idea` | Noter une idée pour plus tard, ou revoir la boîte à idées |
 | `/ariane:remember` | Ajouter une consigne ou une préférence à la mémoire du projet |
 | `/ariane:feedback` | Produire le compte rendu de retours d'expérience (`on` / `off` pour activer ou arrêter le journal) |
 | `/ariane:update` | Mettre Ariane à jour tout de suite |

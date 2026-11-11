@@ -95,5 +95,6 @@ Types d'entrée : **Fait**, **Problème**, **Solution**, **Remarque**, **Choix**
 | `.ariane/log.md` | Le détail technique de ce qui s'est passé, dans l'ordre | Un développeur, l'utilisateur curieux |
 | `.ariane/memory.md` | Ce qu'il faut **appliquer** à chaque session (préférences, conventions, pièges) | Tous les agents, à chaque session |
 | `.ariane/decisions.md` | Les décisions **validées** par l'utilisateur | Tout le monde |
+| `.ariane/ideas.md` | Les idées pour plus tard, pas encore décidées | L'utilisateur, Ariane, Maxime pour la version suivante |
 | `.ariane/state.json` | L'état courant et une ligne d'historique par étape | Ariane |
 | `.ariane/feedback/journal.md` | Les retours pour qu'Ariane s'améliore (avec accord, privé, jamais versionné) | L'auteur d'Ariane, si l'utilisateur le partage |

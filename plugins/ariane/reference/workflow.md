@@ -120,6 +120,18 @@ L'état est écrit dans `state.json` après chaque étape : si la session se fer
 3. **Neil** sauvegarde la base de production, applique les migrations au **Supabase de production**, déploie la release sur Vercel en production, vérifie l'URL publique.
 4. Ariane annonce l'URL publique et propose la suite.
 
+## La boîte à idées
+
+`.ariane/ideas.md` (modèle : `templates/ideas.md`) garde les idées pour plus tard, sans toucher au travail en cours. Elle est créée à la première idée et versionnée avec le projet.
+
+- **On y met** : ce que l'utilisateur dit vouloir « un jour » (Ariane le note dès qu'elle l'entend, ou avec `/ariane:idea`), ce que Maxime reporte après le MVP, les remarques de démo hors du lot.
+- **Quatre sections** : « À explorer », « Retenues pour la suite », « Réalisées », « Écartées ». Une idée change de section, elle n'est jamais effacée.
+- **Une idée n'est pas une décision** : rien n'est construit tant qu'elle n'est pas passée par le PRD et par une story.
+- **On y revient** entre deux lots (une phrase, sans insister), quand le projet est en ligne (le tri, pour préparer la version suivante) et à la demande.
+- **La version suivante** : les idées retenues repassent par le PRD avec le parcours de `/ariane:back` (Maxime, relecture de Cassandre, validation 1), puis Poucet ajoute de nouveaux lots.
+
+Voir « La boîte à idées » dans `ariane.md`.
+
 ## La mémoire du projet
 
 `.ariane/memory.md` (modèle : `templates/memory.md`) contient ce que tous les agents doivent savoir sur ce projet et son utilisateur : préférences, décisions, problèmes rencontrés et solutions, conventions, choses à éviter. Il est importé par `CLAUDE.md`, donc chargé à chaque session, y compris dans les sous-agents.

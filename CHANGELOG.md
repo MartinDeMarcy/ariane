@@ -2,6 +2,17 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.17.0] – 2026-11-11
+
+### Ajouté
+
+- **La boîte à idées**, `.ariane/ideas.md` (modèle `templates/ideas.md`) : les idées pour plus tard, notées sans toucher au travail en cours. Quatre sections : à explorer, retenues pour la suite, réalisées, écartées.
+- Ariane note une idée dès qu'elle l'entend (« note cette idée », « pour plus tard », « ce serait bien si… »), confirme en une phrase et reprend où elle en était. La commande `/ariane:idea` fait la même chose ; sans argument, elle montre la boîte et propose le tri.
+- **Une zone « Boîte à idées » dans le panneau d'avancement** : on y écrit une idée, Entrée la note directement dans `.ariane/ideas.md` (section « À explorer », origine « depuis le panneau »), sans passer par la conversation ni interrompre le lot en cours. Le panneau affiche le nombre d'idées en attente.
+- Ce que Maxime reporte après le MVP et les remarques de démo hors du lot y sont rangés aussi, avec leur origine.
+- Ariane y revient entre deux lots (une phrase), quand le projet est en ligne (le tri : prochaine version, plus tard, écarter) et à la demande. Les idées retenues repassent par le PRD avec le parcours de `/ariane:back`, puis deviennent de nouveaux lots.
+- Règle pour toute l'équipe : une idée notée n'est pas une décision ; rien n'est construit tant qu'elle n'est pas dans le PRD et dans une story.
+
 ## [0.16.0] – 2026-11-11
 
 ### Ajouté

@@ -5,12 +5,16 @@ type Dollar = Parameters<Hook<'session.start'>>[0]
 
 const PANE = 'ariane-panel'
 const STATE_FILE = '.ariane/state.json'
+const IDEAS_FILE = '.ariane/ideas.md'
 const EVERY_MS = 2500
 
 // Change the tag when what is stored changes: it declines what an earlier
 // version left, which outlives a reload.
 const raw = atom({ plugin: 'ariane', key: 'raw' } as const, null, {
   shape: 'raw-1',
+})
+const ideas = atom({ plugin: 'ariane', key: 'ideas' } as const, null, {
+  shape: 'ideas-1',
 })
 // ---------- Ce que le panneau lit dans .ariane/state.json ----------
 
@@ -148,15 +152,17 @@ type Density = {
   proj: 'cards' | 'mini' | 'list' | 'line'
   lot: 'goal' | 'full' | 'single' | 'summary' | 'none'
   foot: 'full4' | 'full2' | 'suite' | 'buttons' | 'none'
+  // La zone pour écrire une idée : gardée tant qu'il reste de la place.
+  idea: boolean
 }
 const LEVELS: Density[] = [
-  { top: 'full', proj: 'cards', lot: 'goal', foot: 'full4' },
-  { top: 'full', proj: 'cards', lot: 'full', foot: 'full2' },
-  { top: 'full', proj: 'mini', lot: 'single', foot: 'suite' },
-  { top: 'compact', proj: 'list', lot: 'full', foot: 'suite' },
-  { top: 'compact', proj: 'list', lot: 'single', foot: 'buttons' },
-  { top: 'compact', proj: 'line', lot: 'summary', foot: 'buttons' },
-  { top: 'compact', proj: 'line', lot: 'none', foot: 'none' },
+  { top: 'full', proj: 'cards', lot: 'goal', foot: 'full4', idea: true },
+  { top: 'full', proj: 'cards', lot: 'full', foot: 'full2', idea: true },
+  { top: 'full', proj: 'mini', lot: 'single', foot: 'suite', idea: true },
+  { top: 'compact', proj: 'list', lot: 'full', foot: 'suite', idea: true },
+  { top: 'compact', proj: 'list', lot: 'single', foot: 'buttons', idea: true },
+  { top: 'compact', proj: 'line', lot: 'summary', foot: 'buttons', idea: false },
+  { top: 'compact', proj: 'line', lot: 'none', foot: 'none', idea: false },
 ]
 const U = 12 // une unité d'espacement vertical (gap ou padding de 1)
 const L_BODY = 21
@@ -177,9 +183,69 @@ async function load($: Dollar) {
   } catch {
     text = null
   }
-  if (text === last) return
-  last = text
-  await update($, raw, () => text)
+  if (text !== last) {
+    last = text
+    await update($, raw, () => text)
+  }
+  await loadIdeas($)
+}
+
+let lastIdeas: string | null | undefined
+// Ce que l'utilisateur est en train d'écrire : gardé ici pour qu'un
+// rafraîchissement du panneau ne l'efface pas.
+let draft = ''
+
+async function loadIdeas($: Dollar) {
+  let text: string | null = null
+  try {
+    text = (await $.fs.read(IDEAS_FILE)) as string
+  } catch {
+    text = null
+  }
+  if (text === lastIdeas) return
+  lastIdeas = text
+  await update($, ideas, () => text)
+}
+
+// Les idées en attente : les lignes de la section « À explorer ».
+const pending = (text: string | null): number => {
+  if (text === null) return 0
+  const start = text.indexOf('## À explorer')
+  if (start < 0) return 0
+  const end = text.indexOf('\n## ', start + 1)
+  const section = end < 0 ? text.slice(start) : text.slice(start, end)
+  return section.split('\n').filter(line => line.startsWith('- ')).length
+}
+
+const EMPTY_BOX = '# La boîte à idées\n\n## À explorer\n\n## Retenues pour la suite\n\n## Réalisées\n\n## Écartées\n'
+
+// Note une idée dans .ariane/ideas.md, à la fin de « À explorer », sans
+// passer par la conversation : le travail en cours n'est pas interrompu.
+async function addIdea($: Dollar, value: string, where: string) {
+  const idea = value.replace(/\s+/g, ' ').trim().slice(0, 300)
+  if (idea === '') return
+  let text: string
+  try {
+    text = (await $.fs.read(IDEAS_FILE)) as string
+  } catch {
+    try {
+      text = (await $.fs.read(`${$.plugin.root}/templates/ideas.md`)) as string
+    } catch {
+      text = EMPTY_BOX
+    }
+  }
+  const date = new Date(await $.clock.now()).toISOString().slice(0, 10)
+  const line = `- ${date} · Utilisateur (depuis le panneau, ${where}) · ${idea}`
+  const marker = text.indexOf('\n## Retenues pour la suite')
+  const next =
+    marker < 0
+      ? `${text.trimEnd()}\n${line}\n`
+      : `${text.slice(0, marker).trimEnd()}\n${line}\n${text.slice(marker)}`
+  await $.fs.write(IDEAS_FILE, next)
+  draft = ''
+  lastIdeas = next
+  await update($, ideas, () => next)
+  $.ui.toast('Idée notée dans la boîte à idées.')
 }
 
 function watch($: Dollar) {
@@ -229,6 +295,9 @@ export const register: Register = on => {
     const Svg = (ui as any).Svg as any
     const isRich = e.surface !== 'terminal'
     const state = parse(await read($, raw))
+    const waitingIdeas = pending(await read($, ideas))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const Input = (ui as any).Input as any
 
     // Sur le bureau : une pastille arrondie en image. Sur le terminal : un aplat.
     const chip = (label: string, tone: string) => {
@@ -396,6 +465,7 @@ export const register: Register = on => {
         else if (d.lot === 'single') parts.push(FRAME + L_BODY + U + n * L_FOOT)
         else if (d.lot === 'summary') parts.push(FRAME + L_BODY)
       }
+      if (d.idea) parts.push(FRAME + L_BODY + U + 36)
       if (d.foot === 'full4') parts.push(FRAME + pairH(L_FOOT + U + Math.min(4, history.length) * L_FOOT, suiteH))
       else if (d.foot === 'full2') parts.push(FRAME + pairH(L_FOOT + U + Math.min(2, history.length) * L_FOOT, suiteH))
       else if (d.foot === 'suite') parts.push(FRAME + L_FOOT + (hasButtons ? U + BUTTONS : 0))
@@ -580,6 +650,29 @@ export const register: Register = on => {
       </Box>
     )
 
+    // La boîte à idées : une zone pour en écrire une, sans quitter le panneau.
+    const ideaBlock =
+      cfg.idea && Input ? (
+        <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
+          {header(
+            'Boîte à idées',
+            waitingIdeas > 0 ? chip(`${waitingIdeas} en attente`, 'neutral') : undefined,
+          )}
+          <Input
+            key="idea"
+            placeholder="Note une idée pour plus tard…"
+            submitLabel="noter"
+            value={draft}
+            onInput={(value: string) => {
+              draft = value
+            }}
+            onSubmit={(value: string) => {
+              void addIdea($, value, subtitle.toLowerCase())
+            }}
+          />
+        </Box>
+      ) : null
+
     const buttons = hasButtons ? (
       <Box flexDirection="row" gap={1}>
         <Button key="next" variant="primary" label={nextLabel} onPress={press} />
@@ -629,6 +722,7 @@ export const register: Register = on => {
         {top}
         {project}
         {lotBlock}
+        {ideaBlock}
         {footer}
       </Box>
     )
