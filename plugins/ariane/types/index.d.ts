@@ -9,6 +9,8 @@ declare module 'claude-code' {
       ideas: Shaped<string | null>
       // La liste des idées en attente est dépliée dans le panneau.
       ideasOpen: Shaped<boolean>
+      // La fenêtre des accès rapides est ouverte par-dessus le panneau.
+      linksOpen: Shaped<boolean>
       // La démo de test du panneau, dans le dépôt d'Ariane : affichée ou non,
       // le jeu d'essai montré et le niveau de densité forcé (null : automatique).
       demo: Shaped<{ on: boolean; fixture: number; level: number | null }>

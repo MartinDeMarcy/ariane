@@ -2,6 +2,13 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.2] – 2026-11-11
+
+### Modifié
+
+- **Accès rapides** : le bloc de liens devient un bouton « Accès rapides », à côté de « Continuer » et « Où on en est ». Il ouvre une fenêtre posée par-dessus le panneau, avec pour chaque adresse une courte description et un bouton « Ouvrir » qui la lance dans le navigateur de la machine.
+- **Liste des idées en attente** : elle s'ouvre dans une fenêtre posée par-dessus le panneau, avec un bouton « Fermer », au lieu de se déplier dans la boîte à idées. Le reste du panneau ne bouge plus et ne se resserre plus quand on l'ouvre. Jusqu'à douze idées affichées.
+
 ## [0.20.1] – 2026-11-11
 
 Retours du premier essai du panneau sur le projet Booker.

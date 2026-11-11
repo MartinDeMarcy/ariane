@@ -21,6 +21,10 @@ const ideasOpen = atom({ plugin: 'ariane', key: 'ideasOpen' } as const, false, {
   shape: 'ideas-open-1',
 })
 // La démo de test : affichée ou non, quel jeu d'essai, quel niveau forcé.
+// La fenêtre des accès rapides est-elle ouverte ?
+const linksOpen = atom({ plugin: 'ariane', key: 'linksOpen' } as const, false, {
+  shape: 'links-open-1',
+})
 const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixture: 1, level: null }, {
   shape: 'demo-1',
 })
@@ -258,18 +262,39 @@ const web = (value: string | null | undefined, prefix = 'https://') => {
   if (text === '') return null
   return /^https?:\/\//.test(text) ? text : `${prefix}${text}`
 }
-const projectLinks = (state: ProjectState): { label: string; href: string }[] => {
+type ProjectLink = { label: string; about: string; href: string }
+const projectLinks = (state: ProjectState): ProjectLink[] => {
   const env = state.environments ?? {}
-  const all: [string, string | null][] = [
-    ['Site en ligne', web(env.production_url)],
-    ['GitHub', web(state.repo?.url)],
+  const supabase = 'https://supabase.com/dashboard/project/'
+  const all: [string, string, string | null][] = [
+    ['Site en ligne', 'L’application telle que tes utilisateurs la voient.', web(env.production_url)],
+    ['GitHub', 'Le dépôt du code : branches, pull requests et historique.', web(state.repo?.url)],
     // Vercel retrouve l'équipe tout seul à partir du nom du projet.
-    ['Vercel', web(env.vercel_project,'https://vercel.com/d?to=%2F%5Bteam%5D%2F')],
-    ['Supabase test', web(env.supabase_test, 'https://supabase.com/dashboard/project/')],
-    ['Supabase production', web(env.supabase_prod, 'https://supabase.com/dashboard/project/')],
-    ['Wiki', web(state.wiki?.url)],
+    ['Vercel', 'L’hébergement : déploiements, journaux et domaines.', web(env.vercel_project, 'https://vercel.com/d?to=%2F%5Bteam%5D%2F')],
+    ['Supabase test', 'La base de données et les comptes de l’environnement de test.', web(env.supabase_test, supabase)],
+    ['Supabase production', 'La base de données et les comptes de la vraie application.', web(env.supabase_prod, supabase)],
+    ['Wiki', 'La documentation du projet.', web(state.wiki?.url)],
   ]
-  return all.flatMap(([label, href]) => (href ? [{ label, href }] : []))
+  return all.flatMap(([label, about, href]) => (href ? [{ label, about, href }] : []))
+}
+
+// Ouvre une adresse dans le navigateur de la machine, sans passer par un
+// shell : l'adresse est un argument, jamais une ligne de commande.
+async function openUrl($: Dollar, href: string) {
+  if (!/^https?:\/\//.test(href)) return
+  const isWindows = /^[A-Za-z]:[\\/]/.test($.plugin.root)
+  const tries = isWindows
+    ? [['rundll32', 'url.dll,FileProtocolHandler', href]]
+    : [['open', href], ['xdg-open', href]]
+  for (const argv of tries) {
+    try {
+      const { exitCode } = await $.process.run(argv, { timeoutMs: 10000 })
+      if (exitCode === 0) return
+    } catch {
+      // Commande absente sur cette machine : on essaie la suivante.
+    }
+  }
+  $.ui.toast(`Impossible d’ouvrir ${href}`)
 }
 
 const day = (iso?: string | null) =>
@@ -300,17 +325,15 @@ type Density = {
   foot: 'full4' | 'full2' | 'suite' | 'buttons' | 'none'
   // La zone pour écrire une idée : gardée tant qu'il reste de la place.
   idea: boolean
-  // Les accès rapides : le site, le dépôt, Vercel, Supabase, le wiki.
-  links: boolean
 }
 const LEVELS: Density[] = [
-  { top: 'full', proj: 'cards', lot: 'goal', foot: 'full4', idea: true, links: true },
-  { top: 'full', proj: 'cards', lot: 'full', foot: 'full2', idea: true, links: true },
-  { top: 'full', proj: 'mini', lot: 'single', foot: 'suite', idea: true, links: true },
-  { top: 'compact', proj: 'list', lot: 'full', foot: 'suite', idea: true, links: true },
-  { top: 'compact', proj: 'list', lot: 'single', foot: 'buttons', idea: true, links: false },
-  { top: 'compact', proj: 'line', lot: 'summary', foot: 'buttons', idea: false, links: false },
-  { top: 'compact', proj: 'line', lot: 'none', foot: 'none', idea: false, links: false },
+  { top: 'full', proj: 'cards', lot: 'goal', foot: 'full4', idea: true },
+  { top: 'full', proj: 'cards', lot: 'full', foot: 'full2', idea: true },
+  { top: 'full', proj: 'mini', lot: 'single', foot: 'suite', idea: true },
+  { top: 'compact', proj: 'list', lot: 'full', foot: 'suite', idea: true },
+  { top: 'compact', proj: 'list', lot: 'single', foot: 'buttons', idea: true },
+  { top: 'compact', proj: 'line', lot: 'summary', foot: 'buttons', idea: false },
+  { top: 'compact', proj: 'line', lot: 'none', foot: 'none', idea: false },
 ]
 const U = 12 // une unité d'espacement vertical (gap ou padding de 1)
 const L_BODY = 21
@@ -400,7 +423,7 @@ const pending = (text: string | null): Idea[] => {
         : { date: '', text: line.slice(2) }
     })
 }
-const IDEAS_SHOWN = 8
+const IDEAS_SHOWN = 12
 
 const EMPTY_BOX = '# La boîte à idées\n\n## À explorer\n\n## Retenues pour la suite\n\n## Réalisées\n\n## Écartées\n'
 
@@ -511,8 +534,6 @@ export const register: Register = on => {
     const shownIdeas = waitingList.slice(-IDEAS_SHOWN).reverse()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Input = (ui as any).Input as any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const Link = (ui as any).Link as any
 
     // Sur le bureau : une pastille arrondie en image. Sur le terminal : un aplat.
     const chip = (label: string, tone: string) => {
@@ -655,7 +676,8 @@ export const register: Register = on => {
     const pressStatus = () => (isDemo ? inert() : void $.prompt.submit({ text: '/ariane:status' }))
     const hasButtons = phase !== 'done'
 
-    const links = Link ? projectLinks(state) : []
+    const links = projectLinks(state)
+    const hasRow = hasButtons || links.length > 0
 
     // ----- Choisir la densité : le niveau le plus riche qui tient en hauteur -----
     // 0 complet · 1 resserré · 2 cartes réduites · 3 listes · 4 résumé · 5 minimal
@@ -672,7 +694,7 @@ export const register: Register = on => {
     // Les derniers pas sur toute la largeur, un trait, puis la suite dessous.
     const pairH = (count: number, b: number) =>
       count > 0 ? L_FOOT + U + count * L_FOOT + U + 1 + U + b : b
-    const suiteH = L_FOOT + U + L_FOOT + (hasButtons ? U + BUTTONS : 0)
+    const suiteH = L_FOOT + U + L_FOOT + (hasRow ? U + BUTTONS : 0)
 
     const height = (index: number): number => {
       const d = LEVELS[index]
@@ -691,14 +713,11 @@ export const register: Register = on => {
         else if (d.lot === 'summary') parts.push(FRAME + L_BODY)
       }
       // Liste dépliée : deux lignes par idée, estimation large.
-      const listH = isListOpen ? U + shownIdeas.length * 2 * L_FOOT + (waitingIdeas > shownIdeas.length ? L_FOOT : 0) : 0
-      if (d.idea) parts.push(FRAME + BUTTONS + U + 36 + L_BODY + listH)
-      // Les liens tiennent sur une ligne, deux si le panneau est étroit.
-      if (d.links && links.length > 0) parts.push(FRAME + L_FOOT + U + (inner >= 60 ? 1 : 2) * L_BODY)
+      if (d.idea) parts.push(FRAME + BUTTONS + U + 36 + L_BODY)
       if (d.foot === 'full4') parts.push(FRAME + pairH(Math.min(4, history.length), suiteH))
       else if (d.foot === 'full2') parts.push(FRAME + pairH(Math.min(2, history.length), suiteH))
-      else if (d.foot === 'suite') parts.push(FRAME + L_FOOT + (hasButtons ? U + BUTTONS : 0))
-      else if (d.foot === 'buttons' && hasButtons) parts.push(BUTTONS)
+      else if (d.foot === 'suite') parts.push(FRAME + L_FOOT + (hasRow ? U + BUTTONS : 0))
+      else if (d.foot === 'buttons' && hasRow) parts.push(BUTTONS)
       return parts.reduce((sum, part) => sum + part, 0) + (parts.length - 1) * gap
     }
 
@@ -924,27 +943,13 @@ export const register: Register = on => {
               <Button
                 key="ideas-toggle"
                 variant="secondary"
-                label={`${waitingIdeas} en attente ${isListOpen ? '▴' : '▾'}`}
-                onPress={() => void update($, ideasOpen, open => !open)}
+                label={`${waitingIdeas} en attente`}
+                onPress={() => {
+                  void update($, linksOpen, () => false)
+                  void update($, ideasOpen, () => true)
+                }}
               />
             ) : undefined,
-          )}
-          {isListOpen && (
-            <Box flexDirection="column">
-              {shownIdeas.map(idea => (
-                <Box flexDirection="row" gap={1}>
-                  <Text dimColor size="caption">{day(idea.date) || '·'}</Text>
-                  <Box flexShrink={1}>
-                    <Text size="footnote">{idea.text}</Text>
-                  </Box>
-                </Box>
-              ))}
-              {waitingIdeas > shownIdeas.length && (
-                <Text dimColor size="caption">
-                  … et {waitingIdeas - shownIdeas.length} de plus dans .ariane/ideas.md
-                </Text>
-              )}
-            </Box>
           )}
           {/* Deux lignes, sur toute la largeur du cadre. */}
           <Box flexDirection="column" alignItems="stretch" width="100%">
@@ -966,25 +971,93 @@ export const register: Register = on => {
         </Box>
       ) : null
 
-    // Les accès rapides : un lien par adresse connue du projet.
-    const linksBlock =
-      cfg.links && links.length > 0 ? (
-        <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
-          <Text dimColor size="footnote">Accès rapides</Text>
-          <Box flexDirection="row" flexWrap="wrap" columnGap={2}>
-            {links.map(one => (
-              <Text size="footnote">
-                <Link href={one.href} label={`${one.label} ↗`} />
-              </Text>
-            ))}
-          </Box>
-        </Box>
-      ) : null
 
-    const buttons = hasButtons ? (
-      <Box flexDirection="row" gap={1}>
-        <Button key="next" variant="primary" label={nextLabel} onPress={press} />
-        <Button key="status" variant="secondary" label="Où on en est" onPress={pressStatus} />
+    // La liste des idées : une fenêtre posée par-dessus tout le panneau, qui ne
+    // déplace rien dessous. Le fond suit le thème (la couleur du texte inversé
+    // est celle du fond).
+    const modal = (title: string, closeKey: string, close: () => void, body: unknown) => (
+      <Box
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        flexDirection="column"
+        backgroundColor="inverseText"
+      >
+        <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
+          {header(title, <Button key={closeKey} variant="secondary" label="Fermer" onPress={close} />)}
+          {hr()}
+          {body}
+        </Box>
+      </Box>
+    )
+
+    const ideasModal = isListOpen
+      ? modal(
+          `Boîte à idées · ${waitingIdeas} en attente`,
+          'ideas-close',
+          () => void update($, ideasOpen, () => false),
+          <Box flexDirection="column" gap={1}>
+            {shownIdeas.map(idea => (
+              <Box flexDirection="row" gap={1}>
+                <Text dimColor size="caption">{day(idea.date) || '·'}</Text>
+                <Box flexShrink={1}>
+                  <Text size="footnote">{idea.text}</Text>
+                </Box>
+              </Box>
+            ))}
+            {waitingIdeas > shownIdeas.length && (
+              <Text dimColor size="caption">
+                … et {waitingIdeas - shownIdeas.length} de plus dans .ariane/ideas.md
+              </Text>
+            )}
+          </Box>,
+        )
+      : null
+
+    // Les accès rapides : chaque adresse connue du projet, ce qu'on y trouve et
+    // un bouton pour l'ouvrir.
+    const linksModal =
+      links.length > 0 && (await read($, linksOpen))
+        ? modal(
+            'Accès rapides',
+            'links-close',
+            () => void update($, linksOpen, () => false),
+            <Box flexDirection="column" gap={1}>
+              {links.map(one => (
+                <Box flexDirection="row" justifyContent="space-between" alignItems="center" gap={2}>
+                  <Box flexDirection="column" flexShrink={1}>
+                    <Text size="footnote" weight="semibold">{one.label}</Text>
+                    <Text dimColor size="caption">{one.about}</Text>
+                  </Box>
+                  <Button
+                    key={`link-${one.label}`}
+                    variant="secondary"
+                    label="Ouvrir ↗"
+                    onPress={() => void openUrl($, one.href)}
+                  />
+                </Box>
+              ))}
+            </Box>,
+          )
+        : null
+
+    const buttons = hasRow ? (
+      <Box flexDirection="row" flexWrap="wrap" gap={1}>
+        {hasButtons && <Button key="next" variant="primary" label={nextLabel} onPress={press} />}
+        {hasButtons && <Button key="status" variant="secondary" label="Où on en est" onPress={pressStatus} />}
+        {links.length > 0 && (
+          <Button
+            key="links-open"
+            variant="secondary"
+            label="Accès rapides"
+            onPress={() => {
+              void update($, ideasOpen, () => false)
+              void update($, linksOpen, () => true)
+            }}
+          />
+        )}
       </Box>
     ) : null
 
@@ -1027,14 +1100,15 @@ export const register: Register = on => {
     ) : null
 
     return (
-      <Box flexDirection="column" gap={level === 0 ? 2 : 1}>
+      <Box flexDirection="column" gap={level === 0 ? 2 : 1} position="relative">
         {debugBlock}
         {top}
         {project}
         {lotBlock}
         {ideaBlock}
-        {linksBlock}
         {footer}
+        {ideasModal}
+        {linksModal}
       </Box>
     )
   })
