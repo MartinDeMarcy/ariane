@@ -7,6 +7,11 @@ declare module 'claude-code' {
       raw: Shaped<string | null>
       // Le texte de .ariane/ideas.md, la boîte à idées, ou null si elle n'existe pas.
       ideas: Shaped<string | null>
+      // La liste des idées en attente est dépliée dans le panneau.
+      ideasOpen: Shaped<boolean>
+      // La démo de test du panneau, dans le dépôt d'Ariane : affichée ou non,
+      // le jeu d'essai montré et le niveau de densité forcé (null : automatique).
+      demo: Shaped<{ on: boolean; fixture: number; level: number | null }>
     }
   }
 }

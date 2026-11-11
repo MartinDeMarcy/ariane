@@ -2,6 +2,22 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.1] – 2026-11-11
+
+Retours du premier essai du panneau sur le projet Booker.
+
+### Ajouté
+
+- **Liste des idées en attente** : dans la boîte à idées, le compteur « N en attente » est un bouton qui déplie les huit idées les plus récentes, et les replie.
+- **Accès rapides** : un bloc de liens vers les adresses connues du projet (site en ligne, dépôt GitHub, tableau de bord Vercel, projets Supabase de test et de production, wiki). Seuls les liens dont l'adresse est dans `.ariane/state.json` apparaissent.
+- **Démo de test du panneau**, pour le développement d'Ariane : ouvert dans le dépôt d'Ariane lui-même, sans projet en cours, le panneau affiche un projet fictif, avec « démo de test » dans son titre, un bandeau de mesures et deux boutons pour faire défiler les jeux d'essai (cadrage, construction, démo d'un lot, projet en ligne) et les niveaux de densité. Dans la démo, les boutons ne lancent rien et aucune idée n'est écrite. Ailleurs, rien ne change.
+
+### Corrigé
+
+- **Boîte à idées** : la zone de saisie fait deux lignes et prend la largeur du cadre, au lieu d'un champ court d'une ligne.
+- **Les derniers pas** : affichés sur toute la largeur du panneau, « La suite » dessous, au lieu de deux colonnes où les libellés étaient coupés.
+- **Carte « Construire »** : une étape terminée sans lot dans le fichier d'état affiche « Construction terminée » au lieu de « Pas encore », qui contredisait la pastille « Terminé ».
+
 ## [0.20.0] – 2026-11-11
 
 Reprise de la branche `feat/ariane-journal-decisions-risques`, écrite d'après les retours du projet Booker, et adaptée au parcours actuel.

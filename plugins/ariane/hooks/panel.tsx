@@ -16,6 +16,15 @@ const raw = atom({ plugin: 'ariane', key: 'raw' } as const, null, {
 const ideas = atom({ plugin: 'ariane', key: 'ideas' } as const, null, {
   shape: 'ideas-1',
 })
+// La liste des idées en attente est-elle dépliée ?
+const ideasOpen = atom({ plugin: 'ariane', key: 'ideasOpen' } as const, false, {
+  shape: 'ideas-open-1',
+})
+// La démo de test : affichée ou non, quel jeu d'essai, quel niveau forcé.
+const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixture: 1, level: null }, {
+  shape: 'demo-1',
+})
+
 // ---------- Ce que le panneau lit dans .ariane/state.json ----------
 
 type Story = { id: string; title?: string; lot?: string; status?: string }
@@ -31,6 +40,14 @@ type ProjectState = {
   stories?: Story[]
   history?: Step[]
   cycle?: { version?: string } | null
+  repo?: { url?: string | null }
+  environments?: {
+    supabase_test?: string | null
+    supabase_prod?: string | null
+    vercel_project?: string | null
+    production_url?: string | null
+  }
+  wiki?: { url?: string | null }
 }
 
 const PHASE_LABEL: Record<string, string> = {
@@ -46,6 +63,111 @@ const PHASE_LABEL: Record<string, string> = {
   wiki: 'Documentation',
   release: 'Mise en ligne',
 }
+
+// ---------- La démo de test, dans le dépôt d'Ariane seulement ----------
+// Ouvert dans le dépôt d'Ariane lui-même (reconnu à la source du plugin), sans
+// projet en cours, le panneau montre un projet fictif pour être essayé et
+// réglé. Le titre le dit, un bandeau donne les mesures et deux boutons font
+// défiler les jeux d'essai et les niveaux de densité. Ailleurs, rien ne change.
+const HOME_MARKER = 'plugins/ariane/.claude-plugin/plugin.json'
+const DEMO_TITLE = 'Ariane · démo de test'
+
+const DEMO_PHASES = (over: Record<string, string>) => ({
+  onboarding: 'done', maturity: 'done', brief: 'todo', prd: 'todo', ux: 'todo',
+  architecture: 'todo', planning: 'todo', build: 'todo', wiki: 'todo', release: 'todo', ...over,
+})
+const DEMO_BUILD = DEMO_PHASES({
+  brief: 'done', prd: 'done', ux: 'done', architecture: 'done', planning: 'done', build: 'in_progress',
+})
+const DEMO_HISTORY: Step[] = [
+  { date: '2026-11-02', agent: 'Socrate', event: 'Brief rédigé et relu avec l’utilisateur' },
+  { date: '2026-11-03', agent: 'Maxime', event: 'Cahier des charges prêt pour la validation' },
+  { date: '2026-11-04', agent: 'Iris', event: 'Maquettes des cinq écrans du MVP terminées' },
+  { date: '2026-11-05', agent: 'Poucet', event: 'Découpage en trois lots et neuf stories' },
+  { date: '2026-11-08', agent: 'Ada', event: 'Story 004 implémentée avec ses tests unitaires et fonctionnels' },
+  { date: '2026-11-09', agent: 'Thomas', event: 'Story 004 vérifiée sur l’environnement de test en ligne' },
+]
+const DEMO_LOTS = (second: string): Lot[] => [
+  { id: '01', title: 'Comptes et connexion', goal: 'On peut créer un compte et se connecter.', stories: ['001', '002', '003'], status: 'done' },
+  { id: '02', title: 'Réserver un créneau', goal: 'Un client réserve un créneau et reçoit une confirmation.', stories: ['004', '005', '006', '007'], status: second },
+  { id: '03', title: 'Tableau de bord', goal: 'Le gérant voit ses réservations de la semaine.', stories: ['008', '009'], status: 'todo' },
+]
+const DEMO_STORIES = (second: string[]): Story[] => [
+  ...['001', '002', '003'].map(id => ({ id, title: `Story ${id}`, lot: '01', status: 'done' })),
+  { id: '004', title: 'Choisir un créneau dans le calendrier', lot: '02', status: second[0] },
+  { id: '005', title: 'Confirmer la réservation', lot: '02', status: second[1] },
+  { id: '006', title: 'E-mail de confirmation', lot: '02', status: second[2] },
+  { id: '007', title: 'Annuler une réservation', lot: '02', status: second[3] },
+  { id: '008', title: 'Liste des réservations', lot: '03', status: 'todo' },
+  { id: '009', title: 'Filtre par semaine', lot: '03', status: 'todo' },
+]
+const DEMO_ENV = {
+  repo: { url: 'https://github.com/exemple/demo' },
+  environments: { supabase_test: 'abcdefghijklmnopqrst', vercel_project: 'demo' },
+}
+const DEMOS: { name: string; state: ProjectState }[] = [
+  {
+    name: 'cadrage',
+    state: {
+      project: { name: 'Démo' },
+      phase: 'prd',
+      phases: DEMO_PHASES({ brief: 'done', prd: 'waiting_validation' }),
+      history: DEMO_HISTORY.slice(0, 2),
+    },
+  },
+  {
+    name: 'construction',
+    state: {
+      project: { name: 'Démo' },
+      phase: 'build',
+      phases: DEMO_BUILD,
+      gates: { prd: '2026-11-03', ux: '2026-11-05', release: null },
+      lots: DEMO_LOTS('in_progress'),
+      current_lot: '02',
+      stories: DEMO_STORIES(['on_test', 'local_ok', 'in_progress', 'todo']),
+      history: DEMO_HISTORY,
+      ...DEMO_ENV,
+    },
+  },
+  {
+    name: 'démo d’un lot',
+    state: {
+      project: { name: 'Démo' },
+      phase: 'build',
+      phases: DEMO_BUILD,
+      gates: { prd: '2026-11-03', ux: '2026-11-05', release: null },
+      lots: DEMO_LOTS('demo'),
+      current_lot: '02',
+      stories: DEMO_STORIES(['in_lot', 'in_lot', 'in_lot', 'in_lot']),
+      history: DEMO_HISTORY,
+      ...DEMO_ENV,
+    },
+  },
+  {
+    name: 'projet en ligne',
+    state: {
+      project: { name: 'Démo' },
+      phase: 'done',
+      phases: DEMO_PHASES({
+        brief: 'done', prd: 'done', ux: 'done', architecture: 'done', planning: 'done', build: 'done', wiki: 'done', release: 'done',
+      }),
+      gates: { prd: '2026-11-03', ux: '2026-11-05', release: '2026-11-11' },
+      history: [...DEMO_HISTORY, { date: '2026-11-11', agent: 'Neil', event: 'Mise en production de la version 0.1.0 terminée' }],
+      repo: DEMO_ENV.repo,
+      environments: {
+        ...DEMO_ENV.environments,
+        supabase_prod: 'tsrqponmlkjihgfedcba',
+        production_url: 'https://demo.vercel.app',
+      },
+      wiki: { url: 'https://github.com/exemple/demo/wiki' },
+    },
+  },
+]
+const DEMO_IDEAS =
+  '## À explorer\n' +
+  '- 2026-11-06 · Utilisateur (depuis le panneau, construction) · Un rappel par SMS la veille du rendez-vous\n' +
+  '- 2026-11-08 · Utilisateur (depuis le panneau, construction) · Exporter les réservations de la semaine en PDF\n' +
+  '- 2026-11-09 · Léonard · Une liste d’attente quand un créneau est complet\n'
 
 type Stage = { name: string; phases: string[]; gate: string | null; gateLabel: string }
 const STAGES: Stage[] = [
@@ -128,6 +250,28 @@ const bar = (width: number, filled: number, current: boolean) => {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="6" viewBox="0 0 ${width} 6">${rects.join('')}</svg>`
 }
 
+// ---------- Les accès rapides ----------
+// Ce que l'état garde : des adresses entières (dépôt, site, wiki) ou de simples
+// références (projets Supabase, nom du projet Vercel), à compléter ici.
+const web = (value: string | null | undefined, prefix = 'https://') => {
+  const text = (value ?? '').trim()
+  if (text === '') return null
+  return /^https?:\/\//.test(text) ? text : `${prefix}${text}`
+}
+const projectLinks = (state: ProjectState): { label: string; href: string }[] => {
+  const env = state.environments ?? {}
+  const all: [string, string | null][] = [
+    ['Site en ligne', web(env.production_url)],
+    ['GitHub', web(state.repo?.url)],
+    // Vercel retrouve l'équipe tout seul à partir du nom du projet.
+    ['Vercel', web(env.vercel_project,'https://vercel.com/d?to=%2F%5Bteam%5D%2F')],
+    ['Supabase test', web(env.supabase_test, 'https://supabase.com/dashboard/project/')],
+    ['Supabase production', web(env.supabase_prod, 'https://supabase.com/dashboard/project/')],
+    ['Wiki', web(state.wiki?.url)],
+  ]
+  return all.flatMap(([label, href]) => (href ? [{ label, href }] : []))
+}
+
 const day = (iso?: string | null) =>
   iso && iso.length >= 10 ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}` : ''
 
@@ -156,15 +300,17 @@ type Density = {
   foot: 'full4' | 'full2' | 'suite' | 'buttons' | 'none'
   // La zone pour écrire une idée : gardée tant qu'il reste de la place.
   idea: boolean
+  // Les accès rapides : le site, le dépôt, Vercel, Supabase, le wiki.
+  links: boolean
 }
 const LEVELS: Density[] = [
-  { top: 'full', proj: 'cards', lot: 'goal', foot: 'full4', idea: true },
-  { top: 'full', proj: 'cards', lot: 'full', foot: 'full2', idea: true },
-  { top: 'full', proj: 'mini', lot: 'single', foot: 'suite', idea: true },
-  { top: 'compact', proj: 'list', lot: 'full', foot: 'suite', idea: true },
-  { top: 'compact', proj: 'list', lot: 'single', foot: 'buttons', idea: true },
-  { top: 'compact', proj: 'line', lot: 'summary', foot: 'buttons', idea: false },
-  { top: 'compact', proj: 'line', lot: 'none', foot: 'none', idea: false },
+  { top: 'full', proj: 'cards', lot: 'goal', foot: 'full4', idea: true, links: true },
+  { top: 'full', proj: 'cards', lot: 'full', foot: 'full2', idea: true, links: true },
+  { top: 'full', proj: 'mini', lot: 'single', foot: 'suite', idea: true, links: true },
+  { top: 'compact', proj: 'list', lot: 'full', foot: 'suite', idea: true, links: true },
+  { top: 'compact', proj: 'list', lot: 'single', foot: 'buttons', idea: true, links: false },
+  { top: 'compact', proj: 'line', lot: 'summary', foot: 'buttons', idea: false, links: false },
+  { top: 'compact', proj: 'line', lot: 'none', foot: 'none', idea: false, links: false },
 ]
 const U = 12 // une unité d'espacement vertical (gap ou padding de 1)
 const L_BODY = 21
@@ -178,6 +324,20 @@ const BUTTONS = 34
 let timer: { cancel: () => void } | undefined
 let last: string | null | undefined
 
+let isHome: boolean | undefined
+async function atHome($: Dollar): Promise<boolean> {
+  if (isHome === undefined) {
+    try {
+      isHome = Boolean(await $.fs.exists(HOME_MARKER))
+    } catch {
+      isHome = false
+    }
+  }
+  return isHome
+}
+
+let lastDemoOn: boolean | undefined
+
 async function load($: Dollar) {
   let text: string | null = null
   try {
@@ -189,7 +349,18 @@ async function load($: Dollar) {
     last = text
     await update($, raw, () => text)
   }
+  const isDemoOn = text === null && (await atHome($))
+  if (isDemoOn !== lastDemoOn) {
+    lastDemoOn = isDemoOn
+    await update($, demo, value => ({ ...value, on: isDemoOn }))
+  }
   await loadIdeas($)
+}
+
+// Ouvre le panneau, avec le titre de la démo quand c'est elle qui s'affiche.
+async function openPane($: Dollar) {
+  const isDemo = !(await $.fs.exists(STATE_FILE)) && (await atHome($))
+  void $.ui.open({ id: PANE, title: isDemo ? DEMO_TITLE : 'Ariane' })
 }
 
 let lastIdeas: string | null | undefined
@@ -210,14 +381,26 @@ async function loadIdeas($: Dollar) {
 }
 
 // Les idées en attente : les lignes de la section « À explorer ».
-const pending = (text: string | null): number => {
-  if (text === null) return 0
+// Chaque ligne s'écrit « - date · auteur · idée » ; une ligne écrite autrement
+// est montrée telle quelle.
+type Idea = { date: string; text: string }
+const pending = (text: string | null): Idea[] => {
+  if (text === null) return []
   const start = text.indexOf('## À explorer')
-  if (start < 0) return 0
+  if (start < 0) return []
   const end = text.indexOf('\n## ', start + 1)
   const section = end < 0 ? text.slice(start) : text.slice(start, end)
-  return section.split('\n').filter(line => line.startsWith('- ')).length
+  return section
+    .split('\n')
+    .filter(line => line.startsWith('- '))
+    .map(line => {
+      const parts = line.slice(2).split(' · ')
+      return parts.length >= 3 && /^\d{4}-\d{2}-\d{2}$/.test(parts[0])
+        ? { date: parts[0], text: parts.slice(2).join(' · ') }
+        : { date: '', text: line.slice(2) }
+    })
 }
+const IDEAS_SHOWN = 8
 
 const EMPTY_BOX = '# La boîte à idées\n\n## À explorer\n\n## Retenues pour la suite\n\n## Réalisées\n\n## Écartées\n'
 
@@ -279,8 +462,8 @@ async function tidy($: Dollar) {
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     watch($)
-    if (await $.fs.exists(STATE_FILE)) {
-      void $.ui.open({ id: PANE, title: 'Ariane' })
+    if ((await $.fs.exists(STATE_FILE)) || (await atHome($))) {
+      void openPane($)
     }
 
     return next(e)
@@ -291,7 +474,7 @@ export const register: Register = on => {
   on('command.run', async ($, e, next) => {
     if (e.command.startsWith('ariane:')) {
       watch($)
-      void $.ui.open({ id: PANE, title: 'Ariane' })
+      void openPane($)
     }
     // Avant de passer à l'étape suivante : alléger la conversation si besoin.
     if (e.command === 'ariane:next') await tidy($)
@@ -304,7 +487,7 @@ export const register: Register = on => {
     const skill = (e as { skill?: unknown }).skill
     if (typeof skill === 'string' && skill.startsWith('ariane:')) {
       watch($)
-      void $.ui.open({ id: PANE, title: 'Ariane' })
+      void openPane($)
     }
 
     return next(e)
@@ -317,10 +500,19 @@ export const register: Register = on => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Svg = (ui as any).Svg as any
     const isRich = e.surface !== 'terminal'
-    const state = parse(await read($, raw))
-    const waitingIdeas = pending(await read($, ideas))
+    const real = parse(await read($, raw))
+    const demoCfg = await read($, demo)
+    const isDemo = real === null && demoCfg.on
+    const fixture = DEMOS[demoCfg.fixture % DEMOS.length]
+    const state = isDemo ? fixture.state : real
+    const waitingList = pending(isDemo ? DEMO_IDEAS : await read($, ideas))
+    const waitingIdeas = waitingList.length
+    const isListOpen = waitingIdeas > 0 && (await read($, ideasOpen))
+    const shownIdeas = waitingList.slice(-IDEAS_SHOWN).reverse()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Input = (ui as any).Input as any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const Link = (ui as any).Link as any
 
     // Sur le bureau : une pastille arrondie en image. Sur le terminal : un aplat.
     const chip = (label: string, tone: string) => {
@@ -356,8 +548,6 @@ export const register: Register = on => {
     const inner = cols - 6
     const perRow = inner >= 80 ? 4 : inner >= 40 ? 2 : 1
     const cardW = Math.max(14, Math.floor((inner - 1 - (perRow - 1) * 2) / perRow) - 4)
-    const perPair = inner >= 50 ? 2 : 1
-    const pairW = Math.max(18, Math.floor((inner - 1 - (perPair - 1) * 3) / perPair) - 4)
     const barW = Math.max(60, Math.min(300, Math.round(inner * 8 * 0.4)))
     const frameBorder = isRich ? '#7a8ca373' : 'subtle'
     const frameBg = isRich ? '#7a8ca31f' : undefined
@@ -416,6 +606,9 @@ export const register: Register = on => {
       if (inDemo) return { text: `Démo du lot ${inDemo.id} à essayer`, color: 'warning', mark: '◔' }
       const done = lots.filter(one => one.status === 'done').length
       if (lots.length > 0 && done === lots.length) return { text: 'Tous les lots validés', color: 'success', mark: '✓' }
+      // Étape finie sans lot à montrer (état ancien ou allégé) : rester cohérent
+      // avec la pastille « Terminé ».
+      if (st === 'done') return { text: 'Construction terminée', color: 'success', mark: '✓' }
       if (lot) return { text: `Démo du lot ${lot.id} à venir`, color: 'inactive', mark: '○' }
       return { text: 'Pas encore', color: 'inactive', mark: '○' }
     }
@@ -456,9 +649,13 @@ export const register: Register = on => {
             : (PHASE_LABEL[phase] ?? phase)
 
     const nextLabel = inDemo ? 'Essayer la démo' : waiting ? 'Valider' : 'Continuer'
-    const press = () => void $.prompt.submit({ text: '/ariane:next' })
-    const pressStatus = () => void $.prompt.submit({ text: '/ariane:status' })
+    // Dans la démo, les boutons ne lancent rien et aucune idée n'est écrite.
+    const inert = () => $.ui.toast('Démo de test : rien n’est lancé ni écrit.')
+    const press = () => (isDemo ? inert() : void $.prompt.submit({ text: '/ariane:next' }))
+    const pressStatus = () => (isDemo ? inert() : void $.prompt.submit({ text: '/ariane:status' }))
     const hasButtons = phase !== 'done'
+
+    const links = Link ? projectLinks(state) : []
 
     // ----- Choisir la densité : le niveau le plus riche qui tient en hauteur -----
     // 0 complet · 1 resserré · 2 cartes réduites · 3 listes · 4 résumé · 5 minimal
@@ -472,7 +669,9 @@ export const register: Register = on => {
     }
     fullCards += (stageRows - 1) * U
     const miniCards = stageRows * (FRAME + L_BODY + U + L_CAP) + (stageRows - 1) * U
-    const pairH = (a: number, b: number) => (perPair === 2 ? Math.max(a, b) : a + b + 3 * U)
+    // Les derniers pas sur toute la largeur, un trait, puis la suite dessous.
+    const pairH = (count: number, b: number) =>
+      count > 0 ? L_FOOT + U + count * L_FOOT + U + 1 + U + b : b
     const suiteH = L_FOOT + U + L_FOOT + (hasButtons ? U + BUTTONS : 0)
 
     const height = (index: number): number => {
@@ -491,9 +690,13 @@ export const register: Register = on => {
         else if (d.lot === 'single') parts.push(FRAME + L_BODY + U + n * L_FOOT)
         else if (d.lot === 'summary') parts.push(FRAME + L_BODY)
       }
-      if (d.idea) parts.push(FRAME + L_BODY + U + 36)
-      if (d.foot === 'full4') parts.push(FRAME + pairH(L_FOOT + U + Math.min(4, history.length) * L_FOOT, suiteH))
-      else if (d.foot === 'full2') parts.push(FRAME + pairH(L_FOOT + U + Math.min(2, history.length) * L_FOOT, suiteH))
+      // Liste dépliée : deux lignes par idée, estimation large.
+      const listH = isListOpen ? U + shownIdeas.length * 2 * L_FOOT + (waitingIdeas > shownIdeas.length ? L_FOOT : 0) : 0
+      if (d.idea) parts.push(FRAME + BUTTONS + U + 36 + L_BODY + listH)
+      // Les liens tiennent sur une ligne, deux si le panneau est étroit.
+      if (d.links && links.length > 0) parts.push(FRAME + L_FOOT + U + (inner >= 60 ? 1 : 2) * L_BODY)
+      if (d.foot === 'full4') parts.push(FRAME + pairH(Math.min(4, history.length), suiteH))
+      else if (d.foot === 'full2') parts.push(FRAME + pairH(Math.min(2, history.length), suiteH))
       else if (d.foot === 'suite') parts.push(FRAME + L_FOOT + (hasButtons ? U + BUTTONS : 0))
       else if (d.foot === 'buttons' && hasButtons) parts.push(BUTTONS)
       return parts.reduce((sum, part) => sum + part, 0) + (parts.length - 1) * gap
@@ -501,7 +704,42 @@ export const register: Register = on => {
 
     let level = 0
     while (level < LEVELS.length - 1 && height(level) > avail) level += 1
+    const fitted = level
+    if (isDemo && demoCfg.level !== null && demoCfg.level < LEVELS.length) level = demoCfg.level
     const cfg = LEVELS[level]
+
+    // Le bandeau de débogage : ce que le panneau a mesuré et choisi.
+    const debugBlock = isDemo ? (
+      <Box flexDirection="column" borderStyle="round" borderColor={isRich ? '#d9a441' : 'subtle'} paddingX={1} paddingY={1} gap={1}>
+        <Box flexDirection="column">
+          <Text color="warning" size="caption" wrap="truncate-end">
+            DÉMO DE TEST · {e.surface} · {cols} colonnes · {rows} lignes · {avail} px
+          </Text>
+          <Text dimColor size="caption" wrap="truncate-end">
+            Niveau {level}{level !== fitted ? ` forcé (calculé : ${fitted})` : ''} · hauteurs {LEVELS.map((_, i) => height(i)).join(' / ')}
+          </Text>
+        </Box>
+        <Box flexDirection="row" flexWrap="wrap" gap={1}>
+          <Button
+            key="demo-fixture"
+            variant="secondary"
+            label={`Jeu d’essai : ${fixture.name}`}
+            onPress={() => void update($, demo, value => ({ ...value, fixture: (value.fixture + 1) % DEMOS.length }))}
+          />
+          <Button
+            key="demo-level"
+            variant="secondary"
+            label={`Densité : ${demoCfg.level === null ? 'automatique' : demoCfg.level}`}
+            onPress={() =>
+              void update($, demo, value => ({
+                ...value,
+                level: value.level === null ? 0 : value.level + 1 >= LEVELS.length ? null : value.level + 1,
+              }))
+            }
+          />
+        </Box>
+      </Box>
+    ) : null
 
     const header = (title: string, right?: unknown) => (
       <Box flexDirection="row" justifyContent="space-between" alignItems="center" gap={1}>
@@ -516,7 +754,7 @@ export const register: Register = on => {
         <Box flexDirection="row" alignItems="center" gap={2}>
           {chip('A', 'clay')}
           <Box flexDirection="column" flexGrow={1} flexShrink={1}>
-            <Text weight="semibold">Ariane</Text>
+            <Text weight="semibold">{isDemo ? DEMO_TITLE : 'Ariane'}</Text>
             <Text dimColor size="footnote" wrap="truncate-end">{sentence}</Text>
           </Box>
           {cols >= 40 && badge}
@@ -682,20 +920,64 @@ export const register: Register = on => {
         <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
           {header(
             'Boîte à idées',
-            waitingIdeas > 0 ? chip(`${waitingIdeas} en attente`, 'neutral') : undefined,
+            waitingIdeas > 0 ? (
+              <Button
+                key="ideas-toggle"
+                variant="secondary"
+                label={`${waitingIdeas} en attente ${isListOpen ? '▴' : '▾'}`}
+                onPress={() => void update($, ideasOpen, open => !open)}
+              />
+            ) : undefined,
           )}
-          <Input
-            key="idea"
-            placeholder="Note une idée pour plus tard…"
-            submitLabel="noter"
-            value={draft}
-            onInput={(value: string) => {
-              draft = value
-            }}
-            onSubmit={(value: string) => {
-              void addIdea($, value, subtitle.toLowerCase())
-            }}
-          />
+          {isListOpen && (
+            <Box flexDirection="column">
+              {shownIdeas.map(idea => (
+                <Box flexDirection="row" gap={1}>
+                  <Text dimColor size="caption">{day(idea.date) || '·'}</Text>
+                  <Box flexShrink={1}>
+                    <Text size="footnote">{idea.text}</Text>
+                  </Box>
+                </Box>
+              ))}
+              {waitingIdeas > shownIdeas.length && (
+                <Text dimColor size="caption">
+                  … et {waitingIdeas - shownIdeas.length} de plus dans .ariane/ideas.md
+                </Text>
+              )}
+            </Box>
+          )}
+          {/* Deux lignes, sur toute la largeur du cadre. */}
+          <Box flexDirection="column" alignItems="stretch" width="100%">
+            <Input
+              key="idea"
+              placeholder="Note une idée pour plus tard…"
+              submitLabel="noter"
+              rows={2}
+              value={draft}
+              onInput={(value: string) => {
+                draft = value
+              }}
+              onSubmit={(value: string) => {
+                if (isDemo) inert()
+                else void addIdea($, value, subtitle.toLowerCase())
+              }}
+            />
+          </Box>
+        </Box>
+      ) : null
+
+    // Les accès rapides : un lien par adresse connue du projet.
+    const linksBlock =
+      cfg.links && links.length > 0 ? (
+        <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
+          <Text dimColor size="footnote">Accès rapides</Text>
+          <Box flexDirection="row" flexWrap="wrap" columnGap={2}>
+            {links.map(one => (
+              <Text size="footnote">
+                <Link href={one.href} label={`${one.label} ↗`} />
+              </Text>
+            ))}
+          </Box>
         </Box>
       ) : null
 
@@ -711,9 +993,9 @@ export const register: Register = on => {
     const steps = history.slice(cfg.foot === 'full4' ? -4 : -2).reverse()
 
     const footer = cfg.foot === 'full4' || cfg.foot === 'full2' ? (
-      <Box flexDirection="row" flexWrap="wrap" gap={3} borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1}>
+      <Box flexDirection="column" gap={1} borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1}>
         {steps.length > 0 && (
-          <Box flexDirection="column" width={pairW} flexGrow={1} gap={1}>
+          <Box flexDirection="column" gap={1}>
             <Text dimColor size="footnote">Les derniers pas</Text>
             <Box flexDirection="column">
               {steps.map(step => (
@@ -728,7 +1010,8 @@ export const register: Register = on => {
             </Box>
           </Box>
         )}
-        <Box flexDirection="column" width={pairW} flexGrow={1} gap={1}>
+        {steps.length > 0 && hr()}
+        <Box flexDirection="column" gap={1}>
           <Text dimColor size="footnote">La suite</Text>
           <Text size="footnote">{nextText}</Text>
           {buttons}
@@ -745,10 +1028,12 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column" gap={level === 0 ? 2 : 1}>
+        {debugBlock}
         {top}
         {project}
         {lotBlock}
         {ideaBlock}
+        {linksBlock}
         {footer}
       </Box>
     )
