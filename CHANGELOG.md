@@ -2,6 +2,12 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.9] – 2026-11-11
+
+### Ajouté
+
+- **Un rond qui tourne sur « Continuer » et « Où on en est »** entre le clic et le départ de la commande dans la conversation, pour montrer que le clic a été pris. Un second clic pendant ce temps ne relance rien.
+
 ## [0.20.8] – 2026-11-11
 
 ### Corrigé

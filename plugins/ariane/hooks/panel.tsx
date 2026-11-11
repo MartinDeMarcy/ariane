@@ -30,6 +30,16 @@ const linksOpen = atom({ plugin: 'ariane', key: 'linksOpen' } as const, false, {
 const minute = atom({ plugin: 'ariane', key: 'minute' } as const, 0, {
   shape: 'minute-1',
 })
+// La commande qu'un bouton vient de lancer (« ariane:next »…), ou '' : son
+// bouton tourne tant qu'elle n'est pas partie dans la conversation. « frame »
+// est le cran du petit rond qui tourne.
+const launching = atom({ plugin: 'ariane', key: 'launching' } as const, { command: '', frame: 0 }, {
+  shape: 'launching-1',
+})
+const SPIN = ['◐', '◓', '◑', '◒']
+const SPIN_MS = 160 // un cran du rond
+const SPIN_MAX_MS = 20000 // au-delà, on arrête de tourner quoi qu'il arrive
+
 const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixture: 1, level: null }, {
   shape: 'demo-1',
 })
@@ -808,7 +818,22 @@ export const register: Register = on => {
     // par le panneau n'est pas lu comme une commande : il faut $.command.run.
     // Notre propre crochet « command.run » ne voit pas cet appel, d'où le
     // rangement de la conversation fait ici.
+    const busy = await read($, launching)
     const launch = async (command: string) => {
+      if ((await read($, launching)).command) return // déjà en route
+      await update($, launching, () => ({ command, frame: 0 }))
+      const tick = $.clock.every(SPIN_MS, () => {
+        void update($, launching, now => (now.command ? { ...now, frame: now.frame + 1 } : now))
+      }) as unknown as (() => void) & { cancel?: () => void }
+      let stopped = false
+      const stop = () => {
+        if (stopped) return
+        stopped = true
+        if (typeof tick?.cancel === 'function') tick.cancel()
+        else if (typeof tick === 'function') tick()
+        void update($, launching, () => ({ command: '', frame: 0 }))
+      }
+      $.clock.after(SPIN_MAX_MS, stop)
       try {
         if (command === 'ariane:next') await tidy($)
         await $.command.run({ command })
@@ -817,8 +842,13 @@ export const register: Register = on => {
           .submit({ text: `Lance la commande /${command}.` })
           .catch(() => ({ drop: 'erreur' }))
         if (sent.drop) $.ui.toast(`Impossible de lancer /${command} d’ici : tape-la dans la conversation.`)
+      } finally {
+        stop()
       }
     }
+    // Le libellé d'un bouton : précédé du rond qui tourne tant que sa commande part.
+    const spun = (command: string, label: string) =>
+      busy.command === command ? `${SPIN[busy.frame % SPIN.length]} ${label}` : label
     const press = () => (isDemo ? inert() : void launch('ariane:next'))
     const pressStatus = () => (isDemo ? inert() : void launch('ariane:status'))
     const hasButtons = phase !== 'done'
@@ -1214,8 +1244,8 @@ export const register: Register = on => {
 
     const buttons = hasButtons ? (
       <Box flexDirection="row" flexWrap="wrap" gap={1}>
-        {hasButtons && <Button key="next" variant="primary" label={nextLabel} onPress={press} />}
-        {hasButtons && <Button key="status" variant="secondary" label="Où on en est" onPress={pressStatus} />}
+        {hasButtons && <Button key="next" variant="primary" label={spun('ariane:next', nextLabel)} onPress={press} />}
+        {hasButtons && <Button key="status" variant="secondary" label={spun('ariane:status', 'Où on en est')} onPress={pressStatus} />}
       </Box>
     ) : null
 

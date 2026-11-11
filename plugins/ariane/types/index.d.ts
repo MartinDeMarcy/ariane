@@ -13,6 +13,9 @@ declare module 'claude-code' {
       linksOpen: Shaped<boolean>
       // L'heure qu'il est, en minutes depuis 1970 : le panneau suit le temps qui passe.
       minute: Shaped<number>
+      // La commande qu'un bouton du panneau est en train de lancer ('' : aucune),
+      // et le cran du rond qui tourne sur ce bouton.
+      launching: Shaped<{ command: string; frame: number }>
       // La démo de test du panneau, dans le dépôt d'Ariane : affichée ou non,
       // le jeu d'essai montré et le niveau de densité forcé (null : automatique).
       demo: Shaped<{ on: boolean; fixture: number; level: number | null }>
