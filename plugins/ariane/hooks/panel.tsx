@@ -478,7 +478,7 @@ async function loadIdeas($: Dollar) {
 // Les idées en attente : les lignes de la section « À explorer ».
 // Chaque ligne s'écrit « - date · auteur · idée » ; une ligne écrite autrement
 // est montrée telle quelle.
-type Idea = { date: string; text: string }
+type Idea = { date: string; who: string; text: string; raw: string }
 const pending = (text: string | null): Idea[] => {
   if (text === null) return []
   const start = text.indexOf('## À explorer')
@@ -491,11 +491,16 @@ const pending = (text: string | null): Idea[] => {
     .map(line => {
       const parts = line.slice(2).split(' · ')
       return parts.length >= 3 && /^\d{4}-\d{2}-\d{2}$/.test(parts[0])
-        ? { date: parts[0], text: parts.slice(2).join(' · ') }
-        : { date: '', text: line.slice(2) }
+        ? { date: parts[0], who: author(parts[1]), text: parts.slice(2).join(' · '), raw: line }
+        : { date: '', who: '', text: line.slice(2), raw: line }
     })
 }
-const IDEAS_SHOWN = 12
+// Qui a eu l'idée, sans la précision entre parenthèses : « Utilisateur
+// (pendant le lot 01) » devient « Toi », « Léonard » reste « Léonard ».
+function author(source: string): string {
+  const name = source.replace(/\s*\(.*$/, '').trim()
+  return /^utilisateur/i.test(name) ? 'Toi' : name
+}
 
 const EMPTY_BOX = '# La boîte à idées\n\n## À explorer\n\n## Retenues pour la suite\n\n## Réalisées\n\n## Écartées\n'
 
@@ -526,6 +531,41 @@ async function addIdea($: Dollar, value: string, where: string) {
   lastIdeas = next
   await update($, ideas, () => next)
   $.ui.toast('Idée notée dans la boîte à idées.')
+}
+
+// Retire une idée de la liste en attente. Rien n'est effacé : sa ligne passe
+// dans la section « Écartées » de .ariane/ideas.md, avec la date, comme le
+// veut la boîte à idées (« quand une idée change de sort, on déplace sa ligne »).
+async function dropIdea($: Dollar, raw: string) {
+  let text: string
+  try {
+    text = ((await $.fs.read(IDEAS_FILE)) as string).replace(/\r\n/g, '\n')
+  } catch {
+    return
+  }
+  const start = text.indexOf('## À explorer')
+  if (start < 0) return
+  const sectionEnd = text.indexOf('\n## ', start + 1)
+  const at = text.indexOf(`\n${raw}`, start)
+  if (at < 0 || (sectionEnd >= 0 && at > sectionEnd)) return
+  const without = text.slice(0, at) + text.slice(at + 1 + raw.length)
+  const date = new Date(await $.clock.now()).toISOString().slice(0, 10)
+  const moved = `${raw} · (écartée depuis le panneau le ${date})`
+  const head = without.indexOf('\n## Écartées')
+  let next: string
+  if (head < 0) {
+    next = `${without.trimEnd()}\n\n## Écartées\n\n${moved}\n`
+  } else {
+    const after = without.indexOf('\n## ', head + 1)
+    next =
+      after < 0
+        ? `${without.trimEnd()}\n${moved}\n`
+        : `${without.slice(0, after).trimEnd()}\n${moved}\n${without.slice(after)}`
+  }
+  await $.fs.write(IDEAS_FILE, next)
+  lastIdeas = next
+  await update($, ideas, () => next)
+  $.ui.toast('Idée écartée : elle reste dans .ariane/ideas.md, section « Écartées ».')
 }
 
 function watch($: Dollar) {
@@ -603,7 +643,7 @@ export const register: Register = on => {
     const waitingList = pending(isDemo ? DEMO_IDEAS : await read($, ideas))
     const waitingIdeas = waitingList.length
     const isListOpen = waitingIdeas > 0 && (await read($, ideasOpen))
-    const shownIdeas = waitingList.slice(-IDEAS_SHOWN).reverse()
+    const shownIdeas = [...waitingList].reverse()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Input = (ui as any).Input as any
 
@@ -1061,24 +1101,13 @@ export const register: Register = on => {
       ) : null
 
 
-    // La liste des idées : une fenêtre posée par-dessus tout le panneau, qui ne
-    // déplace rien dessous. Le fond suit le thème (la couleur du texte inversé
-    // est celle du fond).
+    // Une fenêtre (les idées, les accès rapides) : elle prend la place du panneau
+    // tant qu'elle est ouverte. Plus haute que lui, elle défile comme lui.
     const modal = (title: string, closeKey: string, close: () => void, body: unknown) => (
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        flexDirection="column"
-        backgroundColor="inverseText"
-      >
-        <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
-          {header(title, <Button key={closeKey} variant="secondary" label="Fermer" onPress={close} />)}
-          {Svg ? <Svg source={SWEEP} alt="séparateur" height={2} /> : hr()}
-          {body}
-        </Box>
+      <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
+        {header(title, <Button key={closeKey} variant="secondary" label="Fermer" onPress={close} />)}
+        {Svg ? <Svg source={SWEEP} alt="séparateur" height={2} /> : hr()}
+        {body}
       </Box>
     )
 
@@ -1106,19 +1135,25 @@ export const register: Register = on => {
                 />
               </Box>
             )}
-            {shownIdeas.map(idea => (
-              <Box flexDirection="row" gap={1}>
-                <Text dimColor size="caption">{day(idea.date) || '·'}</Text>
-                <Box flexShrink={1}>
-                  <Text size="footnote">{idea.text}</Text>
+            {shownIdeas.map((idea, index) => (
+              <Box flexDirection="column" gap={1}>
+                {hr()}
+                <Box flexDirection="row" justifyContent="space-between" alignItems="center" gap={2}>
+                  <Box flexDirection="column" flexShrink={1}>
+                    <Text size="footnote">{idea.text}</Text>
+                    <Text dimColor size="caption">
+                      {[idea.who, day(idea.date)].filter(Boolean).join(' · ') || 'Sans date'}
+                    </Text>
+                  </Box>
+                  <Button
+                    key={`idea-drop-${waitingIdeas - 1 - index}`}
+                    variant="secondary"
+                    label="Écarter"
+                    onPress={() => (isDemo ? inert() : void dropIdea($, idea.raw))}
+                  />
                 </Box>
               </Box>
             ))}
-            {waitingIdeas > shownIdeas.length && (
-              <Text dimColor size="caption">
-                … et {waitingIdeas - shownIdeas.length} de plus dans .ariane/ideas.md
-              </Text>
-            )}
           </Box>,
         )
       : null
@@ -1201,16 +1236,17 @@ export const register: Register = on => {
       buttons
     ) : null
 
+    if (ideasModal) return ideasModal
+    if (linksModal) return linksModal
+
     return (
-      <Box flexDirection="column" gap={level === 0 ? 2 : 1} position="relative">
+      <Box flexDirection="column" gap={level === 0 ? 2 : 1}>
         {debugBlock}
         {top}
         {project}
         {lotBlock}
         {ideaBlock}
         {footer}
-        {ideasModal}
-        {linksModal}
       </Box>
     )
   })

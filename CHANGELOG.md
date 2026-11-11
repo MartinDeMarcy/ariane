@@ -2,6 +2,13 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.7] – 2026-11-11
+
+### Modifié
+
+- **Fenêtre de la boîte à idées** : elle montre toutes les idées en attente, sans limite, avec qui a eu l'idée (« Toi », « Léonard »…) et la date. Chaque idée a un bouton « Écarter » : sa ligne passe dans la section « Écartées » de `.ariane/ideas.md`, datée, sans être effacée.
+- **Les fenêtres prennent la place du panneau** tant qu'elles sont ouvertes, au lieu d'être posées par-dessus : une fenêtre plus haute que le panneau défile comme lui.
+
 ## [0.20.6] – 2026-11-11
 
 ### Modifié
