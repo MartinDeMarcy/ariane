@@ -25,13 +25,12 @@ const ideasOpen = atom({ plugin: 'ariane', key: 'ideasOpen' } as const, false, {
 const linksOpen = atom({ plugin: 'ariane', key: 'linksOpen' } as const, false, {
   shape: 'links-open-1',
 })
-// L'ouverture d'une fenêtre : le nombre de crans qu'il lui reste à remonter
-// avant d'être en place (0 : posée).
+// L'ouverture d'une fenêtre : 1 tant que le voile du fondu est posé dessus,
+// 0 une fois le fondu fini.
 const modalStep = atom({ plugin: 'ariane', key: 'modalStep' } as const, 0, {
   shape: 'modal-step-1',
 })
-const SLIDE = 3 // crans de départ, un cran valant une ligne
-const SLIDE_MS = 45 // durée d'un cran
+const VEIL_MS = 260 // durée du fondu
 const demo = atom({ plugin: 'ariane', key: 'demo' } as const, { on: false, fixture: 1, level: null }, {
   shape: 'demo-1',
 })
@@ -256,6 +255,17 @@ const SWEEP =
   '<rect width="2000" height="2" fill="#8a8a8a" fill-opacity="0.3"/>' +
   '<rect width="0" height="2" fill="#d97757">' +
   '<animate attributeName="width" from="0" to="2000" dur="0.4s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0 0 1"/>' +
+  '</rect></svg>'
+
+// Le fondu d'ouverture d'une fenêtre : un voile de la couleur du fond, posé
+// sur la fenêtre, qui s'efface. Tout se joue dans l'image, sans redessiner le
+// panneau, donc sans saccade. La couleur suit le thème clair ou sombre de
+// l'app ; un léger écart avec le vrai fond ne se voit pas, le voile s'efface.
+const VEIL =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2000" viewBox="0 0 2000 2000" preserveAspectRatio="none">' +
+  '<style>@media (prefers-color-scheme: light){rect{fill:#ffffff}}</style>' +
+  '<rect width="2000" height="2000" fill="#1f1f1e">' +
+  `<animate attributeName="opacity" from="1" to="0" dur="${VEIL_MS}ms" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.3 0 0.2 1"/>` +
   '</rect></svg>'
 
 // La barre en cinq segments arrondis, dessinée en SVG pour la largeur voulue.
@@ -775,17 +785,15 @@ export const register: Register = on => {
       </Box>
     ) : null
 
-    // Ouvre une fenêtre par-dessus le panneau : elle part quelques lignes plus
-    // bas et remonte cran par cran jusqu'à sa place.
+    // Ouvre une fenêtre par-dessus le panneau, sous un voile qui s'efface. Le
+    // voile est retiré une fois transparent, pour ne plus retenir les clics.
     const openModal = (which: 'ideas' | 'links') => {
       void update($, ideasOpen, () => which === 'ideas')
       void update($, linksOpen, () => which === 'links')
-      void update($, modalStep, () => SLIDE)
-      for (let i = 1; i <= SLIDE; i += 1) {
-        $.clock.after(i * SLIDE_MS, () => void update($, modalStep, () => SLIDE - i))
-      }
+      void update($, modalStep, () => 1)
+      $.clock.after(VEIL_MS + 60, () => void update($, modalStep, () => 0))
     }
-    const slide = Math.max(0, Math.min(SLIDE, await read($, modalStep)))
+    const isVeiled = (await read($, modalStep)) > 0
     // Le petit bouton carré, à droite du statut, qui ouvre les accès rapides.
     const linksButton =
       links.length > 0 ? (
@@ -1009,7 +1017,7 @@ export const register: Register = on => {
     const modal = (title: string, closeKey: string, close: () => void, body: unknown) => (
       <Box
         position="absolute"
-        top={slide}
+        top={0}
         left={0}
         right={0}
         bottom={0}
@@ -1021,6 +1029,11 @@ export const register: Register = on => {
           {Svg ? <Svg source={SWEEP} alt="séparateur" height={2} /> : hr()}
           {body}
         </Box>
+        {isVeiled && Svg && (
+          <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
+            <Svg source={VEIL} alt="ouverture" height={2000} />
+          </Box>
+        )}
       </Box>
     )
 

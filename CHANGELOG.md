@@ -2,6 +2,12 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.4] – 2026-11-11
+
+### Modifié
+
+- **Ouverture des fenêtres** : un fondu remplace la remontée en trois crans, qui était saccadée. Le fondu se joue dans une image posée sur la fenêtre, sans redessiner le panneau. Le trait qui se trace sous le titre est gardé.
+
 ## [0.20.3] – 2026-11-11
 
 ### Modifié
