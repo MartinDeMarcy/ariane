@@ -5,7 +5,7 @@ Ce document est la référence commune à toutes les commandes et à tous les ag
 ## Deux façons de faire travailler un agent
 
 - **Incarné (dialogue)** : la conversation principale *devient* l'agent. Elle lit sa fiche (`agents/<nom>.md`), adopte sa personnalité et dialogue directement avec l'utilisateur. Utilisé quand il faut poser des questions : Ariane, Socrate, Maxime, Iris.
-- **Délégué (autonome)** : la conversation principale lance le sous-agent `ariane:<nom>` avec l'outil Agent, en lui donnant tout le contexte nécessaire (chemins des documents, story en cours, fichiers de savoir-faire à lire). Le sous-agent travaille seul et rend un compte rendu. Utilisé pour : Cassandre, Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil.
+- **Délégué (autonome)** : la conversation principale lance le sous-agent `ariane:<nom>` avec l'outil Agent, en lui donnant tout le contexte nécessaire (chemins des documents, story en cours, fichiers de savoir-faire à lire). Le sous-agent travaille seul et rend un compte rendu. Utilisé pour : Cassandre, Léonard, Occam, Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil.
 
 Un sous-agent délégué ne voit pas la conversation : le message de délégation doit tout contenir. Après chaque délégation, Ariane résume le résultat à l'utilisateur en une à trois phrases simples.
 
@@ -23,7 +23,7 @@ Un sous-agent délégué ne voit pas la conversation : le message de délégatio
 | 7 | `build` | Ada, Thomas, Clio, Neil, Diderot | délégué | code, tests, branches, environnements de test, wiki | **Validation 3 : démo de chaque lot** |
 | 8 | `wiki` | Diderot | délégué | `docs/wiki/` relu et complet | — |
 | 9 | `release` | Clio puis Neil | délégué | `release/x.y.z`, étiquette, app en production | **Validation 4 : la mise en ligne** |
-| 10 | `done` | Ariane | incarné | bilan, prochaines étapes | — |
+| 10 | `done` | Ariane | incarné | bilan, puis préparation de la version suivante (`reference/versions.md`) | — |
 
 Une phase passe à `done` seulement quand son livrable existe et, s'il y a une porte, quand l'utilisateur l'a validée. La date de validation est notée dans `state.gates`.
 
@@ -120,6 +120,10 @@ L'état est écrit dans `state.json` après chaque étape : si la session se fer
 4. **Neil** sauvegarde la base de production, applique les migrations au **Supabase de production**, déploie la release sur Vercel en production, vérifie l'URL publique.
 5. Ariane annonce l'URL publique et propose la suite.
 
+## Après le MVP : les versions
+
+Quand la première version est en ligne, le projet continue par versions : correctif (`x.y.Z`), évolution (`x.Y.0`) ou refonte (`X.0.0`), chacune faite d'un à quatre lots. Leur contenu vient de trois sources : la boîte à idées, les suggestions de Léonard, et le registre des correctifs (`.ariane/issues.md`). Chaque version propose aussi un lot d'entretien, d'après la relecture du code par Occam. Une version rejoue les phases du MVP en plus court, à partir d'une phase `ideation` ; un correctif prend un chemin court. Tout est décrit dans `reference/versions.md`, lu seulement quand une version se prépare ou est en cours (`state.cycle`).
+
 ## La boîte à idées
 
 `.ariane/ideas.md` (modèle : `templates/ideas.md`) garde les idées pour plus tard, sans toucher au travail en cours. Elle est créée à la première idée et versionnée avec le projet.
@@ -128,7 +132,7 @@ L'état est écrit dans `state.json` après chaque étape : si la session se fer
 - **Quatre sections** : « À explorer », « Retenues pour la suite », « Réalisées », « Écartées ». Une idée change de section, elle n'est jamais effacée.
 - **Une idée n'est pas une décision** : rien n'est construit tant qu'elle n'est pas passée par le PRD et par une story.
 - **On y revient** entre deux lots (une phrase, sans insister), quand le projet est en ligne (le tri, pour préparer la version suivante) et à la demande.
-- **La version suivante** : les idées retenues repassent par le PRD avec le parcours de `/ariane:back` (Maxime, relecture de Cassandre, validation 1), puis Poucet ajoute de nouveaux lots.
+- **La version suivante** : les idées retenues entrent dans une version, avec les suggestions de Léonard et les correctifs (voir `reference/versions.md`).
 
 Voir « La boîte à idées » dans `ariane.md`.
 

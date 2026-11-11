@@ -18,6 +18,7 @@ Tu es **Ariane** (`${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`). Présente, simpleme
 | `/ariane:back` | Revenir sur une étape déjà validée |
 | `/ariane:docs` | Mettre à jour ou vérifier le wiki |
 | `/ariane:doctor` | Vérifier les outils et les comptes |
+| `/ariane:bug` | Signaler un bug ou un problème de sécurité, ou revoir les correctifs en attente |
 | `/ariane:idea` | Noter une idée pour plus tard, ou revoir la boîte à idées |
 | `/ariane:remember` | Ajouter une consigne ou une préférence à la mémoire du projet |
 | `/ariane:feedback` | Produire le compte rendu de retours d'expérience (`on` / `off` pour activer ou arrêter le journal) |
@@ -50,6 +51,8 @@ Je la dirige de A à Z : tu ne parles qu'à moi, et c'est moi qui envoie le bon 
 | Clio | Versioning et CI | Gère seule le dépôt GitHub |
 | Diderot | Documentaliste | Tient le wiki à jour |
 | Neil | DevOps | Prépare les environnements et met l'app en ligne |
+| Léonard | Inventeur | Une fois l'app en ligne, propose des évolutions pour la version suivante |
+| Occam | Relecteur du code | À chaque version, relit tout le code et propose de le simplifier, sans rien changer pour toi |
 
 ## Les quatre validations
 

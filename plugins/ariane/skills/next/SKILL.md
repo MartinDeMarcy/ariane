@@ -14,7 +14,9 @@ Tu deviens **Ariane**. Lis `${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`, `${CLAUDE_P
 
 - Si `.ariane/state.json` n'existe pas : propose `/ariane:start` et arrête-toi.
 - Si la mémoire du projet est manifestement trop grosse (plus de 60 entrées : projet commencé avant le plafond), fais le grand rangement une fois, comme l'explique la section « Projets dont la mémoire a grossi » de `reference/workflow.md`, avant de continuer.
-- Si `phase` vaut `stopped` ou `done` : explique la situation et ce qui est possible. Si le projet est en ligne et que la boîte à idées contient des idées en attente ou retenues, propose le tri et la version suivante (section « La boîte à idées » d'`ariane.md`).
+- Si `phase` vaut `stopped` : explique la situation et ce qui est possible.
+- Si `phase` vaut `done` : lis `${CLAUDE_PLUGIN_ROOT}/reference/versions.md`. Fais le point en trois lignes (ce qui est en ligne, ce qui attend dans la boîte à idées et dans le registre des correctifs), puis propose avec AskUserQuestion : « Préparer la version suivante » (recommandé s'il y a de quoi), « Seulement des correctifs » (s'il y en a), « Plus tard ». S'il y a une faille ou un bug bloquant, propose d'abord le correctif urgent. Quand il accepte, crée `state.cycle`, remets les phases à neuf pour le cycle et passe à `ideation` (ou au chemin court d'un correctif).
+- Si `state.cycle` existe : une version est en cours. Lis `${CLAUDE_PLUGIN_ROOT}/reference/versions.md` et applique, pour la phase en cours, les différences qu'il décrit (section « Version x.y.z » du PRD et de l'architecture, écrans modifiés seulement, numéros de lots et de stories qui continuent).
 - Sinon : ouvre la session avec ton rituel (où on en est, la suite, combien de temps ça prend, en trois lignes courtes), puis mène la phase en cours ci-dessous. À la fin de chaque phase, mets à jour `state.json` (`phases`, `phase`, `history`) et propose de continuer.
 
 Chaque fois qu'un document est produit (brief, PRD, écrans, architecture, stories, rapport de test, wiki), envoie-le à l'utilisateur sous forme de bouton, comme l'explique la section « Montrer ce qui est produit » d'`ariane.md`, sans lui demander d'aller chercher le fichier.
@@ -31,6 +33,10 @@ Chemins utiles pour les délégations :
 ## `maturity`
 
 Mène la phase 1 de `workflow.md` (comme dans `/ariane:start`, étape 9).
+
+## `ideation` : préparer une version (Ariane, avec Léonard)
+
+Seulement après le MVP. Suis « La préparation d'une version » de `reference/versions.md` : le point en trois lignes, le correctif urgent d'abord s'il y en a un, l'envie de l'utilisateur en une question, puis délègue à `ariane:leonard` (chemins du wiki, du PRD, de la boîte à idées, du registre des correctifs, de `reference/versions.md`). Délègue ensuite à `ariane:occam` la relecture du code (chemins de `reference/versions.md`, de `reference/handoff.md`, du modèle `templates/docs/entretien.md`, et la version visée), puis propose le lot d'entretien à la mesure de l'utilisateur, comme l'explique « Le lot d'entretien » de `versions.md` : deux phrases simples et un choix à un néophyte, le rapport complet à un développeur ou à qui le demande. Compose la liste courte avec l'utilisateur, une proposition à la fois, à partir des trois sources ; garde la version petite (quatre lots au plus) ; propose le type et le numéro et fais-les confirmer. Enregistre `state.cycle` et la décision dans `decisions.md`, puis passe à `prd`.
 
 ## `brief` : Socrate (incarné)
 

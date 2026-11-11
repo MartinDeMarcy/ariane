@@ -1,6 +1,6 @@
 {
   "name": "ariane",
-  "description": "Ariane et son équipe de onze spécialistes : elle s'adapte à toi, néophyte plein d'idées ou développeur confirmé, de l'idée à une application web en ligne, testée et documentée.",
+  "description": "Ariane et son équipe de treize spécialistes : elle s'adapte à toi, néophyte plein d'idées ou développeur confirmé, de l'idée à une application web en ligne, testée et documentée.",
   "owner": {
     "name": "PRAS Martin",
     "url": "https://github.com/MartinDeMarcy"
@@ -9,7 +9,7 @@
     {
       "name": "ariane",
       "source": "./plugins/ariane",
-      "description": "Ariane dirige ses onze spécialistes (Socrate, Cassandre, Maxime, Iris, Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil) et mène ton projet de MVP web de A à Z : besoin, spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en ligne."
+      "description": "Ariane dirige ses treize spécialistes (Socrate, Cassandre, Maxime, Iris, Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil, Léonard, Occam) et mène ton projet de MVP web de A à Z : besoin, spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en ligne."
     }
   ]
 }

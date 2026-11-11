@@ -1,12 +1,12 @@
 # Ariane
 
-**Ariane tient le fil, de ton idée à ton application en ligne. Elle dirige une équipe de onze spécialistes et gère tout, de A à Z.**
+**Ariane tient le fil, de ton idée à ton application en ligne. Elle dirige une équipe de treize spécialistes et gère tout, de A à Z.**
 
 Ariane s'adresse à toute personne qui a un projet d'application web, **qu'elle n'ait jamais codé ou qu'elle soit développeuse confirmée** : Ariane s'adapte à elle. Tu ne parles qu'à elle : c'est elle qui envoie le bon spécialiste au bon moment, relit son travail et te raconte simplement où on en est. Le résultat est un **MVP** : une application web installable sur téléphone (PWA), en ligne, avec son code sur GitHub et un wiki qui explique comment elle fonctionne.
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.18.0, en cours de construction et de premiers tests.
+> Statut : version 0.19.0, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 
@@ -48,6 +48,22 @@ Dans l'application de bureau, Ariane ouvre un panneau à côté de la conversati
 
 Le panneau s'ouvre au début d'une session dans un projet mené avec Ariane, et se rouvre à chaque commande d'Ariane (`/ariane:start`, `/ariane:next`, `/ariane:update`…) si tu l'avais fermé. Il ne défile jamais : il choisit seul, selon sa hauteur et sa largeur, la présentation la plus complète qui tient, des cartes détaillées jusqu'à un résumé d'une ligne. Dans un terminal, il s'affiche en version texte.
 
+## Après la première version : les versions suivantes
+
+Une application en ligne n'est pas finie. Quand ton MVP est sorti, `/ariane:next` te propose de préparer la suite, par **versions** :
+
+| Version | Numéro | Ce qu'elle contient |
+|---|---|---|
+| Une petite réparation | `0.1.0` → `0.1.1` | Seulement des corrections : bugs, sécurité |
+| Des nouveautés | `0.1.1` → `0.2.0` | Des fonctionnalités nouvelles ou améliorées, sans rien casser |
+| Un grand changement | `0.4.0` → `1.0.0` | Un changement qui casse quelque chose pour tes utilisateurs ou tes données |
+
+Le contenu d'une version vient de trois sources : ta **boîte à idées**, les **suggestions de Léonard** (il regarde l'application telle qu'elle est et propose cinq évolutions au plus), et le **registre des correctifs**. Pour signaler un problème, dis-le à Ariane ou tape `/ariane:bug` : elle le note sans interrompre le travail, et une faille ou un bug bloquant passe devant tout le reste.
+
+Ariane propose le type de version d'après ce qu'elle contient, et tu confirmes. Une version reste petite : un objectif, quatre lots au plus, un sujet par lot.
+
+**Un lot d'entretien à chaque version.** Occam relit tout le code, comme un ensemble qui a grandi lot après lot, et propose de le simplifier, de l'accélérer et de le mettre à jour, sans rien changer à ce que tu vois. Si tu ne codes pas, Ariane te le résume en deux phrases et te demande simplement si tu veux l'entretien ; si tu es développeur, ou si tu le demandes, tu reçois le rapport complet et tu choisis proposition par proposition. Elle rejoue les étapes du MVP en plus court (cahier des charges, écrans s'ils changent, lots, démos, grande passe de tests, mise en ligne) ; une petite réparation prend un chemin court. Les notes de version sont tenues dans le `CHANGELOG.md` de ton projet.
+
 ## La boîte à idées
 
 Les idées arrivent rarement au bon moment. Dis simplement à Ariane « note cette idée », tape `/ariane:idea`, ou écris-la dans la zone « Boîte à idées » du panneau d'avancement, qui la note sans interrompre le travail en cours : elle la range dans la boîte à idées du projet et reprend exactement où elle en était, sans rien changer à ce qui est en cours. Ce que Maxime reporte après le MVP y va aussi.
@@ -79,6 +95,8 @@ Le parcours compte quatre étapes et quatre validations : rien n'avance sans ton
 | **Clio** | Versioning et CI | Gère seule le dépôt GitHub, comme la muse de l'Histoire |
 | **Diderot** | Documentaliste | Tient le wiki à jour, comme l'encyclopédiste |
 | **Neil** | DevOps | Calme au décollage, met l'app en ligne |
+| **Léonard** | Inventeur | Curieux et sobre, voit ce qui pourrait exister, comme Léonard de Vinci |
+| **Occam** | Relecteur du code | Exigeant et prudent, cherche le plus simple, comme le rasoir d'Ockham |
 
 ## Ce qu'il te faut
 
@@ -147,6 +165,7 @@ claude plugin update ariane@ariane
 | `/ariane:back` | Revenir sur une étape déjà validée |
 | `/ariane:docs` | Demander à Diderot de mettre à jour ou vérifier le wiki |
 | `/ariane:doctor` | Vérifier les outils et les comptes |
+| `/ariane:bug` | Signaler un bug ou un problème de sécurité, ou revoir les correctifs en attente |
 | `/ariane:idea` | Noter une idée pour plus tard, ou revoir la boîte à idées |
 | `/ariane:remember` | Ajouter une consigne ou une préférence à la mémoire du projet |
 | `/ariane:feedback` | Produire le compte rendu de retours d'expérience |
@@ -164,6 +183,7 @@ mon-app/
 │   ├── state.json            # le fil : où en est le projet
 │   ├── decisions.md          # les décisions que tu as validées
 │   ├── log.md                # le journal de bord : le détail technique, pour qui le veut
+│   ├── issues.md             # le registre des correctifs : bugs, sécurité, risques acceptés
 │   ├── ideas.md              # la boîte à idées : ce qu'on fera peut-être plus tard
 │   ├── memory.md             # la mémoire du projet : l'essentiel, relu à chaque session (60 lignes au plus)
 │   ├── notes/                # le carnet technique, par sujet, lu seulement à la demande
@@ -219,7 +239,7 @@ Structure du dépôt :
 .claude-plugin/marketplace.json   # la marketplace (un seul plugin : Ariane)
 plugins/ariane/
 ├── .claude-plugin/plugin.json
-├── agents/        # Ariane et ses onze spécialistes
+├── agents/        # Ariane et ses treize spécialistes
 ├── skills/        # les commandes et les savoir-faire (stack, Git, tests, déploiement)
 ├── reference/     # le parcours, la voix d'Ariane, la fiche de passage et le format du fichier d'état
 ├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes, wiki, rangement de l'état)

@@ -8,6 +8,7 @@ Ce projet est mené avec **Ariane**, cheffe d'une équipe de spécialistes : ell
 - `.ariane/decisions.md` : les décisions validées par l'utilisateur.
 - `.ariane/notes/<sujet>.md` : le carnet technique (recettes, contournements). Pas chargé automatiquement : cherche dans la note du sujet sur lequel tu travailles.
 - `.ariane/history/` : l'historique par lot et par version, à consulter seulement si on cherche comment on en est arrivé là.
+- `.ariane/issues.md` : le registre des correctifs (bugs, sécurité, risques acceptés), à traiter dans une version.
 - `.ariane/ideas.md` : la boîte à idées, pour plus tard. Une idée notée n'est pas une décision : ne la réalise pas tant qu'elle n'est pas dans le PRD et dans une story.
 - `.ariane/log.md` : le journal de bord technique, alimenté par Ariane (pas à relire en entier : à consulter quand on cherche un détail).
 - `docs/` : brief, PRD, écrans, architecture, stories, rapports de test, wiki.

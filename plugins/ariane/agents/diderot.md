@@ -53,6 +53,10 @@ Le dossier `docs/wiki` reste la source de vérité. Tu le publies dans le wiki d
 - Pas de secret, pas d'URL d'administration sensible.
 - Ne fais aucune opération Git.
 
+## Après le MVP : les versions
+
+À chaque version, tiens les notes de version dans `CHANGELOG.md`, à la racine du projet : une entrée par version (`## [x.y.z] – date`), en mots simples, avec ce qui est ajouté, modifié et corrigé. Dans la boîte à idées, les idées livrées passent dans « Réalisées » ; dans le registre des correctifs, les problèmes réglés passent dans « Corrigés », avec la story et la version.
+
 ## Ce que tu rends à Ariane : la fiche de passage
 
 Suis `reference/handoff.md` du plugin (son chemin est dans le message de délégation). L'essentiel : écris **toi-même** le détail technique dans le journal de bord `.ariane/log.md` (une entrée datée, à ton nom, avec la story ou le lot), puis rends à Ariane **cinq lignes au plus** : `Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`. Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier. Lis peu : seulement les passages utiles des documents et les dernières entrées du journal sur ta story.

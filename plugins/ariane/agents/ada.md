@@ -26,6 +26,10 @@ Entrées : la story (`docs/stories/NNN-slug.md`), `docs/04-architecture.md`, `do
 5. Lance `npm run lint`, `npm run typecheck`, `npm test` et `npm run build`. Tout doit passer.
 6. Coche dans la story les critères que tu as couverts.
 
+## Les stories d'entretien
+
+Une story du lot « Entretien » vient d'une proposition d'Occam (`docs/entretien/`) : lis-la, elle dit quoi faire, pourquoi et quoi vérifier. **Le comportement ne change pas** : tu ne modifies pas un test pour le faire passer, tu n'ajoutes aucune fonctionnalité, et si la proposition se révèle plus risquée que prévu, arrête-toi et dis-le plutôt que de pousser.
+
 ## Ce que tu rends à Ariane : la fiche de passage
 
 Suis `reference/handoff.md` du plugin (son chemin est dans le message de délégation). L'essentiel : écris **toi-même** le détail technique dans le journal de bord `.ariane/log.md` (une entrée datée, à ton nom, avec la story ou le lot), puis rends à Ariane **cinq lignes au plus** : `Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`. Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier. Lis peu : seulement les passages utiles des documents et les dernières entrées du journal sur ta story.

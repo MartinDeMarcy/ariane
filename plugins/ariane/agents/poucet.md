@@ -37,6 +37,10 @@ La liste des lots, dans l'ordre, chacun avec son but, ses stories (une ligne cha
 - Rien qui ne soit pas dans le PRD.
 - Une story ne dépend jamais d'une story d'un lot postérieur : à la fin de chaque lot, l'app doit fonctionner et pouvoir être essayée.
 
+## Après le MVP : les versions
+
+Quand une version est en cours (`state.cycle`), tu découpes la section « Version x.y.z » du PRD, ou la liste des correctifs retenus. Les numéros **continuent** : pars de `state.counters` (dernier lot et dernière story utilisés), jamais de 1. **Un lot, un sujet** : les corrections ne se mélangent pas aux fonctionnalités, et l'entretien du code a son propre lot, « Entretien », fait des propositions d'Occam que l'utilisateur a retenues (`docs/entretien/v<version>.md`) : une story par proposition, avec pour critère d'acceptation que rien ne change pour l'utilisateur et que tous les tests existants passent. Un correctif tient en un seul lot. Inscris les lots de la version dans `state.cycle.lots`.
+
 ## Ce que tu rends à Ariane : la fiche de passage
 
 Suis `reference/handoff.md` du plugin (son chemin est dans le message de délégation). L'essentiel : écris **toi-même** le détail technique dans le journal de bord `.ariane/log.md` (une entrée datée, à ton nom, avec la story ou le lot), puis rends à Ariane **cinq lignes au plus** : `Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`. Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier. Lis peu : seulement les passages utiles des documents et les dernières entrées du journal sur ta story.

@@ -21,6 +21,10 @@ Règles d'écriture :
 
 <!-- Les idées devenues des fonctionnalités : `… · (faite : story 012, version 1.1.0)`. -->
 
+## Suggestions écartées
+
+<!-- Les suggestions de Léonard que l'utilisateur n'a pas voulues : il ne les repropose pas. -->
+
 ## Écartées
 
 <!-- Les idées abandonnées, avec la raison en quelques mots : on ne les repropose pas. -->

@@ -30,10 +30,12 @@ type ProjectState = {
   current_lot?: string | null
   stories?: Story[]
   history?: Step[]
+  cycle?: { version?: string } | null
 }
 
 const PHASE_LABEL: Record<string, string> = {
   onboarding: 'Accueil',
+  ideation: 'Préparer la version',
   maturity: 'Niveau du projet',
   brief: 'Brief',
   prd: 'Cahier des charges',
@@ -381,10 +383,13 @@ export const register: Register = on => {
     const working = lotStories.find(s => s.status === 'in_progress')
     const readyText = `${readyCount} sur ${lotStories.length} prête${readyCount > 1 ? 's' : ''}`
 
+    // Après le MVP, « Cadrer » commence par la préparation de la version.
+    const phasesOf = (stage: Stage) =>
+      stage.name === 'Cadrer' && phases.ideation !== undefined ? ['ideation', 'prd'] : stage.phases
     const stageState = (stage: Stage): 'done' | 'current' | 'todo' => {
-      const statuses = stage.phases.map(p => phases[p] ?? 'todo')
+      const statuses = phasesOf(stage).map(p => phases[p] ?? 'todo')
       if (statuses.every(s => s === 'done')) return 'done'
-      if (stage.phases.includes(phase) || statuses.some(s => s !== 'todo')) return 'current'
+      if (phasesOf(stage).includes(phase) || statuses.some(s => s !== 'todo')) return 'current'
       return 'todo'
     }
     const doneStages = STAGES.filter(s => stageState(s) === 'done').length
@@ -396,7 +401,7 @@ export const register: Register = on => {
             label: `Lot ${one.id}`,
             status: one.status === 'done' ? 'done' : one.status === 'todo' || !one.status ? 'todo' : 'in_progress',
           }))
-        : stage.phases.map(p => ({ label: PHASE_LABEL[p] ?? p, status: phases[p] ?? 'todo' }))
+        : phasesOf(stage).map(p => ({ label: PHASE_LABEL[p] ?? p, status: phases[p] ?? 'todo' }))
 
     const gate = (stage: Stage, st: 'done' | 'current' | 'todo'): { text: string; color: string; mark: string } => {
       if (stage.gate !== null) {
@@ -568,7 +573,7 @@ export const register: Register = on => {
         <Box flexDirection="column" borderStyle="round" borderColor={frameBorder} backgroundColor={frameBg} paddingX={1} paddingY={1} gap={1}>
           <Box flexDirection="row" justifyContent="space-between" alignItems="center" gap={1}>
             <Text dimColor size="footnote" wrap="truncate-end">
-              {state.project?.name || 'Projet sans nom'} · {subtitle}
+              {state.project?.name || 'Projet sans nom'}{state.cycle?.version ? ` v${state.cycle.version}` : ''} · {subtitle}
             </Text>
             {cols >= 50 && <Text dimColor size="footnote">{doneStages} sur {STAGES.length}</Text>}
           </Box>

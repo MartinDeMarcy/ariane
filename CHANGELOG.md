@@ -2,6 +2,20 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.19.0] – 2026-11-11
+
+### Ajouté
+
+- **Le cycle des versions, après le MVP** (`reference/versions.md`). Une fois la première version en ligne, le projet continue par versions faites d'un à quatre lots : correctif (`x.y.Z` : bugs et sécurité seulement), évolution (`x.Y.0` : des nouveautés sans rien casser) ou refonte (`X.0.0` : un changement cassant, avec un plan de passage). Ariane propose le type d'après le contenu, l'utilisateur confirme.
+- Une phase `ideation` pour préparer une version : le point sur ce qui attend, l'envie de l'utilisateur, les suggestions de Léonard, puis la liste courte composée avec l'utilisateur. Les phases du MVP sont ensuite rejouées en plus court (section « Version x.y.z » dans le PRD et l'architecture, écrans modifiés seulement, numéros de lots et de stories qui continuent). Un correctif prend un chemin court : un seul lot, sans idéation ni PRD.
+- **Léonard, l'inventeur** (`agents/leonard.md`), douzième spécialiste : en lecture seule, il regarde l'application telle qu'elle est et propose cinq évolutions au plus, avec ce qu'elles apportent et ce qu'elles coûtent. Il ne repropose pas ce qui a été écarté.
+- **Le registre des correctifs**, `.ariane/issues.md` (modèle `templates/issues.md`) : bugs signalés, remarques non bloquantes de Thomas, failles et risques acceptés « pour l'instant », avec leur gravité. Ariane y note un problème dès qu'elle l'entend ; `/ariane:bug` fait la même chose. Une faille ou un bug bloquant devient un correctif urgent, proposé tout de suite.
+- **Occam, le relecteur du code** (`agents/occam.md`), treizième spécialiste, et **le lot d'entretien** proposé à chaque évolution et à chaque refonte. Occam relit le code dans son ensemble et sa façon de fonctionner, en partant des mesures (plus gros fichiers, fichiers les plus modifiés, dépendances, durée des tests), et écrit `docs/entretien/v<version>.md` : huit propositions au plus, avec leur gain, leur risque et leur taille. Il ne modifie pas le code : Ada réalise, Thomas vérifie, dans un lot à part où le comportement ne change pas.
+- **L'entretien est présenté à la mesure de l'utilisateur** : deux phrases simples et un oui ou un non à un néophyte ; le rapport complet et le choix proposition par proposition à un développeur confirmé, ou dès qu'on le demande.
+- Règles pour un code qui reste propre : un lot par sujet, rien ne traîne en fin de version, notes de version dans le `CHANGELOG.md` du projet (Diderot).
+- Branches : un correctif urgent pendant qu'une version est en cours part de l'étiquette en production (`release/x.y.Z`), pas de `main`, puis est reporté dans `main`.
+- État : `state.cycle` (la version en cours) et `state.counters` (derniers numéros de lot et de story). À une mise en ligne, `scripts/archive-state.mjs --version` range aussi les lots et les stories livrés dans `.ariane/history/vx.y.z.md`.
+
 ## [0.18.0] – 2026-11-11
 
 ### Modifié

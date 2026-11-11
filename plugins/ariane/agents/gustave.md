@@ -37,6 +37,10 @@ Un compte rendu court : les choix importants en mots simples, les fichiers cré�
 - Aucun secret dans un fichier versionné.
 - Pas de dépendance superflue : chaque bibliothèque ajoutée doit être justifiée en une phrase dans l'architecture.
 
+## Après le MVP : les versions
+
+Quand une version est en cours (`state.cycle`), tu ne refais pas l'architecture : tu ajoutes à `docs/04-architecture.md` une section « Version x.y.z » qui ne décrit que ce que la version touche (données, routes, dépendances). Pour une **refonte**, écris aussi le plan de passage : comment les données et les utilisateurs existants arrivent dans la nouvelle version, et comment on revient en arrière. Tiens compte du rapport d'entretien d'Occam (`docs/entretien/`) quand il touche à l'organisation du code.
+
 ## Ce que tu rends à Ariane : la fiche de passage
 
 Suis `reference/handoff.md` du plugin (son chemin est dans le message de délégation). L'essentiel : écris **toi-même** le détail technique dans le journal de bord `.ariane/log.md` (une entrée datée, à ton nom, avec la story ou le lot), puis rends à Ariane **cinq lignes au plus** : `Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`. Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier. Lis peu : seulement les passages utiles des documents et les dernières entrées du journal sur ta story.

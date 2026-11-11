@@ -8,6 +8,8 @@
 // - Déplace dans ce fichier d'historique les lignes anciennes de
 //   state.history (les 20 dernières restent) et les notes des stories et des
 //   lots terminés.
+// - Avec --version, les lots et les stories livrés sortent aussi de l'état
+//   (state.counters garde leur dernier numéro).
 // - Ne supprime rien : tout ce qui sort de state.json est écrit dans
 //   l'historique avant.
 // - Mesure la mémoire du projet (.ariane/memory.md) et dit si elle dépasse
@@ -80,7 +82,37 @@ drain(state.lots, "Lot");
 drain(state.stories, "Story");
 if (noteLines.length > 0) sections.push("## Notes des lots et des stories terminés\n\n" + noteLines.join("\n") + "\n");
 
+// 3. À une mise en ligne : les lots et les stories livrés sortent de l'état.
+// Leur numéro reste connu (state.counters), pour que la suite continue.
+const numberOf = (id) => (/^\d+$/.test(String(id)) ? Number(id) : 0);
+const before = JSON.stringify(state.counters || null);
+state.counters = {
+  lot: Math.max(state.counters?.lot || 0, ...(state.lots || []).map((l) => numberOf(l.id))),
+  story: Math.max(state.counters?.story || 0, ...(state.stories || []).map((s) => numberOf(s.id))),
+};
+let changed = JSON.stringify(state.counters) !== before;
+if (version) {
+  const doneLots = (state.lots || []).filter((l) => l.status === "done");
+  const doneStories = (state.stories || []).filter((s) => s.status === "done");
+  if (doneLots.length > 0 || doneStories.length > 0) {
+    const rows = [];
+    for (const l of doneLots) {
+      rows.push(`- Lot ${l.id} · ${l.title || ""} · validé le ${l.validated_at || "?"} · ${l.branch || ""}${l.pull_request ? ` · PR ${l.pull_request}` : ""}`);
+      for (const s of doneStories.filter((one) => one.lot === l.id)) {
+        rows.push(`  - Story ${s.id} · ${s.title || ""} · ${s.branch || ""}${s.pull_request ? ` · PR ${s.pull_request}` : ""}`);
+      }
+    }
+    for (const s of doneStories.filter((one) => !doneLots.some((l) => l.id === one.lot))) {
+      rows.push(`- Story ${s.id} · ${s.title || ""} · ${s.branch || ""}`);
+    }
+    sections.push(`## Lots et stories livrés dans la ${title}\n\n` + rows.join("\n") + "\n");
+    state.lots = (state.lots || []).filter((l) => l.status !== "done");
+    state.stories = (state.stories || []).filter((s) => s.status !== "done");
+  }
+}
+
 let file = null;
+if (sections.length === 0 && changed) writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n");
 if (sections.length > 0) {
   const folder = join(dir, "history");
   mkdirSync(folder, { recursive: true });
@@ -96,7 +128,7 @@ if (sections.length > 0) {
   writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n");
 }
 
-// 3. La mémoire du projet : mesurée, jamais modifiée ici.
+// 4. La mémoire du projet : mesurée, jamais modifiée ici.
 let memory = null;
 try {
   const text = readFileSync(join(dir, "memory.md"), "utf8");

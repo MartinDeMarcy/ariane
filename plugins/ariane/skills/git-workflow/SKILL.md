@@ -126,3 +126,21 @@ gh release create vx.y.z --title "Version x.y.z" --notes-file <notes tirées de 
 Numérotation SemVer : `0.1.0` pour le premier MVP en ligne, puis `0.2.0` pour de nouvelles fonctionnalités, `0.1.1` pour une correction.
 
 Ajoute la version dans `state.releases`.
+
+## Les versions après le MVP
+
+Le numéro de version est décidé par Ariane avec l'utilisateur : correctif `x.y.Z`, évolution `x.Y.0`, refonte `X.0.0`. Un numéro publié ne se réutilise jamais.
+
+**Correctif urgent pendant qu'une version est en cours** : `main` contient des lots validés mais pas encore publiés, il ne faut donc pas en partir.
+
+```bash
+git fetch --tags
+git switch -c release/x.y.Z vx.y.(Z-1)        # depuis l'étiquette en production
+git push -u origin release/x.y.Z
+git switch -c lot/NN-correctif-slug            # le lot du correctif part de la release
+# … stories du correctif, pull request vers release/x.y.Z, CI verte, fusion …
+git tag vx.y.Z && git push origin vx.y.Z       # après la validation de l'utilisateur
+# puis reporter le correctif dans main, par une pull request release/x.y.Z → main
+```
+
+Hors de ce cas, un correctif part de `main` comme n'importe quel lot.

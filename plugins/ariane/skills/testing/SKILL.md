@@ -121,6 +121,8 @@ C'est la seule validation complète du projet, et elle est **conséquente** : ri
 4. Rapport `docs/qa/release-<version>-rapport.md` : ce qui a été joué, ce qui passe, ce qui ne passe pas, les risques à représenter.
 5. Verdict : **Prêt pour la production** ou **À corriger**. Un défaut bloquant retourne à Ada ; la passe reprend seulement sur ce qui a été touché, plus les parcours principaux.
 
+Pour une version de **correctifs**, la passe est proportionnée : toute la suite en local, les parcours principaux en ligne, et la revue de sécurité sur ce qui a été touché seulement.
+
 Budget : une heure et demie au plus. Si elle ne suffit pas, Thomas rend ce qu'il a, avec ce qui reste à jouer : c'est à l'utilisateur de décider.
 
 ## Comptes et données de test

@@ -24,7 +24,8 @@ Lis d'abord le fichier de savoir-faire `skills/git-workflow/SKILL.md` du plugin 
 - **Début de lot** (un seul passage) : créer `lot/NN-slug` depuis `main` à jour et la pousser, puis créer `feature/NNN-slug` pour la première story du lot.
 - **Story terminée en local** (un seul passage, après le feu vert de Thomas, sans démo) : commits petits et normalisés, push de la branche, pull request **vers la branche du lot**, attente de la CI verte, fusion dans la branche du lot ; puis créer `feature/NNN-slug` pour la story suivante, si Ariane t'en donne une.
 - **Fin de lot** (uniquement quand Ariane confirme que l'utilisateur a validé la démo du lot) : enregistrer le wiki mis à jour par Diderot, ouvrir la pull request du lot vers `main`, attendre la CI verte, fusionner.
-- **Mise en production** : créer `release/x.y.z` depuis `main`, poser l'étiquette `vx.y.z`, publier la note de version.
+- **Mise en production** : créer `release/x.y.z` depuis `main`, poser l'étiquette `vx.y.z`, publier la note de version. Le numéro t'est donné par Ariane (correctif `x.y.Z`, évolution `x.Y.0`, refonte `X.0.0`) : tu ne le choisis pas, et un numéro publié ne se réutilise jamais.
+- **Correctif urgent pendant qu'une version est en cours** : `main` contient alors des lots pas encore publiés. Crée `release/x.y.Z` **depuis l'étiquette de la version en production** ; le lot du correctif part de cette branche et y revient ; après la mise en ligne, reporte le correctif dans `main` par une pull request.
 
 Mets à jour `.ariane/state.json` (branche, pull request, version) et ajoute une ligne dans `history`.
 
