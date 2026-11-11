@@ -1,6 +1,6 @@
 ---
 name: testing
-description: Stratégie de test d'Ariane (Vitest en local, Playwright sur l'environnement de test Vercel, captures, rapport). Savoir-faire de Thomas et d'Ada.
+description: Stratégie de test d'Ariane (Vitest en local, Playwright en local puis sur l'environnement de test Vercel, limites externes, captures, rapport). Savoir-faire de Thomas et d'Ada.
 user-invocable: false
 ---
 
@@ -15,9 +15,9 @@ user-invocable: false
 
 ## Vitest
 
-`vitest.config.ts` : environnement `jsdom`, plugin React, alias `@` vers `src`, fichier de setup qui importe `@testing-library/jest-dom/vitest`. Tests dans `tests/unit/` ou à côté du code (`*.test.ts(x)`).
+`vitest.config.ts` : environnement `jsdom`, alias `@` vers `src`, fichier de setup qui importe `@testing-library/jest-dom/vitest` (le plugin React n'est pas indispensable : si npm refuse de l'installer, passe-t'en). Tests dans `tests/unit/` ou à côté du code (`*.test.ts(x)`).
 
-Bonne pratique : tester ce que voit l'utilisateur (textes, rôles, libellés) plutôt que les détails internes.
+Bonne pratique : tester ce que voit l'utilisateur (textes, rôles, libellés) plutôt que les détails internes. Les parties qu'un test de bout en bout ne peut pas rejouer sans danger (réservations dans le passé, calculs de fuseau, règles de dates) se prouvent ici, en masse.
 
 ## Playwright : rapide et borné
 
@@ -59,12 +59,25 @@ export default defineConfig({
 });
 ```
 
+### Attendre l'hydratation, jamais le réseau au repos
+
+N'utilise **pas** `waitForLoadState("networkidle")` : sur un build de production, il ne se termine jamais (Next précharge des pages liées, parfois en 404). Attends l'**hydratation** de React : un petit composant client (`HydrationMarker`, dans le layout racine) pose `data-hydrated="true"` sur `<html>` une fois monté, et un utilitaire (`attendreHydratation(page)`, `tests/e2e/support/hydratation.ts`) l'attend. C'est aussi indispensable avant d'injecter du contenu dans une page : sans cela, React efface ce qui a été ajouté.
+
+### Écrire des tests qui ne se gênent pas
+
+- Un test qui compte sur une **base sans donnée** (états vides) ne se lance jamais en même temps qu'un test qui en crée ; s'il trouve des données, il se met de côté (`skip` avec la raison).
+- Donne un **nom unique** aux données créées (horodatage) : deux fichiers qui créent la même chose avec le même nom échouent en « strict mode violation ».
+- Cible les alertes avec `locator("main [role=alert]")`, pas `getByRole("alert")` seul : l'annonceur de routes de Next est un `role=alert` toujours présent.
+- Dans une mesure de mise en page, ignore les champs `input[type=hidden]` (ceux de Next font 0 px) et le contenu d'un `<details>` fermé.
+- Les prévisualisations Vercel chargent un script de commentaires (`vercel.live`), absent en production : autorise-le dans les tests qui interdisent « tout autre site ».
+- Un test du scénario de démo peut échouer en mode développement à cause du bouton de l'outil de Next : lance les tests de bout en bout sur l'app construite pour la production.
+
 ### Les limites extérieures : ce qui fait durer des heures
 
 Relevé sur un vrai projet : la validation d'un lot en ligne a pris jusqu'à 2 h 25 pour environ 490 tests. Ce n'étaient pas les tests qui étaient lents, mais les attentes imposées par deux services :
 
 - **Vercel** : après environ **40 tests navigateur** d'affilée sur une prévisualisation, Vercel affiche son « point de contrôle de sécurité » (réponse 403, en-tête `x-vercel-mitigated: challenge`) et bloque l'adresse 3 à 10 minutes. Passer des centaines de tests en ligne oblige à les découper en tranches de 20 avec des pauses : des heures.
-- **Supabase** (projet de test) : 30 vérifications de lien et 30 connexions par tranche de 5 minutes et par adresse, 2 e-mails par heure avec l'envoi intégré. Une suite qui se connecte à chaque test ou qui attend des e-mails s'arrête toute seule.
+- **Supabase** (projet de test) : 30 vérifications de lien et 30 connexions par tranche de 5 minutes et par adresse, 2 e-mails par heure avec l'envoi intégré (30 avec un SMTP personnalisé réglé à 30 ; erreur `over_email_send_rate_limit`). Une suite qui se connecte à chaque test ou qui attend des e-mails s'arrête toute seule.
 
 Deux règles en découlent : **le gros des tests ne passe jamais en ligne**, et **une passe en ligne reste sous 40 tests navigateur**.
 
@@ -111,7 +124,13 @@ En tout : vingt minutes au plus. Au-delà, il rend ce qu'il a.
 C'est la seule validation complète du projet, et elle est **conséquente** : rien ne part en production sans elle. C'est aussi le seul moment où Thomas a le droit de prendre son temps et de passer des tests en ligne par tranches.
 
 1. **Tout en local**, sur l'app construite pour la production : `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, puis **toute la suite de bout en bout, sur ordinateur et sur mobile** (`E2E_FULL=1 npm run test:e2e`). Aucune limite de Vercel ici : tout passe.
-2. **En ligne**, sur la prévisualisation de la branche qui part en production : les parcours principaux de chaque fonctionnalité et toutes les démos de lots (`E2E_FULL=1 BASE_URL=<url> npm run test:e2e -- --grep @mobile`), sur les deux appareils. Ici, et ici seulement, les tranches sont permises : au plus 30 tests navigateur par tranche, deux minutes entre deux tranches, un seul lancement en tâche de fond. Si le point de contrôle de Vercel apparaît malgré tout, une seule attente de dix minutes, puis reprise.
+2. **En ligne**, sur la prévisualisation de la branche qui part en production : les parcours principaux de chaque fonctionnalité et toutes les démos de lots (`E2E_FULL=1 BASE_URL=<url> npm run test:e2e -- --grep @mobile`), sur les deux appareils. Ici, et ici seulement, les tranches sont permises. La méthode, éprouvée sur un vrai projet :
+   - des **tranches de 20 à 30 tests** : `--shard=i/N` (`--workers=2` au plus). `--shard` ne découpe pas un fichier fait d'un seul bloc `serial` : découpe alors par `--project` ou par `--grep` ;
+   - une **sonde avant chaque tranche**, avec un petit script Playwright (`goto /connexion`, statut 200), **pas avec `curl`** : `curl` repasse avant le navigateur ;
+   - **deux minutes entre deux tranches** ;
+   - un **seul pilote en tâche de fond** (une commande lancée avec `run_in_background`, qui enchaîne les tranches et écrit un journal). Pas de `nohup … &` : le journal n'apparaît pas, on relance par erreur et deux chaînes tournent en parallèle. `sleep` est bloqué dans l'environnement : attends avec `node -e "setTimeout(()=>{},120000)"` ;
+   - un échec dû au point de contrôle (« Point de contrôle de sécurité » dans `error-context.md`) **n'est pas un défaut** : attends dix minutes une fois, relance la tranche, ne la compte pas comme un échec ;
+   - **annonce la durée à Ariane** dès le départ, pour qu'elle prévienne l'utilisateur : sinon il croit à un blocage.
 3. **La revue d'ensemble**, qui ne se fait qu'ici :
    - sécurité : règles d'accès de **toutes** les tables, aucune page privée ouverte sans session, aucun secret dans le code ni dans le navigateur, en-têtes de sécurité (CSP, X-Frame-Options, nosniff, Referrer-Policy) ;
    - données : une personne ne voit et ne modifie que ce qui est à elle ;
@@ -132,12 +151,32 @@ Les tests de bout en bout tournent sur le **Supabase de test**. Pour ne jamais b
 - **Pas d'e-mail dans les tests.** Les comptes de test sont créés par l'API d'administration (`auth.admin.generateLink` ou `auth.admin.createUser` avec `email_confirm: true`, clé `service_role` lue dans `.env.local` par les tests seulement, jamais dans le code de l'app ni dans le navigateur) : aucun e-mail n'est envoyé, le compte est utilisable tout de suite.
 - **Une session par suite, pas une connexion par test** : une fixture partagée ouvre la session une fois et la réutilise (`storageState`). Seuls les tests qui portent sur la connexion elle-même se connectent.
 - **Des limites relevées sur le projet de test** : Neil monte les limites de débit de l'authentification du projet de test (voir le savoir-faire déploiement), pour qu'une suite complète passe sans attendre.
-- Les tests créent leurs comptes `e2e+<horodatage>@example.com` et les suppriment à la fin ; chacun crée ses données et ne dépend pas de celles des autres. Aucune donnée réelle d'utilisateur.
+- Les tests créent leurs comptes `e2e+<horodatage>@example.com` et **nettoient derrière eux** ; chacun crée ses données et ne dépend pas de celles des autres. Aucune donnée réelle d'utilisateur. À la fin d'un passage, vérifie que la base est propre.
+- **Jamais d'e-mail réel pendant les tests.** Pour le mot de passe oublié, la seule demande autorisée est celle d'une adresse inventée **sans compte** (`@example.com` : rien n'est envoyé, aucun quota entamé). Pour prouver un envoi d'e-mail, utilise un **faux serveur SMTP local** (une spec jetable qui parle SMTP) : rien ne part, et on peut vérifier le contenu. Le mode « à blanc » (`EMAIL_DRY_RUN`) est réservé aux tests ; il n'existe dans aucun environnement Vercel.
+- Ne teste jamais une route protégée par secret avec le **vrai** secret sur un environnement en ligne.
+
+## Les contrôles de sécurité, sur ce que la story ajoute
+
+Sans qu'on te le demande, mais seulement sur ce que la story ou le lot a ajouté (la revue d'ensemble attend la grande passe) :
+
+- **Redirection ouverte** : toute route qui lit un paramètre de retour (`next`…) refuse `//evil.com`, `https://evil.com`, `/\evil.com`.
+- **Pas de fuite** : aucune adresse e-mail d'un autre utilisateur dans la page ni dans le HTML brut ; aucun secret (`service_role`, `SMTP_PASSWORD`, `CRON_SECRET`, clés) dans les fichiers JavaScript publics.
+- **Routes protégées par secret** (tâches planifiées) : 401 sans corps ni détail sans l'en-tête, 405 pour les autres méthodes, `Cache-Control: no-store`.
+- **Identifiants mal encodés** (`/ressource/%ff`) : 400, pas 500.
+- **Droits** : un utilisateur ne lit ni ne modifie les données d'un autre (essaie l'API, pas seulement l'écran) ; la base n'a pas bougé après un refus.
+
+## Mobile : ce que les tests ne prouvent pas
+
+Playwright émule un téléphone, mais **pas les zones sûres d'un vrai téléphone à bords arrondis**. Vérifie `viewport-fit=cover`, la hauteur réelle de la barre d'onglets et le `scroll-padding-bottom` (un champ atteint au clavier ne doit pas passer dessous), et écris dans ton rapport « à essayer sur un vrai téléphone » : c'est le rôle de la démo. **Une remarque mobile non bloquante se traite avant la démo**, pas après : sinon elle revient en refus de démo.
 
 ## Captures
 
-Les captures viennent du **test de démo** lui-même (`page.screenshot({ path })` aux écrans clés du scénario), six au plus, dans `docs/qa/captures/lot-NN/`. Pas de séance de captures à part. Elles servent à la démo d'Ariane et au wiki de Diderot.
+Les captures viennent du **test de démo** lui-même (`page.screenshot({ path })` aux écrans clés du scénario), six au plus, dans `docs/qa/captures/lot-NN/`. Pas de séance de captures à part. Elles servent à la démo d'Ariane et au wiki de Diderot. Ne montre jamais la valeur brute d'un cookie ou d'un secret dans une sortie de test.
 
 ## Rapport
 
-`docs/qa/lot-NN-rapport.md`, à partir de `templates/docs/qa-report.md` : critères vérifiés (OK / KO), résultats, captures, verdict. Court : un tableau et une liste, pas de récit.
+`docs/qa/lot-NN-rapport.md`, à partir de `templates/docs/qa-report.md` : critères vérifiés (OK / KO), résultats, captures, verdict. Court : un tableau et une liste, pas de récit. Il dit aussi :
+
+- **ce qui n'est pas prouvable en ligne** (réception d'un vrai e-mail, tâche planifiée qui ne tourne qu'en production, variables Vercel non lisibles) : c'est un « à confirmer », pas un « OK » ;
+- **les remarques non bloquantes**, numérotées (R1, R2…), avec celles qui sont « à régler avant la production » marquées comme telles : Ariane les inscrit au registre des correctifs ou les présente à la démo ;
+- **la durée**, et les attentes volontaires dues aux limites externes.

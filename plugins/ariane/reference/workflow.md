@@ -115,7 +115,7 @@ L'état est écrit dans `state.json` après chaque étape : si la session se fer
 ## Phase 9 : la mise en production
 
 1. **Thomas** fait la **grande passe de tests** : toute la suite en local (ordinateur et mobile), les parcours principaux et les démos de lots en ligne, et la revue d'ensemble (sécurité, données, téléphone, accessibilité, risques acceptés). Rapport `docs/qa/release-<version>-rapport.md`. Un défaut bloquant retourne à Ada avant d'aller plus loin.
-2. Ariane présente ce qui va partir en production, **le résultat de la grande passe et les risques à accepter**, et demande la **Validation 4**. Elle range l'état avec `scripts/archive-state.mjs --version <x.y.z>`.
+2. Ariane **représente les risques acceptés** (registre des correctifs) et les points « à régler avant la production » relevés par Thomas, Neil et Diderot : pour chacun, l'utilisateur confirme qu'il reste accepté en ligne, ou demande de le corriger avant ou juste après. Elle relit `decisions.md` pour que la configuration et la documentation n'en disent pas autre chose. Puis elle présente ce qui va partir en production, **le résultat de la grande passe**, et demande la **Validation 4**. Elle range l'état avec `scripts/archive-state.mjs --version <x.y.z>`.
 3. **Clio** crée `release/<version>` depuis `main`, pose l'étiquette `v<version>`, publie la note de version (tirée de `docs/wiki/historique.md`).
 4. **Neil** sauvegarde la base de production, applique les migrations au **Supabase de production**, déploie la release sur Vercel en production, vérifie l'URL publique.
 5. Ariane annonce l'URL publique et propose la suite.
@@ -155,7 +155,7 @@ Règles :
 
 À l'accueil, Ariane demande à l'utilisateur s'il accepte qu'un journal de session soit tenu pour l'aider à s'améliorer. Sa réponse va dans `state.feedback`.
 
-- S'il accepte : Ariane alimente `.ariane/feedback/journal.md` (modèle : `templates/feedback-journal.md`) à la fin de chaque phase et de chaque story, et à chaque friction notable.
+- S'il accepte : Ariane alimente `.ariane/feedback/journal.md` (modèle : `templates/feedback-journal.md`), en silence, à la fin de chaque phase, **de chaque lot (avant la démo, puis à sa validation)**, à la mise en production, à chaque blocage et à chaque friction notable. Une entrée par lot, pas une par story. Au début de `/ariane:next`, elle rattrape les entrées manquantes depuis `log.md`, `decisions.md` et l'historique.
 - `/ariane:feedback` produit un compte rendu partageable : `.ariane/feedback/rapport-AAAA-MM-JJ.md`.
 - **La consommation de tokens** est mesurée automatiquement à la fin de chaque spécialiste et de chaque tour (`hooks/token-meter.mjs`, hors de la conversation, donc sans rien consommer) : `.ariane/feedback/tokens.jsonl` garde une ligne par mesure, `.ariane/feedback/tokens.md` le tableau par phase, par agent, par lot et par story. Le compte rendu de `/ariane:feedback` le reprend.
 - Rien n'est envoyé automatiquement : l'utilisateur partage le compte rendu s'il le souhaite. Le dossier `.ariane/feedback/` n'est pas versionné.
@@ -167,7 +167,8 @@ Règles :
 - Une seule chose à la fois ; jamais de jargon sans explication.
 - Pour toute décision : 2 à 4 options avec une recommandation (outil AskUserQuestion).
 - Mettre à jour `state.json` après chaque étape, et ajouter une ligne dans `history`.
-- Noter chaque décision validée par l'utilisateur dans `.ariane/decisions.md`.
+- Noter chaque décision validée par l'utilisateur dans `.ariane/decisions.md`, et chaque changement qui remplace une décision déjà consignée (avec la date, l'ancien choix, le nouveau, qui l'a décidé et pourquoi). Un spécialiste qui s'écarte d'une décision le dit dans sa fiche de passage ; Ariane demande alors confirmation à l'utilisateur.
+- Noter chaque risque accepté « pour l'instant » dans `decisions.md` et dans le registre des correctifs (`.ariane/issues.md`), pour le représenter avant chaque mise en ligne.
 - Ne jamais demander à l'utilisateur de valider une opération Git : c'est le domaine de Clio.
 - Montrer ce qui est produit : l'utilisateur ne va jamais chercher un fichier. Chaque document produit est envoyé à l'utilisateur sous forme de bouton (`SendUserFile`), qu'il ouvre d'un clic dans le volet de l'application, mis en forme ; aux validations (PRD, écrans), le bouton est envoyé avant de demander l'accord. Les maquettes sont regroupées dans un menu (`docs/maquettes/index.html`) qu'un bouton d'Ariane ouvre dans Chrome. Sans bouton, Ariane donne un lien cliquable, puis en dernier recours écrit le contenu dans le message en Markdown mis en forme (jamais dans un bloc de code). Le chemin du fichier n'est cité qu'à titre d'information.
 

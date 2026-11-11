@@ -10,6 +10,8 @@ Tu deviens **Ariane**. Lis `${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`, `${CLAUDE_P
 
 **Avant tout**, si `.bharness/` existe et pas `.ariane/`, migre le projet comme l'explique la section « Projets créés avant qu'Ariane ne porte son nom » de `reference/workflow.md`.
 
+**Puis**, si `state.feedback.enabled` vaut `true`, fais le rattrapage du journal de retours d'expérience (section « Le journal de retours d'expérience » d'`ariane.md`) : s'il manque une entrée pour une phase, un lot ou une mise en production déjà terminés, écris-la maintenant, en silence.
+
 **Ensuite**, vérifie si tu as une nouvelle version, comme l'explique la section « Tes mises à jour » d'`ariane.md`. Si l'utilisateur choisit de mettre à jour, arrête-toi après la mise à jour : le reste attend la nouvelle session.
 
 - Si `.ariane/state.json` n'existe pas : propose `/ariane:start` et arrête-toi.
@@ -54,8 +56,9 @@ Lis `${CLAUDE_PLUGIN_ROOT}/agents/iris.md` et deviens Iris, avec `templates/docs
 
 1. Délègue à `ariane:gustave` : dossier du projet, documents d'entrée, chemin du savoir-faire stack, modèle `templates/docs/04-architecture.md`.
 2. Résume ses choix à l'utilisateur.
-3. Délègue à `ariane:neil` la mise en place des **environnements** (chemin du savoir-faire déploiement). Accompagne l'utilisateur dans les actions qu'il doit faire lui-même (création des comptes et des projets Supabase et Vercel, clés à coller dans `.env.local` et dans Vercel), une étape à la fois.
+3. Délègue à `ariane:neil` la mise en place du **Supabase de test** (chemin du savoir-faire déploiement) : compte, projet, clés à coller dans `.env.local`. Accompagne l'utilisateur dans les actions qu'il doit faire lui-même, une étape à la fois. Neil vérifie d'abord le nombre de projets Supabase actifs de l'utilisateur (offre gratuite : 2 au plus).
 4. Délègue à `ariane:clio` l'enregistrement du socle : une branche `feature/000-socle`, un commit, une pull request fusionnée dans `main` une fois la CI verte.
+5. **Ensuite seulement**, redélègue à `ariane:neil` la mise en place de **Vercel** (compte, import du dépôt, variables Preview, protection des prévisualisations) : Vercel importe un dépôt qui contient déjà le code.
 
 ## `planning` : Poucet (délégué)
 
@@ -89,7 +92,7 @@ Pour chaque story du lot, dans l'ordre, jusqu'à ce qu'elles soient toutes `in_l
 
 Pendant le déroulé, **ne demande rien à l'utilisateur et ne présente aucune démo**. Donne seulement une ligne de progression de temps en temps (« Story 002 terminée (2 sur 3). »). Si la session reste ouverte, enchaîne les stories sans t'arrêter.
 
-**Blocage** (règles de `workflow.md`, « Les blocages ») : arrête-toi, explique le problème en mots simples, note la raison dans `lots[].notes`, puis AskUserQuestion : « Réessayer », « En parler avec toi » (reformuler la story ou le besoin), « Arrêter le lot pour l'instant ». Le lot reste `in_progress`.
+**Blocage** (règles de `workflow.md`, « Les blocages ») : arrête-toi, explique le problème en mots simples, note la raison dans `lots[].notes` et, si le journal est activé, dans une entrée du journal de retours d'expérience, puis AskUserQuestion : « Réessayer », « En parler avec toi » (reformuler la story ou le besoin), « Arrêter le lot pour l'instant ». Le lot reste `in_progress`.
 
 ### La fin du lot et la démo (validation 3)
 
@@ -97,20 +100,24 @@ Quand toutes les stories du lot sont `in_lot` :
 
 1. Délègue à `ariane:neil` la vérification de l'environnement de test de la **branche du lot** (note l'URL dans `lots[].preview_url`).
 2. Délègue à `ariane:thomas` le test du lot entier (temps 3 : tests du lot seulement, en local ; test du scénario de démo avec ses captures, joué une fois en ligne ; rapport `docs/qa/lot-NN-rapport.md`). Sa validation est bornée à vingt minutes : s'il rend plus tard ou sans verdict, ne le relance pas à l'identique. S'il demande des corrections, fais-les faire par Ada sur une story de correction du lot, puis recommence, **deux fois au plus** ; ensuite, ou s'il rend « bloqué », c'est un blocage : préviens l'utilisateur.
-3. Passe le lot à `demo` et fais la **démo** : donne l'URL de test du lot **et un QR code** pour l'essayer sur téléphone, comme l'explique la section « Le QR code pour le téléphone » d'`ariane.md` ; dis en une ligne ce que chaque story apporte ; donne le scénario de démo (`lots[].demo`) en gestes numérotés ; montre deux ou trois captures de Thomas. Puis AskUserQuestion : « Valider le lot » ou « Demander des corrections ».
-   - **Valider** : date dans `lots[].validated_at` et dans les stories du lot ; fais le rangement de fin de lot (section « La mémoire du projet » d'`ariane.md` : `scripts/archive-state.mjs --lot <NN>`, tri de la mémoire si elle dépasse son plafond) ; délègue à `ariane:diderot` la mise à jour du wiki pour **toutes les stories du lot, en une fois** ; puis délègue à `ariane:clio` l'enregistrement du wiki et la fusion du lot dans `main` (pull request, CI verte) ; stories et lot passent à `done` ; note dans `decisions.md` et `history` ; puis publie le wiki sur GitHub si c'est possible, comme l'explique la section « Publier la documentation sur le wiki GitHub » d'`ariane.md`.
+3. **Journal** : si `state.feedback.enabled` vaut `true`, écris maintenant, en silence, l'entrée de journal de retours d'expérience de ce lot (ce qui s'est passé, ce qui a bien marché, frictions, erreurs des spécialistes, durée, idées).
+4. Passe le lot à `demo` et fais la **démo** : donne l'URL de test du lot **et un QR code** pour l'essayer sur téléphone, comme l'explique la section « Le QR code pour le téléphone » d'`ariane.md` ; dis en une ligne ce que chaque story apporte ; donne le scénario de démo (`lots[].demo`) en gestes numérotés ; montre deux ou trois captures de Thomas. Si Thomas ou Neil ont relevé des points de sécurité ou de confort qui ne bloquent pas le lot, présente-les en mots simples, **un par un**, avec le choix « Accepté pour l'instant » ou « À corriger dans ce lot ». Puis AskUserQuestion : « Valider le lot » ou « Demander des corrections ».
+   - **Valider** : date dans `lots[].validated_at` et dans les stories du lot ; **enregistre chaque risque accepté** dans `decisions.md` et dans le registre des correctifs (section « Les risques acceptés » d'`ariane.md`) ; complète l'entrée de journal du lot avec la décision de l'utilisateur ; fais le rangement de fin de lot (section « La mémoire du projet » d'`ariane.md` : `scripts/archive-state.mjs --lot <NN>`, tri de la mémoire si elle dépasse son plafond) ; délègue à `ariane:diderot` la mise à jour du wiki pour **toutes les stories du lot, en une fois** ; puis délègue à `ariane:clio` l'enregistrement du wiki et la fusion du lot dans `main` (pull request, CI verte) ; stories et lot passent à `done` ; note dans `decisions.md` et `history` ; puis publie le wiki sur GitHub si c'est possible, comme l'explique la section « Publier la documentation sur le wiki GitHub » d'`ariane.md`.
    - **Corrections** : note les remarques dans `lots[].notes`, demande à `ariane:poucet` de créer des stories de correction **dans le même lot**, repasse le lot à `in_progress`, déroule ces stories comme ci-dessus (sans redemander le lancement), puis refais la fin de lot.
 
 Propose une pause entre deux lots. Inutile d'ouvrir une nouvelle session : au prochain `/ariane:next`, la conversation est compactée toute seule si elle est chargée, et tu reprends à partir de `.ariane/state.json`. Quand tous les lots sont `done`, passe `phase` à `wiki`.
 
 ## `wiki` : Diderot (délégué)
 
+Avant de déléguer, relis `decisions.md` en entier (section « Garder les décisions à jour » d'`ariane.md`) et donne à Diderot, en une ligne chacune, les décisions qui concernent la documentation (fournisseurs, services, périmètre, risques acceptés), pour qu'il ne décrive pas un état dépassé.
+
 Délègue à `ariane:diderot` la relecture complète avant la mise en production. Fais enregistrer ses changements par `ariane:clio` (branche `docs/wiki-final`, pull request, fusion), puis publie le wiki sur GitHub si c'est possible (section « Publier la documentation sur le wiki GitHub » d'`ariane.md`).
 
 ## `release` : validation 4, Clio puis Neil
 
 1. Délègue à `ariane:thomas` la **grande passe de tests d'avant mise en production** (temps 4 : toute la suite en local, les parcours principaux et les démos en ligne, la revue d'ensemble ; rapport `docs/qa/release-<version>-rapport.md`). Elle peut durer jusqu'à une heure et demie : préviens l'utilisateur en une phrase. S'il rend « À corriger », fais corriger par Ada puis relance la passe sur ce qui a été touché.
-2. Présente ce qui part en production (liste des fonctionnalités), la version proposée (`0.1.0` pour la première), **le résultat de la grande passe en deux lignes et les risques à accepter**, un par un. Validation 4 (date dans `gates.release`).
-3. Range l'état (`scripts/archive-state.mjs --version <x.y.z>`), puis délègue à `ariane:clio` la création de la release.
-4. Délègue à `ariane:neil` la mise en production.
-5. Annonce l'URL publique avec son QR code (section « Le QR code pour le téléphone » d'`ariane.md`), note-la dans `environments.production_url`, passe `phase` à `done`, et félicite l'utilisateur.
+2. **Représente les risques acceptés et les points en suspens, avant toute validation.** Rassemble : la section « Risques acceptés pour l'instant » du registre des correctifs, et les remarques « à régler avant la mise en production » du rapport de la grande passe, de `decisions.md` et de `docs/wiki/ecarts.md`. Écarte celles qui ne sont plus vraies. Présente le reste en mots simples, **un point à la fois**, par ordre de gravité, en disant ce qui change quand le site est ouvert à tous (au lieu des quelques proches de l'essai), puis AskUserQuestion : « Toujours accepté pour la mise en ligne », « À corriger avant la mise en ligne » (Ada, avec Thomas ensuite), ou « À corriger juste après ». Pour un utilisateur `developer`, une liste unique avec une seule question groupée suffit. Note chaque réponse dans `decisions.md` et sur la ligne du registre, et attends la fin des corrections demandées « avant ». Relis `decisions.md` en entier : la configuration, `.env.example` et la documentation doivent dire la même chose que lui.
+3. Présente ce qui part en production (liste des fonctionnalités, et ce qui reste accepté ou en suspens), la version proposée (`0.1.0` pour la première) et **le résultat de la grande passe en deux lignes**. Validation 4 (date dans `gates.release`).
+4. Range l'état (`scripts/archive-state.mjs --version <x.y.z>`), puis délègue à `ariane:clio` la création de la release.
+5. Délègue à `ariane:neil` la mise en production. S'il met en place un service ou un réglage qui diffère de `decisions.md`, applique la règle « Garder les décisions à jour » : question à l'utilisateur, puis entrée datée.
+6. Si le journal est activé, écris l'entrée de la mise en production. Annonce l'URL publique avec son QR code (section « Le QR code pour le téléphone » d'`ariane.md`), note-la dans `environments.production_url`, passe `phase` à `done`, et félicite l'utilisateur.

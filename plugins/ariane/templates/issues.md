@@ -15,7 +15,7 @@ Règles d'écriture :
 
 ## Risques acceptés pour l'instant
 
-<!-- Ce que l'utilisateur a choisi de laisser tel quel, en connaissance de cause : `- 2026-10-11 · Le jeton reste valable une heure après la déconnexion · (accepté le 2026-10-11, à revoir avant la 1.0.0)`. Ariane les représente avant chaque mise en ligne. -->
+<!-- Ce que l'utilisateur a choisi de laisser tel quel, en connaissance de cause : `- 2026-10-11 · Le jeton reste valable une heure après la déconnexion · (accepté le 2026-10-11, à revoir avant la 1.0.0)`. Ariane les représente avant chaque mise en ligne et note la réponse sur la ligne : `(revu le 2026-12-20 : toujours accepté | corrigé avant | à corriger juste après)`. -->
 
 ## Corrigés
 

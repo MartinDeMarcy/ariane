@@ -22,7 +22,7 @@ Fichiers : <les fichiers créés ou le lien utile (pull request, URL de test, ra
 Difficultés : <ce qui a coincé, ou « aucune »>
 ```
 
-Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier, pas de liste de tout ce qui a été lu. En cas de « à corriger » ou « bloqué », la ligne « À savoir » dit précisément quoi, et pour qui.
+Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier, pas de liste de tout ce qui a été lu. En cas de « à corriger » ou « bloqué », la ligne « À savoir » dit précisément quoi, et pour qui. **C'est aussi là que le spécialiste dit s'il a dû s'écarter d'une décision du projet** (un autre service, un autre outil, un périmètre différent) : jamais en silence.
 
 ## Où va le détail : le journal de bord, écrit par le spécialiste
 

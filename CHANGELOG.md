@@ -2,6 +2,24 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.20.0] – 2026-11-11
+
+Reprise de la branche `feat/ariane-journal-decisions-risques`, écrite d'après les retours du projet Booker, et adaptée au parcours actuel.
+
+### Ajouté
+
+- **Le journal de retours est tenu à chaque lot.** Ariane écrit une entrée, en silence, à la fin de chaque lot (avant la démo, puis à sa validation), à la mise en production et à chaque blocage, et rattrape au début de `/ariane:next` les entrées manquantes depuis `log.md`, `decisions.md` et l'historique. Retour de Booker : le journal s'arrêtait au lot 02 parce que le déroulé d'un lot n'avait aucune étape « journal ».
+- **Garder les décisions à jour** : un changement qui remplace une décision consignée (fournisseur d'e-mails, outil, périmètre…) est écrit dans `decisions.md` avec la date, l'ancien choix, le nouveau, qui l'a décidé et pourquoi. Les spécialistes reçoivent les décisions qui touchent leur tâche et signalent tout écart dans leur fiche de passage ; Ariane demande confirmation à l'utilisateur et relit `decisions.md` avant la relecture du wiki et avant la validation 4. Retour de Booker : le passage de Gmail à Resend n'avait jamais été consigné.
+- **Les risques acceptés sont représentés avant chaque mise en ligne.** Les remarques non bloquantes de Thomas et de Neil sont présentées à la démo du lot, une par une (« Accepté pour l'instant » ou « À corriger dans ce lot ») ; chaque risque accepté va dans `decisions.md` et dans la section « Risques acceptés pour l'instant » du registre des correctifs. À l'étape `release`, Ariane les repasse en revue : toujours accepté, à corriger avant, ou juste après. (La branche les rangeait dans une clé `state.accepted_risks` ; ils vont ici dans le registre des correctifs, qui existe depuis la 0.19.0, pour ne pas alourdir le fichier d'état.)
+
+### Modifié
+
+Les trois savoir-faire techniques reprennent ce que le projet Booker a appris en conditions réelles.
+
+- **`deploy-vercel` (Neil)** : limite de 2 projets Supabase gratuits actifs (vérifiée d'abord, jamais de mise en pause à la place de l'utilisateur) ; ordre Supabase de test, socle de Clio, puis Vercel (`/ariane:next` suit le même ordre) ; migrations et configuration de production avec `--remote=<réf>` et une copie de `supabase/` hors dépôt ; section « Les e-mails » ; effets de bord de `vercel link` ; `vercel deploy --prod` à lancer par l'utilisateur ; ne jamais promouvoir une prévisualisation en production ; recherche des déploiements par SHA ; liste de vérification en lecture seule de la production, dont les en-têtes de sécurité.
+- **`stack-nextjs-supabase` (Gustave, Ada)** : Next.js 16 (`proxy.ts`, `eslint .`), `@serwist/turbopack`, version de npm, `AGENTS.md`, `.gitattributes` ; checklist de la barre de navigation mobile ; en-têtes de sécurité dès la coque ; redirection ouverte, cookie de session, anti-énumération, identifiants mal encodés ; tâches planifiées protégées par secret ; envoi d'e-mails qui ne bloque jamais l'action.
+- **`testing` (Thomas, Ada)** : attendre l'hydratation plutôt que `networkidle` ; tests qui ne se gênent pas ; jamais d'e-mail réel en test (faux serveur SMTP) ; contrôles de sécurité sur ce que la story ajoute ; ce que l'émulation mobile ne prouve pas ; rapport qui distingue « à confirmer » et « OK ». La méthode des tranches (sonde, pause, pilote unique) est gardée, mais réservée à la grande passe d'avant mise en production : à la fin d'un lot, la règle reste une passe en local et la démo seule en ligne.
+
 ## [0.19.0] – 2026-11-11
 
 ### Ajouté
