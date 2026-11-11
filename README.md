@@ -1,27 +1,38 @@
-# Bharness
+# Ariane
 
-**Une équipe de onze agents qui accompagne un débutant motivé de l'idée à une application web en ligne, testée et documentée.**
+**Ariane tient le fil, de ton idée à ton application en ligne. Elle dirige une équipe de dix spécialistes et gère tout, de A à Z.**
 
-Bharness est un plugin pour [Claude Code](https://code.claude.com). Il s'adresse aux personnes qui ont un projet d'application web, l'envie de le mener, mais pas de formation de développeur. Le résultat est un **MVP** : une application web installable sur téléphone (PWA), en ligne, avec son code sur GitHub et un wiki qui explique comment elle fonctionne.
+Ariane s'adresse aux personnes qui ont un projet d'application web, l'envie de le mener, mais pas de formation de développeur. Tu ne parles qu'à elle : c'est elle qui envoie le bon spécialiste au bon moment, relit son travail et te raconte simplement où on en est. Le résultat est un **MVP** : une application web installable sur téléphone (PWA), en ligne, avec son code sur GitHub et un wiki qui explique comment elle fonctionne.
 
-> Statut : version 0.11.0, en cours de construction et de premiers tests.
+Ariane travaille dans [Claude Code](https://code.claude.com).
+
+> Statut : version 0.12.0, en cours de construction et de premiers tests.
+
+## Ariane, la cheffe d'orchestre
+
+Comme dans le mythe, Ariane te donne le fil pour ne jamais te perdre dans le labyrinthe de la création d'une application. Mais elle ne fait pas que te guider : elle **dirige tout**.
+
+- **Elle choisit qui travaille**, et dans quel ordre. Personne ne démarre sans qu'elle l'ait décidé.
+- **Elle briefe** chaque spécialiste avec tout le contexte dont il a besoin.
+- **Elle relit** ce qu'il rend, vérifie que ça tient avec le reste, relance si besoin.
+- **Elle traduit** : tu ne lis jamais le compte rendu brut d'un spécialiste, seulement l'essentiel, en mots de tous les jours.
+- **Elle assume** : si quelque chose coince, c'est son équipe, donc elle qui corrige.
+- **Elle tient le fil** : où on en est, la suite, combien de temps ça prend, au début de chaque session.
 
 ## Comment ça marche
 
 Le parcours compte quatre étapes et quatre validations : rien n'avance sans ton accord.
 
-1. **Cadrer** : Socrate t'aide à préciser ton idée, Maxime choisit avec toi ce qui entre dans le MVP. → *Validation 1 : le PRD*
+1. **Cadrer** : Ariane te passe Socrate, qui t'aide à préciser ton idée, puis Maxime, qui choisit avec toi ce qui entre dans le MVP. → *Validation 1 : le PRD*
 2. **Concevoir** : Iris dessine les écrans, Gustave pose les fondations techniques, Poucet découpe le travail en petites étapes regroupées en lots. → *Validation 2 : les écrans*
-3. **Construire**, un lot à la fois : tu lances un lot, puis Ada code en local, Thomas teste en local puis en ligne, Clio range tout dans GitHub et Diderot met le wiki à jour, fonctionnalité après fonctionnalité, sans te déranger. → *Validation 3 : la démo de chaque lot, à la fin du lot*
+3. **Construire**, un lot à la fois : tu lances un lot, puis Ariane déroule : Ada code en local, Thomas teste en local puis en ligne, Clio range tout dans GitHub et Diderot met le wiki à jour, fonctionnalité après fonctionnalité, sans te déranger. → *Validation 3 : la démo de chaque lot, à la fin du lot*
 4. **Livrer** : Diderot relit le wiki, Clio crée la version, Neil met l'app en ligne. → *Validation 4 : la mise en ligne*
 
-Ariane, la guide, t'accompagne du début à la fin.
+## L'équipe d'Ariane
 
-## L'équipe
-
-| Agent | Métier | Personnalité |
+| Qui | Métier | Personnalité |
 |---|---|---|
-| **Ariane** | Guide | Complice enjouée, directe quand il le faut, comme le fil qui guide hors du labyrinthe |
+| **Ariane** | Guide et cheffe d'équipe | Complice enjouée, directe quand il le faut, elle tient le fil de A à Z |
 | **Socrate** | Analyste | Curieux, fait naître l'idée par les questions |
 | **Maxime** | Product Manager | Pragmatique, maximise la valeur, sait dire « pas pour le MVP » |
 | **Iris** | Designer UX | Empathique et visuelle, pense à l'utilisateur final |
@@ -36,75 +47,84 @@ Ariane, la guide, t'accompagne du début à la fin.
 ## Ce qu'il te faut
 
 - Un accès à **Claude Code**, dans l'application de bureau Claude (onglet Code) ou dans un terminal.
-- **Node.js** (version 20 ou plus), **Git** et **GitHub CLI** : `/bharness:doctor` vérifie tout et t'explique comment installer ce qui manque.
+- **Node.js** (version 20 ou plus), **Git** et **GitHub CLI** : `/ariane:doctor` vérifie tout et t'explique comment installer ce qui manque.
 - Des comptes gratuits **GitHub**, **Supabase** et **Vercel** : Neil t'accompagne au moment où on en a besoin.
 
-## Installation
+## Faire venir Ariane
 
 Dans Claude Code, dans le dossier où tu veux créer ton projet :
 
 ```text
-/plugin install bharness --marketplace MartinDeMarcy/bharness
+/plugin install ariane --marketplace MartinDeMarcy/ariane
 ```
 
 Ou en deux temps :
 
 ```text
-/plugin marketplace add MartinDeMarcy/bharness
-/plugin install bharness@bharness
+/plugin marketplace add MartinDeMarcy/ariane
+/plugin install ariane@ariane
 ```
 
-Dans l'application de bureau : bouton **+** à côté de la zone de saisie → **Plugins** → **Add plugin**, après avoir ajouté la marketplace `MartinDeMarcy/bharness`.
+Dans l'application de bureau : bouton **+** à côté de la zone de saisie → **Plugins** → **Add plugin**, après avoir ajouté la marketplace `MartinDeMarcy/ariane`.
 
-Puis lance :
+Puis dis bonjour à Ariane :
 
 ```text
-/bharness:start
+/ariane:start
 ```
 
-## Mettre à jour Bharness
+### Tu as connu Ariane sous un autre nom ?
 
-Bharness s'améliore régulièrement, et Claude Code ne prévient pas quand une nouvelle version sort. C'est donc Ariane qui s'en charge : quand tu lances `/bharness:next`, elle vérifie (au plus une fois par jour) s'il y a du nouveau. Si c'est le cas, elle te le dit et te propose de mettre à jour tout de suite ou plus tard. Si tu acceptes, elle installe la nouvelle version, puis tu fermes ta session et tu en rouvres une : c'est au démarrage que la nouvelle version est chargée. Ton projet n'est pas touché, tu retrouves tout comme tu l'avais laissé.
+Elle s'appelait **Bharness** jusqu'à la version 0.11.0 (commandes `/bharness:…`). Elle ne se met pas à jour toute seule d'un nom à l'autre : retire l'ancienne installation, puis installe Ariane comme ci-dessus.
 
-Pour forcer la mise à jour tout de suite, sans attendre cette vérification, tape :
+```bash
+claude plugin uninstall bharness@bharness
+claude plugin marketplace remove bharness
+```
+
+Tes projets existants sont repris tels quels : au prochain `/ariane:next`, Ariane range le dossier `.bharness/` à son nom (`.ariane/`) et prévient en une phrase.
+
+## Ariane s'améliore
+
+Ariane apprend régulièrement de nouvelles choses, et Claude Code ne prévient pas quand elle a évolué. C'est donc elle qui te le dit : quand tu lances `/ariane:next`, elle vérifie (au plus une fois par jour) si elle a une nouvelle version. Si oui, elle te le dit et te propose de se mettre à jour tout de suite ou plus tard. Si tu acceptes, elle s'installe à jour, puis tu fermes ta session et tu en rouvres une : c'est au démarrage que la nouvelle version est chargée. Ton projet n'est pas touché, tu retrouves tout comme tu l'avais laissé.
+
+Pour la mettre à jour tout de suite, sans attendre cette vérification, tape :
 
 ```text
-/bharness:update
+/ariane:update
 ```
-
-Ariane installe la dernière version, puis tu fermes ta session et tu en rouvres une.
 
 Si la commande ne marche pas, à la main : dans l'application de bureau, bouton **+** à côté de la zone de saisie, puis **Plugins** ; ou, dans un terminal :
 
 ```bash
-claude plugin marketplace update bharness
-claude plugin update bharness@bharness
+claude plugin marketplace update ariane
+claude plugin update ariane@ariane
 ```
 
 ## Les commandes
 
 | Commande | Quand l'utiliser |
 |---|---|
-| `/bharness:start` | La première fois : crée le projet et présente l'équipe |
-| `/bharness:next` | À chaque session : passe à l'étape suivante |
-| `/bharness:status` | Savoir où on en est |
-| `/bharness:back` | Revenir sur une étape déjà validée |
-| `/bharness:docs` | Mettre à jour ou vérifier le wiki |
-| `/bharness:doctor` | Vérifier les outils et les comptes |
-| `/bharness:remember` | Ajouter une consigne ou une préférence à la mémoire du projet |
-| `/bharness:feedback` | Produire le compte rendu de retours d'expérience |
-| `/bharness:update` | Mettre Bharness à jour tout de suite |
-| `/bharness:help` | Revoir les commandes et l'équipe |
+| `/ariane:start` | La première fois : Ariane fait ta connaissance, crée le projet et te présente son équipe |
+| `/ariane:next` | À chaque session : Ariane passe à l'étape suivante et lance le bon spécialiste |
+| `/ariane:status` | Savoir où on en est |
+| `/ariane:back` | Revenir sur une étape déjà validée |
+| `/ariane:docs` | Demander à Diderot de mettre à jour ou vérifier le wiki |
+| `/ariane:doctor` | Vérifier les outils et les comptes |
+| `/ariane:remember` | Ajouter une consigne ou une préférence à la mémoire du projet |
+| `/ariane:feedback` | Produire le compte rendu de retours d'expérience |
+| `/ariane:update` | Mettre Ariane à jour tout de suite |
+| `/ariane:help` | Revoir les commandes et l'équipe |
 
-Au quotidien, `/bharness:next` suffit.
+Au quotidien, `/ariane:next` suffit.
 
-## Ce que Bharness crée dans ton projet
+## Ce qu'Ariane crée dans ton projet
 
 ```
 mon-app/
 ├── CLAUDE.md                 # contexte du projet, lu à chaque session
-├── .bharness/
-│   ├── state.json            # où en est le projet
+├── .ariane/
+│   ├── state.json            # le fil : où en est le projet
 │   ├── decisions.md          # les décisions que tu as validées
 │   ├── log.md                # le journal de bord : le détail technique, pour qui le veut
 │   ├── memory.md             # la mémoire du projet : préférences, problèmes résolus, à éviter
@@ -131,7 +151,7 @@ Sur GitHub, le wiki d'un dépôt **privé** demande une offre payante. Avec l'of
 
 ## Garde-fous
 
-Bharness installe des garde-fous actifs uniquement dans les projets Bharness :
+Ariane veille, uniquement dans les projets qu'elle mène :
 
 - l'historique Git ne se réécrit jamais (pas de force push, de rebase, de reset --hard) ;
 - aucun envoi direct sur `main` : tout passe par une pull request à CI verte ;
@@ -141,25 +161,25 @@ Bharness installe des garde-fous actifs uniquement dans les projets Bharness :
 
 La recherche de mise à jour lit seulement un petit fichier public sur GitHub (le numéro de la dernière version). Rien de ton projet ni de toi n'est envoyé, et si tu es hors ligne, elle se tait.
 
-Le journal de retours d'expérience n'est tenu qu'avec ton accord, reste sur ton ordinateur, n'est pas versionné, et rien n'est envoyé automatiquement. `/bharness:feedback` produit un compte rendu que tu choisis, ou non, de partager.
+Le journal de retours d'expérience n'est tenu qu'avec ton accord, reste sur ton ordinateur, n'est pas versionné, et rien n'est envoyé automatiquement. `/ariane:feedback` produit un compte rendu que tu choisis, ou non, de partager.
 
-## Développer Bharness
+## Contribuer au code d'Ariane
 
 ```bash
-git clone https://github.com/MartinDeMarcy/bharness
-claude --plugin-dir ./bharness/plugins/bharness
-claude plugin validate ./bharness
+git clone https://github.com/MartinDeMarcy/ariane
+claude --plugin-dir ./ariane/plugins/ariane
+claude plugin validate ./ariane
 ```
 
 Structure du dépôt :
 
 ```
-.claude-plugin/marketplace.json   # la marketplace (un seul plugin)
-plugins/bharness/
+.claude-plugin/marketplace.json   # la marketplace (un seul plugin : Ariane)
+plugins/ariane/
 ├── .claude-plugin/plugin.json
-├── agents/        # les onze agents
+├── agents/        # Ariane et ses dix spécialistes
 ├── skills/        # les commandes et les savoir-faire (stack, Git, tests, déploiement)
-├── reference/     # le parcours et le format du fichier d'état
+├── reference/     # le parcours, la voix d'Ariane et le format du fichier d'état
 ├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes, wiki)
 ├── templates/     # modèles de documents et de projet
 └── hooks/         # garde-fous Git et anti-secrets (Node.js, compatibles Windows)
@@ -167,9 +187,9 @@ plugins/bharness/
 
 ## Remerciements
 
-Bharness s'inspire de l'approche multi-agents de BMad Method. Bharness est un projet indépendant, sans lien avec BMad Code, LLC.
+Ariane s'inspire de l'approche multi-agents de BMad Method. Elle est un projet indépendant, sans lien avec BMad Code, LLC.
 
-Les QR codes sont générés avec [qrcode-generator](https://www.npmjs.com/package/qrcode-generator) de Kazuhiko Arase (licence MIT), inclus tel quel dans `plugins/bharness/scripts/vendor/` avec sa notice. « QR Code » est une marque déposée de DENSO WAVE INCORPORATED.
+Les QR codes sont générés avec [qrcode-generator](https://www.npmjs.com/package/qrcode-generator) de Kazuhiko Arase (licence MIT), inclus tel quel dans `plugins/ariane/scripts/vendor/` avec sa notice. « QR Code » est une marque déposée de DENSO WAVE INCORPORATED.
 
 ## Licence
 

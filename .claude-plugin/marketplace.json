@@ -1,15 +1,15 @@
 {
-  "name": "bharness",
-  "description": "Bharness : une équipe d'agents qui accompagne un débutant motivé de l'idée à une application web en ligne, testée et documentée.",
+  "name": "ariane",
+  "description": "Ariane et son équipe de dix spécialistes : elle accompagne un débutant motivé de l'idée à une application web en ligne, testée et documentée.",
   "owner": {
     "name": "PRAS Martin",
     "url": "https://github.com/MartinDeMarcy"
   },
   "plugins": [
     {
-      "name": "bharness",
-      "source": "./plugins/bharness",
-      "description": "Onze agents (Ariane, Socrate, Maxime, Iris, Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil) qui mènent un projet de MVP web de A à Z : besoin, spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en ligne."
+      "name": "ariane",
+      "source": "./plugins/ariane",
+      "description": "Ariane dirige ses dix spécialistes (Socrate, Maxime, Iris, Gustave, Poucet, Ada, Thomas, Clio, Diderot, Neil) et mène ton projet de MVP web de A à Z : besoin, spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en ligne."
     }
   ]
 }

@@ -1,0 +1,65 @@
+{
+  "ariane": "0.12.0",
+  "project": {
+    "name": "",
+    "pitch": "",
+    "language": "fr"
+  },
+  "user": {
+    "os": null,
+    "terminal": null,
+    "git": null,
+    "github_account": null,
+    "coding": null,
+    "learning": null,
+    "detail": null
+  },
+  "maturity": {
+    "recommended": null,
+    "target": null,
+    "answers": {}
+  },
+  "phase": "onboarding",
+  "phases": {
+    "onboarding": "in_progress",
+    "maturity": "todo",
+    "brief": "todo",
+    "prd": "todo",
+    "ux": "todo",
+    "architecture": "todo",
+    "planning": "todo",
+    "build": "todo",
+    "wiki": "todo",
+    "release": "todo"
+  },
+  "gates": {
+    "prd": null,
+    "ux": null,
+    "release": null
+  },
+  "lots": [],
+  "current_lot": null,
+  "stories": [],
+  "current_story": null,
+  "repo": {
+    "url": null,
+    "default_branch": "main"
+  },
+  "environments": {
+    "supabase_test": null,
+    "supabase_prod": null,
+    "vercel_project": null,
+    "production_url": null
+  },
+  "wiki": {
+    "status": null,
+    "url": null,
+    "published_at": null
+  },
+  "releases": [],
+  "feedback": {
+    "enabled": false,
+    "asked_at": null
+  },
+  "history": []
+}

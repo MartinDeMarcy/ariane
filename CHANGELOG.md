@@ -2,6 +2,24 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.12.0] – 2026-11-11
+
+### Modifié
+
+- **Bharness devient Ariane.** Le plugin, la marketplace et toutes les commandes portent le nom du personnage : `/ariane:start`, `/ariane:next`, `/ariane:status`, `/ariane:back`, `/ariane:docs`, `/ariane:doctor`, `/ariane:remember`, `/ariane:feedback`, `/ariane:update`, `/ariane:help`. Les sous-agents deviennent `ariane:<nom>`. Le dossier du plugin est `plugins/ariane/`, le dossier d'état des projets est `.ariane/` (au lieu de `.bharness/`), et les variables de test `BHARNESS_*` deviennent `ARIANE_*`.
+- **Une direction artistique centrée sur Ariane et son équipe.** Ariane est présentée comme la cheffe d'orchestre qui dirige ses dix spécialistes de A à Z : elle choisit qui travaille, les briefe, relit leur travail, assume leurs erreurs et le raconte à l'utilisateur. Partout dans les textes, on parle d'elle et de son équipe (« je m'améliore », « j'ai appris de nouvelles choses »), jamais d'un outil ou d'un plugin.
+- `agents/ariane.md`, `reference/ariane-voice.md`, `reference/workflow.md`, `/ariane:help`, le modèle de `CLAUDE.md` et le README sont réécrits dans ce sens ; chaque spécialiste se présente comme membre de l'équipe d'Ariane.
+- Les mises à jour s'annoncent à la première personne (« J'ai appris de nouvelles choses : je peux me mettre à jour »).
+
+### Ajouté
+
+- **Migration automatique** des projets créés avant 0.12.0 : au premier `/ariane:next`, Ariane range `.bharness/` en `.ariane/` (clé d'état, `CLAUDE.md`, `.gitignore`) et confie le commit à Clio. Les garde-fous restent actifs sur les projets non migrés, et la publication du wiki reprend l'ancien fichier `.bharness-wiki.json`.
+
+### À savoir
+
+- Les installations existantes (`bharness@bharness`) ne se mettent pas à jour d'un nom à l'autre : il faut retirer l'ancienne marketplace puis installer `ariane@ariane` (voir le README).
+- L'adresse du dépôt GitHub devient `MartinDeMarcy/ariane` : le dépôt doit être renommé pour que l'installation et la vérification de mise à jour fonctionnent.
+
 ## [0.11.0] – 2026-11-08
 
 ### Ajouté
