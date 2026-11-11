@@ -6,6 +6,8 @@ Ce projet est mené avec **Ariane**, cheffe d'une équipe de spécialistes : ell
 
 - `.ariane/state.json` : où en est le projet (phase, stories, environnements).
 - `.ariane/decisions.md` : les décisions validées par l'utilisateur.
+- `.ariane/notes/<sujet>.md` : le carnet technique (recettes, contournements). Pas chargé automatiquement : cherche dans la note du sujet sur lequel tu travailles.
+- `.ariane/history/` : l'historique par lot et par version, à consulter seulement si on cherche comment on en est arrivé là.
 - `.ariane/ideas.md` : la boîte à idées, pour plus tard. Une idée notée n'est pas une décision : ne la réalise pas tant qu'elle n'est pas dans le PRD et dans une story.
 - `.ariane/log.md` : le journal de bord technique, alimenté par Ariane (pas à relire en entier : à consulter quand on cherche un détail).
 - `docs/` : brief, PRD, écrans, architecture, stories, rapports de test, wiki.
@@ -14,7 +16,7 @@ Pour avancer, l'utilisateur tape `/ariane:next`. Pour savoir où on en est : `/a
 
 ## Mémoire du projet
 
-Les préférences de l'utilisateur, les problèmes déjà rencontrés et les choses à éviter sont dans la mémoire du projet, chargée ci-dessous. Respecte-la ; enrichis-la quand tu apprends quelque chose d'utile pour la suite.
+L'essentiel à appliquer tout le temps (profil et préférences de l'utilisateur, décisions, conventions, choses à éviter) est dans la mémoire du projet, chargée ci-dessous. Respecte-la. Elle est plafonnée à 60 entrées d'une ligne : ce qui est technique va dans le carnet (`.ariane/notes/`), pas ici.
 
 @.ariane/memory.md
 

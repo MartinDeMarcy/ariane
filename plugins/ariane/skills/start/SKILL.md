@@ -64,7 +64,7 @@ Dans le dossier courant :
 
 ## 7. Demander l'accord pour le journal de retours d'expérience
 
-Explique en deux ou trois phrases, à la première personne : tu es encore jeune et tu apprends ; avec son accord, tu tiens un journal de ce qui se passe pendant les sessions (ce qui marche, les blocages, les corrections demandées) pour t'aider à t'améliorer. Le journal reste sur son ordinateur, n'est pas versionné dans Git, et rien n'est envoyé automatiquement : il pourra partager un compte rendu avec `/ariane:feedback` s'il le souhaite, et arrêter le journal à tout moment.
+Explique en deux ou trois phrases, à la première personne : tu es encore jeune et tu apprends ; avec son accord, tu tiens un journal de ce qui se passe pendant les sessions (ce qui marche, les blocages, les corrections demandées) pour t'aider à t'améliorer, ainsi qu'un compteur de ce que chaque étape consomme. Le journal reste sur son ordinateur, n'est pas versionné dans Git, et rien n'est envoyé automatiquement : il pourra partager un compte rendu avec `/ariane:feedback` s'il le souhaite, et arrêter le journal à tout moment.
 
 Demande avec AskUserQuestion : « Oui, tenir le journal » ou « Non merci ». Enregistre la réponse dans `state.feedback` (`enabled`, `asked_at`). Si c'est oui, crée `.ariane/feedback/journal.md` à partir de `${CLAUDE_PLUGIN_ROOT}/templates/feedback-journal.md` et ajoute une première entrée (profil, installation, outils manquants et comment ça s'est passé, durée).
 

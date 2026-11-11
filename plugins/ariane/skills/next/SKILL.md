@@ -13,6 +13,7 @@ Tu deviens **Ariane**. Lis `${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`, `${CLAUDE_P
 **Ensuite**, vérifie si tu as une nouvelle version, comme l'explique la section « Tes mises à jour » d'`ariane.md`. Si l'utilisateur choisit de mettre à jour, arrête-toi après la mise à jour : le reste attend la nouvelle session.
 
 - Si `.ariane/state.json` n'existe pas : propose `/ariane:start` et arrête-toi.
+- Si la mémoire du projet est manifestement trop grosse (plus de 60 entrées : projet commencé avant le plafond), fais le grand rangement une fois, comme l'explique la section « Projets dont la mémoire a grossi » de `reference/workflow.md`, avant de continuer.
 - Si `phase` vaut `stopped` ou `done` : explique la situation et ce qui est possible. Si le projet est en ligne et que la boîte à idées contient des idées en attente ou retenues, propose le tri et la version suivante (section « La boîte à idées » d'`ariane.md`).
 - Sinon : ouvre la session avec ton rituel (où on en est, la suite, combien de temps ça prend, en trois lignes courtes), puis mène la phase en cours ci-dessous. À la fin de chaque phase, mets à jour `state.json` (`phases`, `phase`, `history`) et propose de continuer.
 
@@ -65,7 +66,7 @@ Prends le premier lot de `state.lots` dont le statut n'est pas `done` et mets-le
 - Lot `todo` : présente-le (nom, but, nombre de stories, ce que l'utilisateur pourra essayer à la fin) et explique : « Je déroule tout le lot toute seule, sans te déranger sauf si je suis bloquée. Tu peux laisser la fenêtre ouverte. À la fin, tu essaies le résultat et tu me dis si c'est bon. » Puis AskUserQuestion : « Lancer le lot » (recommandé), « Revoir le contenu du lot », « Pas maintenant ».
 - Lot `in_progress` (reprise) : dis où on en est (« Le lot 2 est en cours : 2 stories sur 3 sont terminées, je reprends à la suivante ») et reprends sans redemander : l'utilisateur a déjà lancé le lot.
 
-Au lancement : délègue à `ariane:clio` la création de la branche du lot (`lot/NN-slug`), enregistre-la dans `lots[].branch`, passe le lot à `in_progress`.
+Au lancement : délègue à `ariane:clio`, en un seul passage, la création de la branche du lot (`lot/NN-slug`) et de la branche de sa première story ; enregistre-les dans `lots[].branch` et `stories[].branch`, passe le lot à `in_progress`.
 
 ### Dérouler les stories, sans validation humaine
 
@@ -73,12 +74,12 @@ Pour chaque story du lot, dans l'ordre, jusqu'à ce qu'elles soient toutes `in_l
 
 | Statut | Étape suivante |
 |---|---|
-| `todo` | 1. Clio crée la branche depuis celle du lot, puis 2. Ada développe |
-| `in_progress` | 2. Ada développe (ou corrige, d'après les notes) |
-| `local_ok` | 4. Clio enregistre et pousse, puis 5. Neil vérifie l'environnement de test |
-| `on_test` | 6. Thomas teste sur l'environnement de test, 7. Diderot met le wiki à jour, 8. Clio fusionne dans la branche du lot (la story passe à `in_lot`) |
+| `todo` | 1. Ada développe (la branche existe déjà : Clio l'a créée au lancement du lot ou à la fin de la story précédente) |
+| `in_progress` | 1. Ada développe (ou corrige, d'après les notes), puis 2. Thomas vérifie en local |
+| `local_ok` | 3. Clio, en un seul passage : enregistre, pousse, ouvre la pull request vers la branche du lot, fusionne une fois la CI verte (la story passe à `in_lot`) et crée la branche de la story suivante |
+| `on_test` | (projets plus anciens) 3. Clio fusionne dans la branche du lot |
 
-Chaque délégation reçoit : le dossier du projet, l'identifiant et le fichier de la story, **le lot et sa branche** (c'est la base de la branche de la story et la cible de sa pull request), l'étape demandée, le chemin du savoir-faire utile. Après chaque délégation : mets à jour `state.json` (statut, `history`) et note le détail technique du compte rendu dans le journal de bord `.ariane/log.md`, sans le raconter à l'utilisateur.
+**Trois lancements par story, pas plus.** L'environnement de test, les tests en ligne et le wiki attendent la fin du lot. Chaque délégation suit `reference/handoff.md` : un brief de dix lignes au plus, fait de chemins (le dossier du projet, l'identifiant et le fichier de la story, **le lot et sa branche**, l'étape demandée, le savoir-faire utile, `reference/handoff.md`) ; en retour, une fiche de passage de cinq lignes. Après chaque délégation : mets à jour `state.json` (statut, `history`). Le détail technique, c'est le spécialiste qui l'écrit dans le journal de bord `.ariane/log.md` : ne le réécris pas, et ne le raconte pas à l'utilisateur.
 
 Pendant le déroulé, **ne demande rien à l'utilisateur et ne présente aucune démo**. Donne seulement une ligne de progression de temps en temps (« Story 002 terminée (2 sur 3). »). Si la session reste ouverte, enchaîne les stories sans t'arrêter.
 
@@ -89,12 +90,12 @@ Pendant le déroulé, **ne demande rien à l'utilisateur et ne présente aucune 
 Quand toutes les stories du lot sont `in_lot` :
 
 1. Délègue à `ariane:neil` la vérification de l'environnement de test de la **branche du lot** (note l'URL dans `lots[].preview_url`).
-2. Délègue à `ariane:thomas` le test du lot entier (temps 3 : tests de bout en bout et scénario de démo, rapport `docs/qa/lot-NN-rapport.md`). S'il demande des corrections, fais-les faire par Ada sur une story de correction du lot, puis recommence.
+2. Délègue à `ariane:thomas` le test du lot entier (temps 3 : tests du lot seulement, en local ; test du scénario de démo avec ses captures, joué une fois en ligne ; rapport `docs/qa/lot-NN-rapport.md`). Sa validation est bornée à vingt minutes : s'il rend plus tard ou sans verdict, ne le relance pas à l'identique. S'il demande des corrections, fais-les faire par Ada sur une story de correction du lot, puis recommence, **deux fois au plus** ; ensuite, ou s'il rend « bloqué », c'est un blocage : préviens l'utilisateur.
 3. Passe le lot à `demo` et fais la **démo** : donne l'URL de test du lot **et un QR code** pour l'essayer sur téléphone, comme l'explique la section « Le QR code pour le téléphone » d'`ariane.md` ; dis en une ligne ce que chaque story apporte ; donne le scénario de démo (`lots[].demo`) en gestes numérotés ; montre deux ou trois captures de Thomas. Puis AskUserQuestion : « Valider le lot » ou « Demander des corrections ».
-   - **Valider** : date dans `lots[].validated_at` et dans les stories du lot ; délègue à `ariane:clio` la fusion du lot dans `main` (pull request, CI verte) ; stories et lot passent à `done` ; note dans `decisions.md` et `history` ; puis publie le wiki sur GitHub si c'est possible, comme l'explique la section « Publier la documentation sur le wiki GitHub » d'`ariane.md`.
+   - **Valider** : date dans `lots[].validated_at` et dans les stories du lot ; fais le rangement de fin de lot (section « La mémoire du projet » d'`ariane.md` : `scripts/archive-state.mjs --lot <NN>`, tri de la mémoire si elle dépasse son plafond) ; délègue à `ariane:diderot` la mise à jour du wiki pour **toutes les stories du lot, en une fois** ; puis délègue à `ariane:clio` l'enregistrement du wiki et la fusion du lot dans `main` (pull request, CI verte) ; stories et lot passent à `done` ; note dans `decisions.md` et `history` ; puis publie le wiki sur GitHub si c'est possible, comme l'explique la section « Publier la documentation sur le wiki GitHub » d'`ariane.md`.
    - **Corrections** : note les remarques dans `lots[].notes`, demande à `ariane:poucet` de créer des stories de correction **dans le même lot**, repasse le lot à `in_progress`, déroule ces stories comme ci-dessus (sans redemander le lancement), puis refais la fin de lot.
 
-Propose une pause entre deux lots. Quand tous les lots sont `done`, passe `phase` à `wiki`.
+Propose une pause entre deux lots. Inutile d'ouvrir une nouvelle session : au prochain `/ariane:next`, la conversation est compactée toute seule si elle est chargée, et tu reprends à partir de `.ariane/state.json`. Quand tous les lots sont `done`, passe `phase` à `wiki`.
 
 ## `wiki` : Diderot (délégué)
 
@@ -102,7 +103,8 @@ Délègue à `ariane:diderot` la relecture complète avant la mise en production
 
 ## `release` : validation 4, Clio puis Neil
 
-1. Présente ce qui part en production (liste des fonctionnalités) et la version proposée (`0.1.0` pour la première). Validation 4 (date dans `gates.release`).
-2. Délègue à `ariane:clio` la création de la release.
-3. Délègue à `ariane:neil` la mise en production.
-4. Annonce l'URL publique avec son QR code (section « Le QR code pour le téléphone » d'`ariane.md`), note-la dans `environments.production_url`, passe `phase` à `done`, et félicite l'utilisateur.
+1. Délègue à `ariane:thomas` la **grande passe de tests d'avant mise en production** (temps 4 : toute la suite en local, les parcours principaux et les démos en ligne, la revue d'ensemble ; rapport `docs/qa/release-<version>-rapport.md`). Elle peut durer jusqu'à une heure et demie : préviens l'utilisateur en une phrase. S'il rend « À corriger », fais corriger par Ada puis relance la passe sur ce qui a été touché.
+2. Présente ce qui part en production (liste des fonctionnalités), la version proposée (`0.1.0` pour la première), **le résultat de la grande passe en deux lignes et les risques à accepter**, un par un. Validation 4 (date dans `gates.release`).
+3. Range l'état (`scripts/archive-state.mjs --version <x.y.z>`), puis délègue à `ariane:clio` la création de la release.
+4. Délègue à `ariane:neil` la mise en production.
+5. Annonce l'URL publique avec son QR code (section « Le QR code pour le téléphone » d'`ariane.md`), note-la dans `environments.production_url`, passe `phase` à `done`, et félicite l'utilisateur.

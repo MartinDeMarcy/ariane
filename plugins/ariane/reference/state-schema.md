@@ -43,7 +43,7 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `releases[]` | liste | `{ "version", "date", "tag" }` |
 | `feedback.enabled` | booléen | L'utilisateur accepte-t-il le journal de retours d'expérience ? |
 | `feedback.asked_at` | date ISO ou `null` | Date à laquelle la question a été posée |
-| `history[]` | liste | `{ "date", "agent", "event" }`, une ligne par étape |
+| `history[]` | liste | `{ "date", "agent", "event" }`, une ligne par étape ; seules les 20 dernières restent ici, les plus anciennes sont rangées dans `.ariane/history/` à la fin de chaque lot |
 
 Projets en version 0.13.0 : `challenge.status`, `rounds`, `raised` et `at` étaient alors à plat ; lis-les comme `challenge.brief`, et crée `challenge.prd` vide.
 
@@ -64,9 +64,9 @@ Projets en version 0.13.0 : `challenge.status`, `rounds`, `raised` et `at` étai
 }
 ```
 
-Statuts, dans l'ordre : `todo` → `in_progress` → `local_ok` → `on_test` → `in_lot` → `done`.
+Statuts, dans l'ordre : `todo` → `in_progress` → `local_ok` → `in_lot` → `done`. Le statut `on_test` (story testée seule sur son environnement) n'est plus utilisé depuis la 0.18.0, où les tests en ligne se font une fois par lot ; il reste lu pour les projets plus anciens.
 
-- `in_lot` : story terminée, testée sur son environnement et fusionnée dans la branche du lot ; elle attend la démo du lot.
+- `in_lot` : story terminée, testée en local et fusionnée dans la branche du lot ; elle attend les tests en ligne et la démo du lot.
 - `done` : le lot a été validé et fusionné dans `main`.
 - Aucune démo n'a lieu au niveau d'une story : les remarques de l'utilisateur donnent de nouvelles stories dans le même lot.
 

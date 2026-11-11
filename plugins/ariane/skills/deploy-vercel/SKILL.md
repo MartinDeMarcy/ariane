@@ -37,7 +37,8 @@ L'utilisateur fait lui-même les actions qui demandent un compte ; guide-le une 
    }
    ```
    Les branches `feature/*` et `lot/*` restent déployées en prévisualisation ; la production ne part que depuis une release, à la main.
-7. **Auth Supabase** : dans chaque projet Supabase (Authentication → URL Configuration), ajoute les URL autorisées : `http://localhost:3000`, le motif des prévisualisations Vercel (projet test) et l'URL de production (projet production).
+7. **Limites du projet de test** : dans le projet Supabase **de test seulement**, monte les limites de débit de l'authentification (`supabase/config.toml`, section `[auth.rate_limit]` : `token_verifications` et `sign_in_sign_ups` à 300 au lieu de 30, puis `npx supabase config push` ; ou Authentication → Rate Limits dans le tableau de bord). Sans cela, une suite de tests attend cinq minutes toutes les trente connexions. Ne le fais jamais sur le projet de production. Les tests créent leurs comptes par l'API d'administration, sans e-mail (voir le savoir-faire des tests).
+8. **Auth Supabase** : dans chaque projet Supabase (Authentication → URL Configuration), ajoute les URL autorisées : `http://localhost:3000`, le motif des prévisualisations Vercel (projet test) et l'URL de production (projet production).
 
 ## L'environnement de test d'une branche
 

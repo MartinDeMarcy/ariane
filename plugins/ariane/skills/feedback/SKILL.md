@@ -26,9 +26,10 @@ Sinon, crée `.ariane/feedback/rapport-AAAA-MM-JJ.md` avec :
 4. **Frictions et blocages**, classés du plus gênant au moins gênant, avec l'agent et l'étape concernés.
 5. **Erreurs ou comportements inattendus des agents** : ce qui était attendu, ce qui s'est passé.
 6. **Corrections demandées par l'utilisateur** aux validations (PRD, écrans, démos).
-7. **Cas non couverts par les consignes d'Ariane** (là où il a fallu improviser).
-8. **Suggestions d'amélioration pour Ariane**, concrètes (agent, commande ou fichier à modifier, et quoi changer).
-9. **Extraits utiles de la mémoire du projet** (`.ariane/memory.md`), s'ils révèlent un manque chez Ariane.
+7. **Consommation de tokens** : reprends les tableaux de `.ariane/feedback/tokens.md` s'il existe (en tout, par phase, par agent, par lot), et dis en deux phrases où part l'essentiel.
+8. **Cas non couverts par les consignes d'Ariane** (là où il a fallu improviser).
+9. **Suggestions d'amélioration pour Ariane**, concrètes (agent, commande ou fichier à modifier, et quoi changer).
+10. **Extraits utiles de la mémoire du projet** (`.ariane/memory.md`), s'ils révèlent un manque chez Ariane.
 
 Règles :
 

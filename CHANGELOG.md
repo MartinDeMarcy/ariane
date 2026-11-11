@@ -2,6 +2,30 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.18.0] – 2026-11-11
+
+### Modifié
+
+- **Trois lancements par story au lieu de huit.** Le cycle devient : Ada développe, Thomas vérifie en local, Clio enregistre, pousse, fusionne dans la branche du lot et crée la branche de la story suivante, en un seul passage. L'environnement de test, les tests de bout en bout en ligne et le wiki ne se font plus story par story mais **une fois par lot** : Thomas teste le lot entier, Diderot met le wiki à jour pour toutes ses stories après la validation. Le statut `on_test` n'est plus utilisé (il reste lu pour les anciens projets).
+- **La fiche de passage** (`reference/handoff.md`) : Ariane envoie un brief de dix lignes au plus, fait de chemins et non de contenus ; chaque spécialiste écrit lui-même le détail dans le journal de bord et rend cinq lignes (`Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`). Ariane ne réécrit plus les comptes rendus dans le journal. Les spécialistes lisent seulement les passages utiles.
+- **Un modèle plus léger pour trois spécialistes** : Clio (`haiku`), Diderot et Poucet (`sonnet`). Ada, Thomas, Gustave, Neil et Cassandre gardent le modèle de la session.
+- **`/ariane:next` range la conversation** : si elle occupe déjà plus d'un tiers de la fenêtre de contexte, elle est compactée avant de continuer, avec la consigne de garder l'état du projet, les décisions pas encore écrites et les préférences de l'utilisateur. Plus besoin d'ouvrir une nouvelle session entre deux lots.
+
+- **La validation d'un lot par Thomas est bornée**, d'après les journaux d'un vrai projet où elle a pris jusqu'à 2 h 25 : environ 490 tests de bout en bout rejoués en ligne à chaque fin de lot, par tranches de 20 avec des pauses, à cause du point de contrôle de sécurité de Vercel (après environ 40 tests navigateur) et des limites de débit de Supabase. Désormais : les tests du lot seulement, **en local** sur l'app construite pour la production ; en ligne, **la démo seulement**, une fois, sous 40 tests navigateur ; une relance ciblée par test en échec ; vingt minutes au plus ; arrêt immédiat (« bloqué ») si l'environnement ou Vercel bloque, sans attente ni découpage en tranches ; pas d'audit d'ensemble à chaque lot ; six captures au plus. Deux allers-retours de correction avec Ada au plus, puis c'est un blocage remonté à l'utilisateur.
+- **Moins de tests de bout en bout** : cinq au plus par story, écrits par Ada et mis au point en local ; les cas limites, les erreurs et les droits vont dans Vitest. Thomas n'écrit plus qu'un test, celui du scénario de démo.
+- Playwright est configuré pour aller vite : limite de temps par test et pour la suite, arrêt après cinq échecs, sortie d'une ligne par test, le mobile ne rejoue que les parcours marqués `@mobile`, démarrage automatique de l'app en local.
+- Comptes de test sans e-mail (créés par l'API d'administration), une session partagée par suite, et limites de débit relevées sur le projet Supabase de test.
+
+- **La mémoire du projet est plafonnée** à 60 entrées d'une ligne : elle est chargée dans chaque session et dans chaque spécialiste lancé (sur un vrai projet, elle avait atteint 200 entrées et près de 26 000 tokens). Elle ne garde que l'essentiel à appliquer tout le temps.
+
+### Ajouté
+
+- **Le carnet technique**, `.ariane/notes/<sujet>.md` (modèle `templates/notes.md`) : les recettes, contournements et détails d'outils, par sujet, lus seulement par l'agent qui travaille dessus. La mémoire en garde la liste.
+- **L'historique par lot et par version**, `.ariane/history/` : à la fin de chaque lot et à chaque mise en production, `scripts/archive-state.mjs` y range les anciennes lignes de `state.history` (les 20 dernières restent) et les notes des stories terminées, et mesure la mémoire ; Ariane fait le tri si elle dépasse. Rien n'est supprimé. Sur un vrai projet, le fichier d'état passe de 70 Ko à 20 Ko.
+- Un rangement unique pour les projets dont la mémoire a déjà grossi, au premier `/ariane:next`.
+- **La grande passe de tests d'avant mise en production** (temps 4 de Thomas) : toute la suite en local sur ordinateur et mobile, les parcours principaux et les démos de lots en ligne (seul moment où les tranches sont permises), et la revue d'ensemble (sécurité, données, téléphone, accessibilité, risques acceptés). Rapport `docs/qa/release-<version>-rapport.md`, une heure et demie au plus, avant la validation 4.
+- **Un compteur de tokens à chaque étape** (`hooks/token-meter.mjs`) : à la fin de chaque spécialiste et de chaque tour de conversation, il mesure ce qui a été consommé et l'ajoute à `.ariane/feedback/tokens.jsonl`, puis régénère `.ariane/feedback/tokens.md` (en tout, par phase, par agent, par lot, par story, par étape). Il tourne hors de la conversation, ne consomme rien, n'envoie rien, et n'écrit que si l'utilisateur a accepté le journal de retours d'expérience. `/ariane:feedback` reprend ces tableaux.
+
 ## [0.17.0] – 2026-11-11
 
 ### Ajouté

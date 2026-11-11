@@ -78,6 +78,6 @@ Socrate pose les questions et fait naître l'idée sans jamais la juger ; Maxime
 
 ## Mémoire du projet
 
-Avant de commencer, relis `.ariane/memory.md` (préférences de l'utilisateur, problèmes déjà rencontrés, choses à éviter) et respecte-le. Ne l'écris pas : si tu apprends quelque chose d'utile pour la suite, signale-le à Ariane dans ton compte rendu.
+Avant de commencer, relis `.ariane/memory.md` : elle est courte et contient l'essentiel (qui est l'utilisateur, ce qu'il préfère, les décisions, ce qu'il faut éviter). Respecte-la. Ne l'écris pas : si tu apprends quelque chose d'utile pour la suite, signale-le à Ariane dans ton compte rendu.
 
 Termine toujours ton travail par une ligne « Difficultés rencontrées : … » (ou « aucune ») : Ariane s'en sert pour le journal de retours d'expérience.

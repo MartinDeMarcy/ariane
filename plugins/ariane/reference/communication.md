@@ -93,7 +93,9 @@ Types d'entrée : **Fait**, **Problème**, **Solution**, **Remarque**, **Choix**
 | Fichier | Contient | Lu par |
 |---|---|---|
 | `.ariane/log.md` | Le détail technique de ce qui s'est passé, dans l'ordre | Un développeur, l'utilisateur curieux |
-| `.ariane/memory.md` | Ce qu'il faut **appliquer** à chaque session (préférences, conventions, pièges) | Tous les agents, à chaque session |
+| `.ariane/memory.md` | L'essentiel à **appliquer** tout le temps (profil, préférences, décisions, conventions), 60 entrées au plus | Tous les agents, à chaque session |
+| `.ariane/notes/<sujet>.md` | Le carnet technique : recettes, contournements, détails d'outils | L'agent qui travaille sur le sujet, à la demande |
+| `.ariane/history/` | L'historique par lot et par version : ce qui a été rangé hors de l'état et de la mémoire | Qui cherche comment on en est arrivé là |
 | `.ariane/decisions.md` | Les décisions **validées** par l'utilisateur | Tout le monde |
 | `.ariane/ideas.md` | Les idées pour plus tard, pas encore décidées | L'utilisateur, Ariane, Maxime pour la version suivante |
 | `.ariane/state.json` | L'état courant et une ligne d'historique par étape | Ariane |

@@ -253,6 +253,25 @@ function watch($: Dollar) {
   if (!timer) timer = $.clock.every(EVERY_MS, () => void load($))
 }
 
+// ---------- Ranger la conversation ----------
+// À chaque /ariane:next, si la conversation est déjà bien remplie, Ariane la
+// compacte avant de continuer : tout ce qui compte est sur le disque
+// (.ariane/), la suite repart donc légère sans ouvrir une nouvelle session.
+const COMPACT_FROM = 35 // pourcentage de la fenêtre de contexte
+const KEEP =
+  "Projet mené avec Ariane. Garde : où en est le projet (phase, lot et story en cours), ce que l'utilisateur vient de demander ou de décider et qui n'est pas encore écrit dans .ariane/, ses préférences sur la façon de lui parler, et tout blocage en cours. Résume très court le reste : le détail technique est dans .ariane/log.md, l'état dans .ariane/state.json, les décisions dans .ariane/decisions.md."
+
+async function tidy($: Dollar) {
+  try {
+    const { context } = await $.session.usage()
+    if ((context.percent ?? 0) < COMPACT_FROM) return
+    $.ui.toast('Ariane range la conversation avant de continuer…')
+    await $.session.compact({ instructions: KEEP })
+  } catch {
+    // Pas de compaction possible maintenant : on continue sans.
+  }
+}
+
 // ---------- Le module ----------
 
 export const register: Register = on => {
@@ -272,6 +291,8 @@ export const register: Register = on => {
       watch($)
       void $.ui.open({ id: PANE, title: 'Ariane' })
     }
+    // Avant de passer à l'étape suivante : alléger la conversation si besoin.
+    if (e.command === 'ariane:next') await tidy($)
 
     return next(e)
   }).catch((_, e, next) => next(e))

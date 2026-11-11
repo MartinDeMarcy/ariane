@@ -6,7 +6,7 @@ Ariane s'adresse à toute personne qui a un projet d'application web, **qu'elle 
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.17.0, en cours de construction et de premiers tests.
+> Statut : version 0.18.0, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 
@@ -44,6 +44,8 @@ Dans l'application de bureau, Ariane ouvre un panneau à côté de la conversati
 - **La boîte à idées** : une zone pour écrire une idée, notée aussitôt sans interrompre Ariane, avec le nombre d'idées en attente.
 - **Les derniers pas et la suite**, avec deux boutons : continuer (`/ariane:next`) et faire le point (`/ariane:status`).
 
+`/ariane:next` range aussi la conversation : si elle est déjà bien remplie, elle est compactée avant de continuer, pour que tu n'aies pas à ouvrir une nouvelle session entre deux lots. Tout ce qui compte est enregistré dans le projet.
+
 Le panneau s'ouvre au début d'une session dans un projet mené avec Ariane, et se rouvre à chaque commande d'Ariane (`/ariane:start`, `/ariane:next`, `/ariane:update`…) si tu l'avais fermé. Il ne défile jamais : il choisit seul, selon sa hauteur et sa largeur, la présentation la plus complète qui tient, des cartes détaillées jusqu'à un résumé d'une ligne. Dans un terminal, il s'affiche en version texte.
 
 ## La boîte à idées
@@ -58,8 +60,8 @@ Le parcours compte quatre étapes et quatre validations : rien n'avance sans ton
 
 1. **Cadrer** : Ariane te passe Socrate, qui t'aide à préciser ton idée, pendant que Cassandre cherche en coulisses ce qui pourrait mal tourner (Ariane te remonte seulement ce qui compte), puis Maxime, qui choisit avec toi ce qui entre dans le MVP et dont Cassandre relit le cahier des charges avant ta validation. → *Validation 1 : le PRD*
 2. **Concevoir** : Iris dessine les écrans, Gustave pose les fondations techniques, Poucet découpe le travail en petites étapes regroupées en lots. → *Validation 2 : les écrans*
-3. **Construire**, un lot à la fois : tu lances un lot, puis Ariane déroule : Ada code en local, Thomas teste en local puis en ligne, Clio range tout dans GitHub et Diderot met le wiki à jour, fonctionnalité après fonctionnalité, sans te déranger. → *Validation 3 : la démo de chaque lot, à la fin du lot*
-4. **Livrer** : Diderot relit le wiki, Clio crée la version, Neil met l'app en ligne. → *Validation 4 : la mise en ligne*
+3. **Construire**, un lot à la fois : tu lances un lot, puis Ariane déroule, fonctionnalité après fonctionnalité, sans te déranger : Ada code en local, Thomas teste en local, Clio range tout dans GitHub. À la fin du lot, Thomas teste l'ensemble en ligne et Diderot met le wiki à jour. → *Validation 3 : la démo de chaque lot, à la fin du lot*
+4. **Livrer** : Diderot relit le wiki, Thomas fait la grande passe de tests sur toute l'application, Clio crée la version, Neil met l'app en ligne. → *Validation 4 : la mise en ligne*
 
 ## L'équipe d'Ariane
 
@@ -163,7 +165,9 @@ mon-app/
 │   ├── decisions.md          # les décisions que tu as validées
 │   ├── log.md                # le journal de bord : le détail technique, pour qui le veut
 │   ├── ideas.md              # la boîte à idées : ce qu'on fera peut-être plus tard
-│   ├── memory.md             # la mémoire du projet : préférences, problèmes résolus, à éviter
+│   ├── memory.md             # la mémoire du projet : l'essentiel, relu à chaque session (60 lignes au plus)
+│   ├── notes/                # le carnet technique, par sujet, lu seulement à la demande
+│   ├── history/              # l'historique par lot et par version : ce qui a été rangé
 │   └── feedback/             # journal de retours d'expérience (si tu l'acceptes, jamais versionné)
 ├── docs/
 │   ├── 01-brief.md … 04-architecture.md
@@ -197,6 +201,8 @@ Ariane veille, uniquement dans les projets qu'elle mène :
 
 La recherche de mise à jour lit seulement un petit fichier public sur GitHub (le numéro de la dernière version). Rien de ton projet ni de toi n'est envoyé, et si tu es hors ligne, elle se tait.
 
+Avec le même accord, un compteur note ce que chaque étape consomme en tokens (par phase, par agent, par lot) dans le même dossier : il tourne hors de la conversation, ne consomme rien lui-même et n'envoie rien.
+
 Le journal de retours d'expérience n'est tenu qu'avec ton accord, reste sur ton ordinateur, n'est pas versionné, et rien n'est envoyé automatiquement. `/ariane:feedback` produit un compte rendu que tu choisis, ou non, de partager.
 
 ## Contribuer au code d'Ariane
@@ -215,10 +221,10 @@ plugins/ariane/
 ├── .claude-plugin/plugin.json
 ├── agents/        # Ariane et ses onze spécialistes
 ├── skills/        # les commandes et les savoir-faire (stack, Git, tests, déploiement)
-├── reference/     # le parcours, la voix d'Ariane et le format du fichier d'état
-├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes, wiki)
+├── reference/     # le parcours, la voix d'Ariane, la fiche de passage et le format du fichier d'état
+├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes, wiki, rangement de l'état)
 ├── templates/     # modèles de documents et de projet
-├── hooks/         # garde-fous Git et anti-secrets (Node.js), et le panneau d'avancement (panel.tsx)
+├── hooks/         # garde-fous Git et anti-secrets, compteur de tokens (Node.js), et le panneau d'avancement (panel.tsx)
 └── types/         # le contrat d'état du panneau
 ```
 

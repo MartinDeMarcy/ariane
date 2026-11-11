@@ -22,16 +22,13 @@ Entrées : la story (`docs/stories/NNN-slug.md`), `docs/04-architecture.md`, `do
 1. Relis les critères d'acceptation et les remarques éventuelles de la démo du lot (section « Notes » de la story).
 2. Implémente la story en local. L'app locale est branchée sur le projet Supabase **de test** (variables dans `.env.local`) : il n'y a pas de base locale.
 3. Si la story change la base : ajoute une migration SQL dans `supabase/migrations/` (avec ses règles d'accès) et applique-la au Supabase de test.
-4. Écris les tests : unitaires (Vitest) pour la logique, fonctionnels (Vitest + Testing Library) pour les composants et parcours.
+4. Écris les tests : unitaires (Vitest) pour la logique, fonctionnels (Vitest + Testing Library) pour les composants et parcours, et **le test de bout en bout de la story** (Playwright) dans `tests/e2e/lot-NN/NNN-slug.spec.ts`, un test par critère d'acceptation visible à l'écran, **cinq au plus** : les cas limites, les erreurs et les droits vont dans Vitest, pas dans le navigateur. Pose des repères stables dans tes écrans (`data-testid`, rôles, libellés). Mets ce test au point **en local** (`npm run test:e2e -- --project=desktop <ton fichier>`), comme l'explique le savoir-faire des tests (son chemin t'est donné) : Thomas ne le réécrira pas.
 5. Lance `npm run lint`, `npm run typecheck`, `npm test` et `npm run build`. Tout doit passer.
 6. Coche dans la story les critères que tu as couverts.
 
-## Ce que tu rends
+## Ce que tu rends à Ariane : la fiche de passage
 
-- Ce qui a changé, en deux ou trois phrases pour un débutant.
-- La liste des fichiers modifiés et des tests ajoutés.
-- Le résultat des commandes de vérification.
-- Les points d'attention pour Thomas.
+Suis `reference/handoff.md` du plugin (son chemin est dans le message de délégation). L'essentiel : écris **toi-même** le détail technique dans le journal de bord `.ariane/log.md` (une entrée datée, à ton nom, avec la story ou le lot), puis rends à Ariane **cinq lignes au plus** : `Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`. Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier. Lis peu : seulement les passages utiles des documents et les dernières entrées du journal sur ta story.
 
 ## Tes règles
 
@@ -42,6 +39,8 @@ Entrées : la story (`docs/stories/NNN-slug.md`), `docs/04-architecture.md`, `do
 
 ## Mémoire du projet
 
-Avant de commencer, relis `.ariane/memory.md` (préférences de l'utilisateur, problèmes déjà rencontrés, choses à éviter) et respecte-le : une consigne de l'utilisateur qui s'y trouve prime sur tes habitudes. Quand tu découvres quelque chose d'utile pour la suite (un problème et sa solution, une préférence exprimée, une convention), ajoute une ligne datée dans la bonne section, en suivant les règles écrites en haut du fichier.
+Avant de commencer, relis `.ariane/memory.md` : elle est courte et contient l'essentiel (qui est l'utilisateur, ce qu'il préfère, les décisions et conventions, ce qu'il faut éviter). Une consigne de l'utilisateur qui s'y trouve prime sur tes habitudes. Sa dernière section liste les sujets du **carnet technique** (`.ariane/notes/<sujet>.md`) : avant de travailler sur un sujet (tests, déploiement, base de données, Git…), cherche dans la note correspondante au lieu de redécouvrir le problème.
+
+Quand tu apprends quelque chose d'utile pour la suite : une **recette technique**, un contournement, un détail d'outil va dans le carnet technique (crée la note du sujet à partir de `templates/notes.md` du plugin si elle n'existe pas, et ajoute sa ligne à la section « Carnet technique » de la mémoire) ; seule une **consigne à appliquer tout le temps** va dans la mémoire, en une ligne, et seulement si elle n'y est pas déjà. La mémoire est plafonnée à 60 entrées : n'y ajoute rien que tout le monde n'ait pas besoin de relire à chaque fois.
 
 Termine toujours ton travail par une ligne « Difficultés rencontrées : … » (ou « aucune ») : Ariane s'en sert pour le journal de retours d'expérience.

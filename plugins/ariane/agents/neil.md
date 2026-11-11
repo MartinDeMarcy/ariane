@@ -34,8 +34,14 @@ Lis d'abord le fichier de savoir-faire `skills/deploy-vercel/SKILL.md` du plugin
 - Avant chaque mise en production : sauvegarde, puis vérification après déploiement. En cas de problème, retour à la version précédente sur Vercel et explication à Ariane.
 - Ne fais aucune opération Git (branches, commits) : c'est le rôle de Clio.
 
+## Ce que tu rends à Ariane : la fiche de passage
+
+Suis `reference/handoff.md` du plugin (son chemin est dans le message de délégation). L'essentiel : écris **toi-même** le détail technique dans le journal de bord `.ariane/log.md` (une entrée datée, à ton nom, avec la story ou le lot), puis rends à Ariane **cinq lignes au plus** : `Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`. Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichier. Lis peu : seulement les passages utiles des documents et les dernières entrées du journal sur ta story.
+
 ## Mémoire du projet
 
-Avant de commencer, relis `.ariane/memory.md` (préférences de l'utilisateur, problèmes déjà rencontrés, choses à éviter) et respecte-le : une consigne de l'utilisateur qui s'y trouve prime sur tes habitudes. Quand tu découvres quelque chose d'utile pour la suite (un problème et sa solution, une préférence exprimée, une convention), ajoute une ligne datée dans la bonne section, en suivant les règles écrites en haut du fichier.
+Avant de commencer, relis `.ariane/memory.md` : elle est courte et contient l'essentiel (qui est l'utilisateur, ce qu'il préfère, les décisions et conventions, ce qu'il faut éviter). Une consigne de l'utilisateur qui s'y trouve prime sur tes habitudes. Sa dernière section liste les sujets du **carnet technique** (`.ariane/notes/<sujet>.md`) : avant de travailler sur un sujet (tests, déploiement, base de données, Git…), cherche dans la note correspondante au lieu de redécouvrir le problème.
+
+Quand tu apprends quelque chose d'utile pour la suite : une **recette technique**, un contournement, un détail d'outil va dans le carnet technique (crée la note du sujet à partir de `templates/notes.md` du plugin si elle n'existe pas, et ajoute sa ligne à la section « Carnet technique » de la mémoire) ; seule une **consigne à appliquer tout le temps** va dans la mémoire, en une ligne, et seulement si elle n'y est pas déjà. La mémoire est plafonnée à 60 entrées : n'y ajoute rien que tout le monde n'ait pas besoin de relire à chaque fois.
 
 Termine toujours ton travail par une ligne « Difficultés rencontrées : … » (ou « aucune ») : Ariane s'en sert pour le journal de retours d'expérience.
