@@ -2,11 +2,11 @@
 
 **Ariane tient le fil, de ton idée à ton application en ligne. Elle dirige une équipe de onze spécialistes et gère tout, de A à Z.**
 
-Ariane s'adresse aux personnes qui ont un projet d'application web, l'envie de le mener, mais pas de formation de développeur. Tu ne parles qu'à elle : c'est elle qui envoie le bon spécialiste au bon moment, relit son travail et te raconte simplement où on en est. Le résultat est un **MVP** : une application web installable sur téléphone (PWA), en ligne, avec son code sur GitHub et un wiki qui explique comment elle fonctionne.
+Ariane s'adresse à toute personne qui a un projet d'application web, **qu'elle n'ait jamais codé ou qu'elle soit développeuse confirmée** : Ariane s'adapte à elle. Tu ne parles qu'à elle : c'est elle qui envoie le bon spécialiste au bon moment, relit son travail et te raconte simplement où on en est. Le résultat est un **MVP** : une application web installable sur téléphone (PWA), en ligne, avec son code sur GitHub et un wiki qui explique comment elle fonctionne.
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.14.0, en cours de construction et de premiers tests.
+> Statut : version 0.16.0, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 
@@ -19,6 +19,31 @@ Comme dans le mythe, Ariane te donne le fil pour ne jamais te perdre dans le lab
 - **Elle tranche** : Cassandre, la contradictrice de l'équipe, conteste ton idée puis relit le cahier des charges avant qu'on construise, et débat avec Socrate et Maxime ; Ariane juge ce qui mérite de te remonter, sans jamais te décourager.
 - **Elle assume** : si quelque chose coince, c'est son équipe, donc elle qui corrige.
 - **Elle tient le fil** : où on en est, la suite, combien de temps ça prend, au début de chaque session.
+
+## Ariane s'adapte à toi
+
+Un **néophyte plein d'idées** et un **développeur confirmé** n'ont pas besoin de la même Ariane. Elle fait connaissance au début (quelques questions légères sur le terminal, Git, le code), puis règle sa façon d'accompagner. Le parcours, les validations et les garde-fous restent les mêmes pour tout le monde.
+
+| | Néophyte | Développeur confirmé |
+|---|---|---|
+| **Elle parle** | En mots de tous les jours, un mot technique est expliqué | En termes techniques, sans définition |
+| **Elle fait** | Tout elle-même, ou pas à pas avec un repère | La commande, sans pas-à-pas |
+| **Elle rend compte** | Du résultat et de la suite ; le détail est dans le journal | Du résultat, avec pull request, environnement de test et rapport de test |
+| **Elle questionne** | Une chose à la fois | Quelques questions regroupées |
+| **Son ton** | Complice, elle fête les jalons | Sobre et direct |
+
+Tu règles le curseur quand tu veux : « parle-moi technique », « va plus vite », « c'est trop technique ». Ariane ne t'étiquette jamais, elle s'ajuste. Les spécialistes de son équipe suivent le même réglage. La stack est imposée dans cette version : ses conventions (nommage, lint, tests) sont respectées dans la stack, mais une autre stack n'est pas encore prise en charge.
+
+## Le panneau d'avancement
+
+Dans l'application de bureau, Ariane ouvre un panneau à côté de la conversation. Il se met à jour tout seul, sans que personne ne l'envoie :
+
+- **Où en est Ariane** : ce qu'elle fait en ce moment, et l'état du projet (en cours, à valider, démo prête, en ligne).
+- **Le projet, étape par étape** : Cadrer, Concevoir, Construire, Livrer, avec ce qui est fait et la validation de chaque étape.
+- **Le lot en cours** : chaque fonctionnalité sur une barre en cinq temps, de « pas commencée » à « prête pour la démo ».
+- **Les derniers pas et la suite**, avec deux boutons : continuer (`/ariane:next`) et faire le point (`/ariane:status`).
+
+Le panneau s'ouvre au début d'une session dans un projet mené avec Ariane, et se rouvre à chaque commande d'Ariane (`/ariane:start`, `/ariane:next`, `/ariane:update`…) si tu l'avais fermé. Il ne défile jamais : il choisit seul, selon sa hauteur et sa largeur, la présentation la plus complète qui tient, des cartes détaillées jusqu'à un résumé d'une ligne. Dans un terminal, il s'affiche en version texte.
 
 ## Comment ça marche
 
@@ -184,7 +209,8 @@ plugins/ariane/
 ├── reference/     # le parcours, la voix d'Ariane et le format du fichier d'état
 ├── scripts/       # petits outils Node.js (mises à jour, maquettes, QR codes, wiki)
 ├── templates/     # modèles de documents et de projet
-└── hooks/         # garde-fous Git et anti-secrets (Node.js, compatibles Windows)
+├── hooks/         # garde-fous Git et anti-secrets (Node.js), et le panneau d'avancement (panel.tsx)
+└── types/         # le contrat d'état du panneau
 ```
 
 ## Remerciements

@@ -16,6 +16,7 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `user.github_account` | booléen | A-t-il déjà un compte GitHub ? |
 | `user.coding` | `none` · `some` · `regular` | A-t-il déjà écrit du code ? |
 | `user.learning` | `explain` · `essential` | Préfère comprendre le pourquoi, ou aller à l'essentiel |
+| `user.profile` | `newcomer` · `intermediate` · `developer` · `null` | Cible d'Ariane, déduite des réponses du début et ajustée en cours de route (voir `user-profile.md`) |
 | `user.detail` | `simple` · `normal` · `detailed` · `null` | Niveau de détail technique de la conversation (voir `communication.md`) ; `simple` par défaut |
 | `maturity.recommended` | `mvp` · `alpha` · `beta` · `production` · `null` | Recommandation d'Ariane |
 | `maturity.target` | idem | Niveau confirmé par l'utilisateur |

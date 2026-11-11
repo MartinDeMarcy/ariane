@@ -1,7 +1,8 @@
 {
   "name": "ariane",
-  "description": "Ariane, cheffe d'équipe : elle dirige onze spécialistes et accompagne un débutant motivé de l'idée à un MVP web en ligne, de A à Z : spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en production (Next.js, Supabase, Vercel).",
-  "version": "0.14.0",
+  "description": "Ariane, cheffe d'équipe : elle dirige onze spécialistes et s'adapte à toi, néophyte plein d'idées ou développeur confirmé, de l'idée à un MVP web en ligne, de A à Z : spécification, maquettes, architecture, développement, tests, versioning, wiki et mise en production (Next.js, Supabase, Vercel).",
+  "version": "0.16.0",
+  "types": "./types/index.d.ts",
   "author": {
     "name": "PRAS Martin",
     "url": "https://github.com/MartinDeMarcy"
@@ -9,5 +10,5 @@
   "homepage": "https://github.com/MartinDeMarcy/ariane",
   "repository": "https://github.com/MartinDeMarcy/ariane",
   "license": "MIT",
-  "keywords": ["mvp", "web", "pwa", "nextjs", "supabase", "vercel", "agents", "beginner", "french"]
+  "keywords": ["mvp", "web", "pwa", "nextjs", "supabase", "vercel", "agents", "beginner", "developer", "french"]
 }

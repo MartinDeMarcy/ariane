@@ -1,5 +1,5 @@
 {
-  "ariane": "0.14.0",
+  "ariane": "0.16.0",
   "project": {
     "name": "",
     "pitch": "",
@@ -12,6 +12,7 @@
     "github_account": null,
     "coding": null,
     "learning": null,
+    "profile": null,
     "detail": null
   },
   "maturity": {

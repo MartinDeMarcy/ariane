@@ -2,6 +2,30 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.16.0] – 2026-11-11
+
+### Ajouté
+
+- **Le panneau d'avancement** (`hooks/panel.tsx`) : un panneau en direct à côté de la conversation, qui lit `.ariane/state.json` et se met à jour tout seul. Il montre ce qu'Ariane fait en ce moment, les quatre étapes du projet avec leurs validations, le lot en cours (une barre en cinq temps par fonctionnalité), les derniers pas de l'équipe et la suite, avec deux boutons (`/ariane:next`, `/ariane:status`).
+- Le panneau s'ouvre au début d'une session dans un projet mené avec Ariane, et se rouvre à chaque commande d'Ariane (tapée, ou lancée par le modèle) s'il avait été fermé.
+- **Jamais de défilement** : sept niveaux de densité, du plus complet (cartes détaillées) au plus compact (une ligne) ; le panneau prend le premier qui tient dans sa hauteur, et adapte le nombre de cartes par ligne à sa largeur.
+- Contrat d'état du panneau, `types/index.d.ts`, déclaré dans `plugin.json` ; `hooks/hooks.json` nomme le module à côté des garde-fous.
+
+## [0.15.0] – 2026-11-11
+
+### Ajouté
+
+- **Ariane s'adapte à sa cible**, du néophyte plein d'idées au développeur confirmé. Trois profils (`newcomer`, `intermediate`, `developer`), déduits des questions de l'accueil et enregistrés dans `state.user.profile`, ajustables à tout moment (« parle-moi technique », « va plus vite », « c'est trop technique »). Le parcours, les validations et les garde-fous ne changent pas : ce qui change, c'est la façon d'accompagner (vocabulaire, installations, comptes rendus, questions, ton, rythme).
+- Un tableau « Ce qui change selon le profil » dans `reference/user-profile.md`, une section « S'adapter à ta cible » dans `agents/ariane.md`, et une section dans le README.
+- À un développeur, Ariane propose dès l'accueil de lui parler technique (`user.detail` = `detailed`), donne les liens utiles (pull request, environnement de test, rapport de test) et respecte ses conventions dans la stack imposée ; une autre stack n'est pas encore prise en charge.
+- Ariane transmet le profil aux spécialistes qu'elle briefe, pour qu'ils s'adaptent aussi.
+
+### Modifié
+
+- La voix d'Ariane : une seule Ariane avec un curseur ; sobre et directe avec un développeur, complice avec un néophyte. Jamais d'étiquette dite à voix haute, jamais de condescendance dans aucun sens.
+- Le niveau de détail de départ se déduit maintenant du profil (`developer` → `normal`, avec proposition de `detailed`).
+- Les descriptions du plugin et de la marketplace ne parlent plus seulement de débutants.
+
 ## [0.14.0] – 2026-11-11
 
 ### Ajouté

@@ -34,7 +34,7 @@ Annonce-le simplement : « Avant de commencer, j'aimerais te connaître un peu, 
 2. Pose les questions de `user-profile.md` (terminal, Git et GitHub, code, façon d'apprendre), **une à la fois**, avec AskUserQuestion.
 3. Résume en une phrase ce que tu as compris (« Tu es sous Windows, tu n'as jamais utilisé de terminal et tu n'as pas encore de compte GitHub : je ferai un maximum de choses moi-même et je te guiderai pas à pas pour le reste. »).
 
-Déduis-en `user.detail` (voir `communication.md` : `simple` sauf pour quelqu'un qui code régulièrement) et garde ce profil en tête : tu l'enregistreras à l'étape 6, une fois la mémoire du projet créée.
+Déduis-en `user.profile` (`newcomer`, `intermediate` ou `developer`, voir `user-profile.md`), puis `user.detail` (voir `communication.md`) ; à un développeur, propose tout de suite de lui parler technique. Adapte-toi dès maintenant, et garde ce profil en tête : tu l'enregistreras à l'étape 6, une fois la mémoire du projet créée.
 
 ## 4. Vérifier et installer les outils
 
