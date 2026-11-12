@@ -13,6 +13,20 @@ user-invocable: false
 | 1 | En local | Tests unitaires (logique) et fonctionnels (composants, parcours dans un DOM simulé) | Vitest + Testing Library |
 | 2 | En local pour la mise au point (story), puis sur l'environnement de test du lot (URL Vercel) | Tests de bout en bout dans un vrai navigateur, ordinateur et mobile | Playwright |
 
+## Lancer les vérifications : `scripts/check.mjs`
+
+Ada et Thomas lancent tout par le script `scripts/check.mjs` du plugin, jamais par `npm` en direct : la sortie des outils resterait dans leur conversation et serait relue à chaque échange.
+
+| Besoin | Commande |
+|---|---|
+| Tout (lint, types, tests, build), une fois à la fin | `node <check.mjs>` |
+| Quelques étapes | `node <check.mjs> --only typecheck,test` |
+| Les tests unitaires d'un fichier | `node <check.mjs> --test <fichier>` (un test précis : `-- -t "<nom>"`) |
+| Un test de bout en bout, sur ordinateur | `node <check.mjs> --e2e <fichier>` (un test précis : `-- -g "<nom>"`) |
+| Les deux appareils | ajoute `--all-devices` |
+
+Il s'arrête à la première étape en échec et n'en montre que l'extrait utile. La sortie complète est dans `.ariane/tmp/check-<étape>.log` (non versionné) : on y cherche avec Grep au lieu de relancer. Une commande qui dure plus de deux minutes (build, tests de bout en bout) se lance en tâche de fond.
+
 ## Vitest
 
 `vitest.config.ts` : environnement `jsdom`, alias `@` vers `src`, fichier de setup qui importe `@testing-library/jest-dom/vitest` (le plugin React n'est pas indispensable : si npm refuse de l'installer, passe-t'en). Tests dans `tests/unit/` ou à côté du code (`*.test.ts(x)`).
@@ -97,7 +111,7 @@ Deux règles en découlent : **le gros des tests ne passe jamais en ligne**, et 
 
 | Moment | Où | Commande | Limite |
 |---|---|---|---|
-| Story (Ada, puis Thomas au temps 1) | En local | `npm run test:e2e -- --project=desktop tests/e2e/lot-NN/NNN-slug.spec.ts` | moins d'une minute |
+| Story (Ada, puis Thomas au temps 1) | En local | `node <check.mjs> --e2e tests/e2e/lot-NN/NNN-slug.spec.ts` | moins d'une minute |
 | Fin de lot : les tests du lot | **En local**, sur l'app construite pour la production (`npm run build && npm start`, puis `BASE_URL=http://localhost:3000`) | `npm run test:e2e -- tests/e2e/lot-NN` | quelques minutes, aucune limite Vercel |
 | Fin de lot : la démo | **En ligne**, sur la prévisualisation du lot | `BASE_URL=<url> npm run test:e2e -- tests/e2e/lot-NN/demo.spec.ts` | **moins de 40 tests navigateur**, une seule passe |
 | Avant la mise en production : la grande passe | En local sur l'app construite, **puis en ligne** par tranches | voir « La grande passe d'avant mise en production » | une heure et demie au plus |

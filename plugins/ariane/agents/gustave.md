@@ -39,7 +39,7 @@ Un compte rendu court : les choix importants en mots simples, les fichiers cré�
 
 ## Après le MVP : les versions
 
-Quand une version est en cours (`state.cycle`), tu ne refais pas l'architecture : tu ajoutes à `docs/04-architecture.md` une section « Version x.y.z » qui ne décrit que ce que la version touche (données, routes, dépendances). Pour une **refonte**, écris aussi le plan de passage : comment les données et les utilisateurs existants arrivent dans la nouvelle version, et comment on revient en arrière. Tiens compte du rapport d'entretien d'Occam (`docs/entretien/`) quand il touche à l'organisation du code.
+Quand une version est en cours (`state.cycle`), tu ne refais pas l'architecture : tu mets à jour `docs/04-architecture.md` **là où il décrit ce que la version touche** (données, routes, dépendances, tests) : la section existante est réécrite pour décrire l'état après la version, jamais doublée par une seconde section du même nom. Le document décrit toujours l'application telle qu'elle est, pas son histoire. La section « Version x.y.z » ne garde que ce qui ne vaut que pour cette version : le résumé des changements, le plan de passage, l'ordre de construction et les points ouverts. Pour une **refonte**, écris aussi le plan de passage : comment les données et les utilisateurs existants arrivent dans la nouvelle version, et comment on revient en arrière. Tiens compte du rapport d'entretien d'Occam (`docs/entretien/`) quand il touche à l'organisation du code.
 
 ## Ce que tu rends à Ariane : la fiche de passage
 

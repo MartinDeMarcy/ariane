@@ -16,5 +16,5 @@ Les préférences et les pièges à éviter vont dans `memory.md`, les décision
 <!-- Première entrée, ajoutée par Ariane au démarrage du projet. Exemple :
 
 ## 2026-10-11 14:05 · Ariane · Fait
-Projet créé avec Ariane 0.21.1 sous Windows. Outils présents : Node.js 24, Git 2.45. GitHub CLI installé avec winget.
+Projet créé avec Ariane 0.22.0 sous Windows. Outils présents : Node.js 24, Git 2.45. GitHub CLI installé avec winget.
 -->

@@ -36,6 +36,9 @@ La liste des lots, dans l'ordre, chacun avec son but, ses stories (une ligne cha
 - Pas de story purement technique sans résultat visible, sauf la toute première (socle).
 - Rien qui ne soit pas dans le PRD.
 - Une story ne dépend jamais d'une story d'un lot postérieur : à la fin de chaque lot, l'app doit fonctionner et pouvoir être essayée.
+- **Une story tient en une séance d'Ada** : cinq critères d'acceptation au plus, une dizaine de fichiers touchés au plus. Au-delà, coupe-la en deux stories qui donnent chacune un résultat visible.
+- **Dis si une story change la base** : ajoute dans la story une ligne « Migration : oui » ou « Migration : non », d'après l'architecture (nouvelle table, colonne, règle d'accès, fonction). Dans le doute, mets « oui ».
+- Une story qui ne peut pas être coupée (le socle d'une refonte, par exemple) : marque-la « socle » ou « grosse » dans sa première ligne, et dis-le dans « À savoir » : Ariane la confiera à un modèle plus puissant.
 
 ## Après le MVP : les versions
 

@@ -32,7 +32,7 @@ Trois sources, et seulement trois. Rien n'entre dans une version sans passer par
 | 1 | `ideation` | Ariane, avec Léonard | La liste courte de la version, son objectif, son type | l'utilisateur choisit |
 | 2 | `prd` | Maxime, relu par Cassandre | Une section « Version x.y.z » dans `docs/02-prd.md` | **Validation 1** de la version |
 | 3 | `ux` | Iris | Les écrans nouveaux ou modifiés seulement | **Validation 2**, si des écrans changent |
-| 4 | `architecture` | Gustave | Une section « Version x.y.z » dans `docs/04-architecture.md` | — |
+| 4 | `architecture` | Gustave | `docs/04-architecture.md` mis à jour sur place, plus une courte section « Version x.y.z » (changements, plan de passage, ordre de construction) | — |
 | 5 | `planning` | Poucet | Les lots et les stories de la version | l'utilisateur confirme les lots |
 | 6 | `build` | Ada, Thomas, Clio | Les lots, un par un | **Validation 3** : la démo de chaque lot |
 | 7 | `wiki` | Diderot | Le wiki et les notes de version | — |

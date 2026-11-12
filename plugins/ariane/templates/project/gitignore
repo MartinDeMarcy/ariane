@@ -18,6 +18,9 @@ next-env.d.ts
 # Pages QR code temporaires d'Ariane
 .ariane/qr/
 
+# Sorties complètes des vérifications (scripts/check.mjs)
+.ariane/tmp/
+
 # Vercel et Supabase
 .vercel/
 supabase/.temp/

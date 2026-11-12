@@ -26,7 +26,7 @@ Rien d'autre : pas de récit, pas de sortie de commande, pas de contenu de fichi
 
 ## Où va le détail : le journal de bord, écrit par le spécialiste
 
-Avant de rendre sa fiche, le spécialiste **ajoute lui-même** son entrée à la fin de `.ariane/log.md`, au format du journal (`## AAAA-MM-JJ HH:MM · <Agent> · <Fait | Problème | Solution | Remarque | Choix>`), avec la story ou le lot dans la première ligne : commandes lancées, fichiers touchés, résultats des vérifications, erreurs et corrections. Deux à dix lignes. Ariane ne réécrit pas ce détail : elle n'ajoute au journal que ses propres actions et remarques.
+Avant de rendre sa fiche, le spécialiste **ajoute lui-même** son entrée à la fin de `.ariane/log.md`, au format du journal (`## AAAA-MM-JJ HH:MM · <Agent> · <Fait | Problème | Solution | Remarque | Choix>`), avec la story ou le lot dans la première ligne : commandes lancées, fichiers touchés, résultats des vérifications, erreurs et corrections. Deux à dix lignes courtes : le journal est relu par les suivants, une entrée de plus de 1 000 caractères est trop longue. Ariane ne réécrit pas ce détail : elle n'ajoute au journal que ses propres actions et remarques.
 
 Les rapports qui ont leur propre fichier (rapport de test, architecture, stories) y restent : la fiche en donne seulement le chemin.
 
@@ -35,7 +35,8 @@ Les rapports qui ont leur propre fichier (rapport de test, architecture, stories
 - Ne relis pas un document en entier quand une partie suffit : cherche la story, la fonctionnalité ou le mot utile (Grep), puis lis ce passage.
 - Pour savoir ce qu'a fait le spécialiste précédent, cherche la story (`story NNN`) ou le lot dans `.ariane/log.md` et lis ses dernières entrées, pas tout le journal.
 - N'explore pas le code au hasard : pars des fichiers nommés dans la story et dans `docs/04-architecture.md`.
-- Lance les vérifications en mode discret quand l'outil le permet, et ne garde que le résultat et la première erreur.
+- Lance les vérifications avec `scripts/check.mjs` du plugin (lint, types, tests, build, tests de bout en bout) : il n'affiche que le bilan et la première erreur, et garde la sortie complète dans `.ariane/tmp/check-<étape>.log`. Cherche dans ce fichier plutôt que de relancer. Ne lance jamais ces outils en direct : leur sortie reste dans ta conversation et se relit à chaque échange.
+- Ne lis jamais en entier un gros document (`docs/04-architecture.md`, `docs/02-prd.md`, `.ariane/log.md`, une note du carnet) : Grep, puis le passage utile.
 
 ## Une seule fois
 

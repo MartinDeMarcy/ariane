@@ -12,13 +12,18 @@
 //   (state.counters garde leur dernier numéro).
 // - Ne supprime rien : tout ce qui sort de state.json est écrit dans
 //   l'historique avant.
-// - Mesure la mémoire du projet (.ariane/memory.md) et dit si elle dépasse
-//   son plafond : c'est Ariane qui fait alors le tri.
+// - Range les entrées anciennes du journal de bord (.ariane/log.md) : les 15
+//   dernières restent, les autres passent dans le fichier d'historique.
+// - Mesure la mémoire du projet (.ariane/memory.md) et les notes du carnet
+//   technique (.ariane/notes/) et dit lesquelles dépassent leur plafond :
+//   c'est Ariane qui fait alors le tri.
 // - Écrit une ligne JSON sur la sortie ; code de sortie 0 sauf erreur d'usage.
-import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const KEEP_HISTORY = 20;
+const KEEP_LOG = 15; // entrées du journal de bord gardées dans log.md
+export const NOTE_MAX_CHARS = 15000; // au-delà, une note du carnet technique est à condenser
 export const MEMORY_MAX_ENTRIES = 60;
 export const MEMORY_MAX_CHARS = 12000;
 
@@ -111,6 +116,26 @@ if (version) {
   }
 }
 
+// 4. Le journal de bord : seules les dernières entrées restent dans log.md.
+const logPath = join(dir, "log.md");
+let archivedLog = 0;
+let logText = null;
+if (existsSync(logPath)) {
+  const text = readFileSync(logPath, "utf8");
+  const lines = text.split(/\r?\n/);
+  const starts = lines.reduce((acc, line, i) => (/^## \d{4}-\d{2}-\d{2}/.test(line) ? [...acc, i] : acc), []);
+  if (starts.length > KEEP_LOG) {
+    const cut = starts[starts.length - KEEP_LOG];
+    const head = lines.slice(0, starts[0]);
+    const old = lines.slice(starts[0], cut);
+    archivedLog = starts.length - KEEP_LOG;
+    sections.push(
+      "## Journal de bord (entrées rangées)\n\n" + old.map((l) => (l.startsWith("## ") ? "#" + l : l)).join("\n").trim() + "\n",
+    );
+    logText = [...head, `<!-- Les entrées plus anciennes sont dans .ariane/history/ (rangées avec le ${title}). -->`, "", ...lines.slice(cut)].join("\n");
+  }
+}
+
 let file = null;
 if (sections.length === 0 && changed) writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n");
 if (sections.length > 0) {
@@ -126,9 +151,23 @@ if (sections.length > 0) {
   }
   appendFileSync(file, `<!-- rangé le ${today} -->\n\n` + sections.join("\n"));
   writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n");
+  // Le journal n'est raccourci qu'une fois ses entrées écrites dans l'historique.
+  if (logText !== null) writeFileSync(logPath, logText);
 }
 
-// 4. La mémoire du projet : mesurée, jamais modifiée ici.
+// 5. Le carnet technique : chaque note est mesurée, jamais modifiée ici.
+const notesOver = [];
+try {
+  for (const name of readdirSync(join(dir, "notes"))) {
+    if (!name.endsWith(".md")) continue;
+    const chars = readFileSync(join(dir, "notes", name), "utf8").length;
+    if (chars > NOTE_MAX_CHARS) notesOver.push({ note: name, chars });
+  }
+} catch {
+  // pas de carnet technique
+}
+
+// 6. La mémoire du projet : mesurée, jamais modifiée ici.
 let memory = null;
 try {
   const text = readFileSync(join(dir, "memory.md"), "utf8");
@@ -149,6 +188,9 @@ done({
   file: file ? file.replace(/\\/g, "/") : null,
   archived_history: oldHistory.length,
   archived_notes: noteLines.filter((l) => l.startsWith("- ")).length,
+  archived_log_entries: archivedLog,
+  notes_over: notesOver,
+  note_max_chars: NOTE_MAX_CHARS,
   state_chars: JSON.stringify(state, null, 2).length,
   memory,
 });

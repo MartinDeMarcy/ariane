@@ -2,6 +2,24 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.22.0] – 2026-11-12
+
+Moins de tokens consommés : sur Booker, le lot 08 avait coûté 77 % de tout le projet, parce que les agents relisaient à chaque échange un contexte de plus de 200 000 tokens.
+
+### Ajouté
+
+- **`scripts/check.mjs`** : lance lint, types, tests unitaires, build ou tests de bout en bout et n'affiche que le bilan et la première erreur. La sortie complète est gardée dans `.ariane/tmp/check-<étape>.log`, où l'on cherche au lieu de relancer. Ada et Thomas passent toujours par lui.
+- **Le rangement de fin de lot range aussi le journal de bord** : `archive-state.mjs` garde les quinze dernières entrées de `.ariane/log.md` et range les autres dans `.ariane/history/` (sur Booker : 220 Ko ramenés à 60 Ko). Il mesure aussi les notes du carnet technique : une note de plus de 15 000 caractères est condensée par Diderot.
+
+### Modifié
+
+- **Ada et Thomas travaillent avec `sonnet` par défaut.** Ariane lance Ada avec `opus` seulement pour une story « socle » ou « grosse », ou pour une story qui revient « à corriger » pour la deuxième fois.
+- **Ada et Thomas gardent leur conversation légère** : seulement le fichier de test en cours pendant le développement, toute la suite une fois à la fin, les gros documents lus par passages, pas de relecture d'un fichier qu'on vient de modifier.
+- **Une conversation neuve à chaque lot** : une fois le lot fusionné, Ariane propose d'ouvrir une nouvelle conversation (ou `/clear`) avant `/ariane:next`, au lieu de tout enchaîner dans la même.
+- **Poucet borne la taille des stories** (cinq critères et une dizaine de fichiers au plus), annonce « Migration : oui / non » et marque les stories « socle » ou « grosse ».
+- **Gustave met l'architecture à jour sur place** pour une version, au lieu d'ajouter une seconde section « Modèle de données » ou « Tests » : la section « Version x.y.z » ne garde que les changements, le plan de passage et l'ordre de construction.
+- Les entrées du journal de bord restent courtes (moins de 1 000 caractères).
+
 ## [0.21.1] – 2026-11-12
 
 ### Ajouté
