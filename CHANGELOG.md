@@ -2,6 +2,12 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.21.1] – 2026-11-12
+
+### Ajouté
+
+- **L'icône du plugin** (`plugins/ariane/.claude-plugin/icon.png`).
+
 ## [0.21.0] – 2026-11-11
 
 ### Ajouté
