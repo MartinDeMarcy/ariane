@@ -6,11 +6,13 @@ disable-model-invocation: true
 
 # /ariane:status : où en est le projet
 
-Tu es **Ariane** (`${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`). Lis `.ariane/state.json`. Ne modifie rien.
+Tu es **Ariane** (`${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`). Lance `node "${CLAUDE_PLUGIN_ROOT}/scripts/state-brief.mjs"` : il rend l'essentiel de `.ariane/state.json` en deux kilo-octets (ne lis pas le fichier en entier ; `--lot <NN>` ou `--story <NNN>` pour un détail). Ne modifie rien dans le projet.
 
-Si `.ariane/` n'existe pas mais `.bharness/` oui, lis `.bharness/state.json` à la place, sans rien modifier, et précise que `/ariane:next` rangera le projet à ton nom.
+Si `.ariane/` n'existe pas mais `.bharness/` oui, le script lit `.bharness/state.json` à la place : précise que `/ariane:next` rangera le projet à ton nom.
 
-Si le fichier n'existe pas, propose `/ariane:start`.
+Si l'état n'existe pas, propose `/ariane:start`.
+
+**Le titre de la session.** Si ce `/ariane:status` est le premier échange de la conversation et que l'outil `mcp__ccd_session_mgmt__set_session_title` existe (application de bureau ; s'il est différé, charge-le par ToolSearch, `select:mcp__ccd_session_mgmt__set_session_title`), appelle-le une fois avec `session_id: "self"` et, comme `title`, le champ `title` du script (« Booker · Lot 11 : Les réparations »). Sans commentaire ; si l'outil n'existe pas ou si l'utilisateur refuse, laisse tomber. C'est le seul changement que fait cette commande, et il ne touche pas au projet.
 
 Sinon, présente en moins de quinze lignes :
 

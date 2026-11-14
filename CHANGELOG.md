@@ -2,6 +2,19 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.25.0] – 2026-11-14
+
+### Ajouté
+
+- **La session prend le nom de ce qu'on fait.** Lancé dans une conversation vierge, `/ariane:next` ou `/ariane:status` renomme la session (« Booker · Lot 11 : Les réparations », « Booker · Démo du lot 10 », « Booker · Le cahier des charges »…). `state-brief.mjs` calcule ce `title` à partir de l'état, donc le nom est le même à chaque fois ; il tient en 60 caractères. Dans l'application de bureau seulement : sans l'outil de renommage, ou si l'utilisateur refuse, rien ne se passe.
+- **Un bouton pour la session suivante.** Quand un lot est fusionné, Ariane propose « Ouvrir la session suivante » (recommandé), « Effacer cette conversation » ou « Continuer ici ». Le premier ouvre une session neuve, nommée d'après le prochain travail, qui lance `/ariane:next` toute seule ; le deuxième efface la conversation (`/clear`). Sans les outils de l'application (terminal), Ariane redonne la consigne en texte comme avant.
+- `/ariane:status` passe lui aussi par `state-brief.mjs` au lieu de lire `state.json` en entier.
+
+### Corrigé
+
+- **`update-plugin.mjs` échouait sous Windows avec « code null »** (donc `/ariane:update` aussi) : `where claude` rend d'abord le script sans extension que npm installe pour les shells Unix (`…\npm\claude`), que Windows ne sait pas lancer. Le script ne garde plus que ce que Windows sait lancer et vise directement le `claude.exe` rangé à côté du `.cmd` de npm ; un code nul affiche maintenant sa cause (`ENOENT`…).
+- **Deux consignes qui se contredisaient** : `ariane.md` disait de ne jamais proposer de nouvelle session, alors que `/ariane:next` la propose entre deux lots. La première vaut en cours de lot, la seconde entre deux lots.
+
 ## [0.24.0] – 2026-11-14
 
 La conversation d'Ariane relit environ 30 millions de tokens par lot sur Booker : un tiers pour le socle de l'application, un quart à un tiers pour sa mise en route (plus de 60 000 tokens chargés au démarrage), le reste pour ce qui s'ajoute pendant le lot. Cette version allège la mise en route et ce qui entre dans la conversation.

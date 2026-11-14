@@ -65,8 +65,40 @@ const shownStories = current ? stories.filter((s) => (current.stories || []).map
 const n = Math.max(1, Number(flag("--history")) || 5);
 const history = (Array.isArray(state.history) ? state.history : []).slice(-n).map((h) => ({ date: h.date, agent: h.agent, short: h.short || String(h.event || "").slice(0, 80) }));
 
+// Le titre de la session : ce qu'on est en train de faire ou sur le point de faire (60 caractères au plus).
+const PHASES = {
+  onboarding: "Premiers pas",
+  maturity: "Le niveau du projet",
+  ideation: state.cycle ? `Préparer la version ${state.cycle.version}` : "L'idée",
+  brief: "Le brief",
+  prd: "Le cahier des charges",
+  ux: "Les écrans",
+  architecture: "L'architecture",
+  planning: "Le découpage en lots",
+  wiki: "Relecture du wiki",
+  release: state.cycle ? `Mise en ligne de la version ${state.cycle.version}` : "Mise en ligne",
+  done: "En ligne",
+  stopped: "Projet en pause",
+};
+const titleLabel = () => {
+  if (state.phase !== "build") return PHASES[state.phase] || "Où on en est";
+  const lot = openLots.find((l) => l.status === "in_progress" || l.status === "demo") || openLots[0];
+  if (!lot) return "Tous les lots sont terminés";
+  const lotName = `Lot ${lot.id}`;
+  if (lot.status === "todo") return `${lotName} : ${lot.title}`;
+  if (lot.status === "demo" || lot.step === "demo") return `Démo du lot ${lot.id}`;
+  if (lot.step === "test") return `Test du lot ${lot.id}`;
+  if (lot.step === "wiki") return `Documentation du lot ${lot.id}`;
+  if (lot.step === "merge") return `Fusion du lot ${lot.id}`;
+  const story = stories.find((s) => (lot.stories || []).map(String).includes(String(s.id)) && s.status === "in_progress");
+  return story ? `${lotName} en construction, story ${story.id}` : `${lotName} : ${lot.title}`;
+};
+const fullTitle = `${state.project?.name || "Projet"} · ${titleLabel()}`;
+const title = fullTitle.length > 60 ? fullTitle.slice(0, 59).trimEnd() + "…" : fullTitle;
+
 out({
   status: "ok",
+  title,
   ariane: state.ariane,
   project: state.project,
   user: state.user && { os: state.user.os, profile: state.user.profile, detail: state.user.detail, learning: state.user.learning },

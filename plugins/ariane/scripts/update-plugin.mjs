@@ -5,7 +5,7 @@
 // Une fois terminé, il faut fermer la session et en rouvrir une pour charger la nouvelle version.
 // Usage : node update-plugin.mjs [--dry-run]
 import { existsSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const dryRun = process.argv.includes('--dry-run');
@@ -16,8 +16,16 @@ const findOnPath = () => {
   const r = spawnSync(isWindows ? 'where' : 'which', ['claude'], { encoding: 'utf8' });
   if (r.status !== 0) return null;
   const lines = r.stdout.split(/[\r\n]+/).map((l) => l.trim()).filter(Boolean);
-  // Sous Windows, on préfère un vrai .exe ; un .cmd doit passer par cmd.exe.
-  return lines.find((l) => l.toLowerCase().endsWith('.exe')) || lines[0] || null;
+  if (!isWindows) return lines[0] || null;
+  // Sous Windows, `where` liste aussi le script sans extension que npm installe pour les shells Unix
+  // (`…\npm\claude`) : Windows ne sait pas le lancer (ENOENT, code null). On ne garde que ce qu'il sait lancer.
+  const exe = lines.find((l) => /\.exe$/i.test(l));
+  if (exe) return exe;
+  const shim = lines.find((l) => /\.(cmd|bat)$/i.test(l));
+  if (!shim) return null;
+  // Le .cmd de npm ne fait que lancer le vrai programme, rangé à côté : on le vise directement.
+  const real = join(dirname(shim), 'node_modules', '@anthropic-ai', 'claude-code', 'bin', 'claude.exe');
+  return existsSync(real) ? real : shim;
 };
 
 // Dans l'application de bureau sous Windows, le programme se trouve dans un dossier `claude-code\<version>\<hash>\claude.exe`
@@ -88,7 +96,9 @@ for (const args of steps) {
     ? spawnSync('cmd', ['/c', claude, ...args], { stdio: 'inherit' })
     : spawnSync(claude, args, { stdio: 'inherit' });
   if (r.status !== 0) {
-    console.error(`Échec de « claude ${args.join(' ')} » (code ${r.status}).`);
+    // Code null : le programme n'a pas pu démarrer (r.error dit pourquoi), ce n'est pas la commande qui a échoué.
+    const why = r.error ? ` : ${r.error.code || r.error.message}` : '';
+    console.error(`Échec de « claude ${args.join(' ')} » (code ${r.status}${why}).`);
     process.exit(r.status || 1);
   }
 }

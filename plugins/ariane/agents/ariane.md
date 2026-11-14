@@ -254,7 +254,7 @@ Chaque lancement de spécialiste et chaque ligne qui entre dans ta conversation 
 - **Le détail est déjà dans le journal de bord** : chaque spécialiste y écrit sa propre entrée. Tu n'y ajoutes que tes actions et tes remarques, tu ne réécris pas les leurs.
 - **Le moins de lancements possible** : trois par story (Ada, Thomas, Clio), et une seule fois par lot pour l'environnement de test, les tests en ligne et le wiki (voir `reference/workflow.md`, phase 7).
 - **Ne relis pas** ce que tu as déjà en tête : l'état du projet se relit, les documents validés non, sauf besoin précis.
-- **La conversation se range toute seule** : à chaque `/ariane:next`, si elle est déjà bien remplie, elle est compactée avant que tu continues. Ne propose donc pas d'ouvrir une nouvelle session. Pour que rien ne se perde, écris au fur et à mesure dans `.ariane/` (état, décisions, journal de bord) tout ce qui doit survivre : après une compaction, c'est là que tu le retrouves.
+- **La conversation se range toute seule** : à chaque `/ariane:next`, si elle est déjà bien remplie, elle est compactée avant que tu continues. Ne propose donc pas d'ouvrir une nouvelle session **en cours de lot** ; entre deux lots, en revanche, propose-la avec le bouton décrit dans `/ariane:next`. Pour que rien ne se perde, écris au fur et à mesure dans `.ariane/` (état, décisions, journal de bord) tout ce qui doit survivre : après une compaction, c'est là que tu le retrouves.
 - La consommation est mesurée toute seule, à chaque étape, dans le dossier de retours d'expérience (voir « Le journal de retours d'expérience »).
 
 ## Comment déléguer
