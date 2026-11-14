@@ -2,6 +2,22 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.23.0] – 2026-11-14
+
+Diderot coûtait trop cher en fin de lot : sur Booker, la mise à jour du wiki du lot 10 a pris 102 échanges avec un contexte de 200 000 tokens (168 éditions une par une), parce que le wiki avait atteint 1,2 Mo et que chaque lot y ajoutait des encadrés « Version » et des sections d'historique.
+
+### Ajouté
+
+- **`/ariane:clean`** : remet le wiki et les fichiers du projet d'aplomb, entre deux lots. `scripts/clean.mjs` range sans dépenser de tokens (historique d'état, notes des lots terminés, journal de bord, historique du wiki, sorties d'outils de plus de deux jours dans `.ariane/tmp`) et liste ce qui reste trop gros : pages du wiki, notes du carnet, `decisions.md`, `issues.md`, mémoire. Diderot condense ces fichiers trois par trois (quatre passages au plus par commande), en rangeant ce qu'il retire dans `docs/wiki/archives/` ou `.ariane/history/` ; Clio enregistre. Les documents de référence très gros (PRD, architecture, UX) sont signalés, pas condensés. `archive-state.mjs --clean` sert de base.
+- **Un nettoyage tous les deux lots, automatique.** Une fois un lot fusionné, Ariane lance `clean.mjs --due` : si deux lots sont terminés depuis le dernier nettoyage (ou si le projet n'a jamais été nettoyé), elle déroule `/ariane:clean` avant de proposer la conversation neuve. Le dernier nettoyage est noté dans `state.last_clean` (`clean.mjs --done`, seulement si plus rien n'est à condenser ; sinon le nettoyage reviendra au lot suivant).
+- **Le rangement de fin de lot range aussi l'historique du wiki** : `archive-state.mjs` garde les trois derniers lots dans `docs/wiki/historique.md` et déplace les autres dans `docs/wiki/archives/historique.md`, sans rien perdre (sur Booker : 122 Ko ramenés à 16 Ko). Il mesure aussi chaque page du wiki et signale dans `wiki_over` celles qui dépassent 25 000 caractères.
+
+### Modifié
+
+- **Diderot garde le wiki léger** : une page décrit l'état d'aujourd'hui (plus d'encadré « Version x.y.z » ni de section « ajouté ensuite »), `ecarts.md` ne garde que les écarts ouverts, les pages transversales ne sont retouchées que là où le lot les change, et il n'ouvre jamais `archives/`.
+- **Diderot groupe ses appels** : plusieurs lectures dans une commande, et toutes les éditions indépendantes dans un même message, au lieu d'une édition par échange.
+- **Les grosses pages se condensent par petits groupes** : quand `wiki_over` n'est pas vide, Ariane demande à Diderot de condenser les trois plus grosses pages, pas plus, à chaque lot.
+
 ## [0.22.1] – 2026-11-14
 
 ### Corrigé

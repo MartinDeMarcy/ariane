@@ -6,7 +6,7 @@ Ariane s'adresse à toute personne qui a un projet d'application web, **qu'elle 
 
 Ariane travaille dans [Claude Code](https://code.claude.com).
 
-> Statut : version 0.22.1, en cours de construction et de premiers tests.
+> Statut : version 0.23.0, en cours de construction et de premiers tests.
 
 ## Ariane, la cheffe d'orchestre
 
@@ -163,6 +163,7 @@ claude plugin update ariane@ariane
 | `/ariane:next` | À chaque session : Ariane passe à l'étape suivante et lance le bon spécialiste |
 | `/ariane:status` | Savoir où on en est |
 | `/ariane:back` | Revenir sur une étape déjà validée |
+| `/ariane:clean` | Remettre le wiki et les fichiers du projet d'aplomb : ranger l'ancien, condenser ce qui est devenu trop gros |
 | `/ariane:docs` | Demander à Diderot de mettre à jour ou vérifier le wiki |
 | `/ariane:doctor` | Vérifier les outils et les comptes |
 | `/ariane:bug` | Signaler un bug ou un problème de sécurité, ou revoir les correctifs en attente |

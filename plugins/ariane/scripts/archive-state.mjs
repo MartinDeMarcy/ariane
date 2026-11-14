@@ -4,6 +4,7 @@
 //
 //   node archive-state.mjs --lot 04        → .ariane/history/lot-04.md
 //   node archive-state.mjs --version 0.1.0 → .ariane/history/v0.1.0.md
+//   node archive-state.mjs --clean         → .ariane/history/nettoyage-AAAA-MM-JJ.md (hors fin de lot)
 //
 // - Déplace dans ce fichier d'historique les lignes anciennes de
 //   state.history (les 20 dernières restent) et les notes des stories et des
@@ -14,6 +15,9 @@
 //   l'historique avant.
 // - Range les entrées anciennes du journal de bord (.ariane/log.md) : les 15
 //   dernières restent, les autres passent dans le fichier d'historique.
+// - Garde les 3 derniers lots dans docs/wiki/historique.md et range les plus
+//   anciens dans docs/wiki/archives/historique.md ; mesure les pages du wiki
+//   (wiki_over : plus de 25 000 caractères, à condenser par Diderot).
 // - Mesure la mémoire du projet (.ariane/memory.md) et les notes du carnet
 //   technique (.ariane/notes/) et dit lesquelles dépassent leur plafond :
 //   c'est Ariane qui fait alors le tri.
@@ -24,6 +28,8 @@ import { join, resolve } from "node:path";
 const KEEP_HISTORY = 20;
 const KEEP_LOG = 15; // entrées du journal de bord gardées dans log.md
 export const NOTE_MAX_CHARS = 15000; // au-delà, une note du carnet technique est à condenser
+export const WIKI_PAGE_MAX_CHARS = 25000; // au-delà, une page du wiki est à condenser
+const KEEP_WIKI_HISTORY = 3; // lots gardés dans docs/wiki/historique.md
 export const MEMORY_MAX_ENTRIES = 60;
 export const MEMORY_MAX_CHARS = 12000;
 
@@ -39,8 +45,9 @@ const done = (result, code = 0) => {
 
 const lot = flag("--lot");
 const version = flag("--version");
+const clean = args.includes("--clean");
 const root = resolve(flag("--project") || process.cwd());
-if (!lot && !version) done({ status: "error", message: "Indique --lot NN ou --version x.y.z." }, 1);
+if (!lot && !version && !clean) done({ status: "error", message: "Indique --lot NN, --version x.y.z ou --clean." }, 1);
 if ((lot && !/^[\w.-]+$/.test(lot)) || (version && !/^[\w.-]+$/.test(version))) {
   done({ status: "error", message: "Nom de lot ou de version invalide." }, 1);
 }
@@ -54,8 +61,8 @@ try {
   done({ status: "error", message: "state.json introuvable ou illisible." }, 1);
 }
 
-const name = lot ? `lot-${lot}` : `v${version}`;
-const title = lot ? `lot ${lot}` : `version ${version}`;
+const name = clean ? `nettoyage-${new Date().toISOString().slice(0, 10)}` : lot ? `lot-${lot}` : `v${version}`;
+const title = clean ? "nettoyage" : lot ? `lot ${lot}` : `version ${version}`;
 const sections = [];
 
 // 1. Les lignes anciennes de l'historique d'état.
@@ -167,6 +174,62 @@ try {
   // pas de carnet technique
 }
 
+// 5b. Le wiki (docs/wiki) : l'historique garde les derniers lots, les plus anciens passent dans
+// docs/wiki/archives/historique.md ; chaque page est mesurée, jamais modifiée ici.
+let archivedWikiHistory = 0;
+const wikiOver = [];
+const wikiDir = join(root, "docs", "wiki");
+if (existsSync(wikiDir)) {
+  const histPath = join(wikiDir, "historique.md");
+  if (existsSync(histPath)) {
+    const text = readFileSync(histPath, "utf8");
+    const eol = text.includes("\r\n") ? "\r\n" : "\n";
+    const lines = text.split(/\r?\n/);
+    const cuts = lines.reduce((acc, line, i) => (line.startsWith("## ") ? [...acc, i] : acc), []);
+    const blocks = cuts.map((from, k) => ({ from, to: cuts[k + 1] ?? lines.length, dated: /^## \d{4}-\d{2}-\d{2}/.test(lines[from]) }));
+    let seen = 0;
+    const moved = blocks.filter((b) => b.dated && ++seen > KEEP_WIKI_HISTORY);
+    if (moved.length > 0) {
+      const movedText = moved.map((b) => lines.slice(b.from, b.to).join(eol).trim()).join(eol + eol);
+      const archiveDir = join(wikiDir, "archives");
+      const archivePath = join(archiveDir, "historique.md");
+      mkdirSync(archiveDir, { recursive: true });
+      if (existsSync(archivePath)) {
+        const old = readFileSync(archivePath, "utf8");
+        const at = old.search(/^## /m);
+        const head = at >= 0 ? old.slice(0, at) : old.trimEnd() + eol + eol;
+        writeFileSync(archivePath, head + movedText + eol + eol + (at >= 0 ? old.slice(at) : ""));
+      } else {
+        writeFileSync(
+          archivePath,
+          `# Historique : lots plus anciens${eol}${eol}Les lots rangés ici sortent de [l'historique](../historique.md) pour qu'il reste court. Rien n'est perdu.${eol}${eol}${movedText}${eol}`,
+        );
+      }
+      const drop = new Set(moved.flatMap((b) => Array.from({ length: b.to - b.from }, (_, i) => b.from + i)));
+      const kept = lines.filter((_, i) => !drop.has(i));
+      const pointer = "Les lots plus anciens sont dans [archives/historique.md](archives/historique.md).";
+      if (!kept.some((l) => l.includes("archives/historique.md"))) {
+        const first = kept.findIndex((l) => l.startsWith("## "));
+        kept.splice(first >= 0 ? first : kept.length, 0, pointer, "");
+      }
+      writeFileSync(histPath, kept.join(eol).replace(/(\r?\n){3,}/g, eol + eol).trimEnd() + eol);
+      archivedWikiHistory = moved.length;
+    }
+  }
+  const walk = (folder, rel = "") => {
+    for (const entry of readdirSync(folder, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        if (entry.name !== "archives") walk(join(folder, entry.name), `${rel}${entry.name}/`);
+      } else if (entry.name.endsWith(".md")) {
+        const chars = readFileSync(join(folder, entry.name), "utf8").length;
+        if (chars > WIKI_PAGE_MAX_CHARS) wikiOver.push({ page: rel + entry.name, chars });
+      }
+    }
+  };
+  walk(wikiDir);
+  wikiOver.sort((a, b) => b.chars - a.chars);
+}
+
 // 6. La mémoire du projet : mesurée, jamais modifiée ici.
 let memory = null;
 try {
@@ -191,6 +254,9 @@ done({
   archived_log_entries: archivedLog,
   notes_over: notesOver,
   note_max_chars: NOTE_MAX_CHARS,
+  archived_wiki_history: archivedWikiHistory,
+  wiki_over: wikiOver,
+  wiki_page_max_chars: WIKI_PAGE_MAX_CHARS,
   state_chars: JSON.stringify(state, null, 2).length,
   memory,
 });

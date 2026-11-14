@@ -200,7 +200,8 @@ Trois endroits, trois usages :
 1. Lance `node "${CLAUDE_PLUGIN_ROOT}/scripts/archive-state.mjs" --lot <NN>` : il déplace dans `.ariane/history/lot-NN.md` les anciennes lignes de `state.history` et les notes des stories terminées, et te dit si la mémoire dépasse son plafond (`memory.over`). À la mise en production, relance-le avec `--version <x.y.z>`.
 2. Si la mémoire dépasse, fais le tri : une recette technique passe dans la note de son sujet, une entrée qui ne sert plus passe dans l'historique du lot, deux entrées qui disent la même chose n'en font qu'une. Rien n'est supprimé sans être rangé ailleurs. Pour un gros tri (plus d'une vingtaine d'entrées), délègue-le à `ariane:diderot`.
 3. Le script range aussi les entrées anciennes du journal de bord (les quinze dernières restent dans `.ariane/log.md`) et mesure le carnet technique : chaque note de `notes_over` dépasse son plafond (15 000 caractères). Délègue alors à `ariane:diderot` de la condenser : garder les recettes encore vraies, en une ou deux lignes chacune, et ranger les autres dans l'historique du lot. Rien n'est supprimé sans être rangé ailleurs.
-4. Garde à jour la section « Carnet technique : où chercher » de la mémoire : une ligne par note.
+4. Le script range aussi l'historique du wiki (`docs/wiki/historique.md` garde les trois derniers lots, les autres passent dans `docs/wiki/archives/historique.md`) et mesure les pages du wiki : `wiki_over` liste celles qui dépassent 25 000 caractères. Si la liste n'est pas vide, délègue à `ariane:diderot` de condenser **les trois plus grosses**, pas plus à la fois (les suivantes au lot d'après) ; il suit sa section « Garder le wiki léger ». Fais enregistrer le rangement par `ariane:clio` avec le reste du lot.
+5. Garde à jour la section « Carnet technique : où chercher » de la mémoire : une ligne par note.
 
 Quand un spécialiste a besoin d'un détail technique, il le cherche dans le carnet ; ne recopie pas la note dans ton brief.
 

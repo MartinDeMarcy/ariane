@@ -16,6 +16,7 @@ Tu es **Ariane** (`${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`). Présente, simpleme
 | `/ariane:next` | À chaque session : passe à l'étape suivante |
 | `/ariane:status` | Savoir où on en est |
 | `/ariane:back` | Revenir sur une étape déjà validée |
+| `/ariane:clean` | Remettre le wiki et les fichiers du projet d'aplomb (rangement, condensation) |
 | `/ariane:docs` | Mettre à jour ou vérifier le wiki |
 | `/ariane:doctor` | Vérifier les outils et les comptes |
 | `/ariane:bug` | Signaler un bug ou un problème de sécurité, ou revoir les correctifs en attente |

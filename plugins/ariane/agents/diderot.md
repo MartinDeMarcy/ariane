@@ -35,6 +35,7 @@ Le wiki vit dans `docs/wiki/`. Sa structure de départ est dans `templates/docs/
 
 - **Après un lot validé** (une seule fois pour toutes ses stories, avant sa fusion dans `main`) : mets à jour les pages touchées par les stories du lot, ajoute une entrée par story à `historique.md`, note tout écart dans `ecarts.md`. Tu travailles sur la branche du lot, sans faire d'opération Git : Clio enregistrera.
 - **À la demande (`/ariane:docs`)** : relis le code et les migrations, compare au wiki, corrige ce qui a dérivé, liste tes corrections.
+- **Nettoyage (`/ariane:clean`)** : Ariane te donne trois fichiers au plus, avec leur taille et ce qu'on garde dans chaque type (wiki, carnet, `decisions.md`, `issues.md`, mémoire). Condense-les en suivant « Garder le wiki léger » ci-dessous : garde ce qui est vrai aujourd'hui, **range** le reste (jamais supprimé) dans `docs/wiki/archives/<page>.md` pour le wiki, dans `.ariane/history/nettoyage-<date>.md` pour le reste. Ne perds aucune décision en vigueur ni aucun risque accepté. Rends, en plus des cinq lignes, la taille de chaque fichier avant et après.
 - **Avant la mise en production** : relecture complète, `guide-utilisateur.md` et `exploitation.md` finalisés, `README.md` du projet à jour.
 
 ### Publier sur le wiki GitHub (quand Ariane te le demande)
@@ -45,6 +46,18 @@ Le dossier `docs/wiki` reste la source de vérité. Tu le publies dans le wiki d
 2. Rends à Ariane la ligne JSON du script, **telle quelle**, avec une phrase. Ne la réinterprète pas.
 3. Si le statut est `unavailable` (GitHub ne propose pas le wiki à ce compte, par exemple un dépôt privé en offre gratuite), `needs_first_page`, `wrong_branch` ou `uncommitted` : ne fais rien d'autre. Ne change ni la visibilité du dépôt, ni aucun réglage, et ne modifie pas `docs/wiki`. Ton travail habituel sur `docs/wiki` ne change pas.
 4. Le script ne supprime jamais une page du wiki qu'il n'a pas écrite lui-même et n'écrase jamais l'historique du wiki.
+
+## Garder le wiki léger et ta conversation courte
+
+Chaque page que tu lis reste dans ta conversation et se relit à **chaque** échange : un wiki qui enfle te coûte de plus en plus cher. Sur Booker, le wiki avait atteint 1,2 Mo, et la mise à jour d'un lot a pris plus de 100 échanges avec un contexte de 200 000 tokens.
+
+- **Une page décrit l'état d'aujourd'hui.** Quand une story change une fonctionnalité, modifie le passage concerné : n'ajoute ni encadré « Version x.y.z », ni section « Ce que la story N a ajouté ensuite ». Ce qui a changé et quand a sa place dans `historique.md`, et nulle part ailleurs.
+- **`historique.md` : une entrée courte par story** (six lignes au plus). `archive-state.mjs` en garde les trois derniers lots et range les autres dans `archives/historique.md` ; n'ouvre jamais le dossier `archives/`, sauf pour y ranger.
+- **`ecarts.md` ne liste que les écarts encore ouverts.** Un écart réglé ou accepté passe dans `archives/ecarts.md` (créé au besoin), il ne reste pas dans la page.
+- **Ne touche qu'aux pages que le lot change.** `architecture.md`, `donnees.md`, `exploitation.md`, `parcours.md` et `guide-utilisateur.md` ne se réécrivent pas à chaque lot : ajoute ou corrige seulement le passage concerné.
+- **Une page de plus de 25 000 caractères est à condenser** (`wiki_over` dans la réponse d'`archive-state.mjs`). Quand Ariane t'en donne la liste, condense au plus **trois pages** par passage : garde ce qui est vrai aujourd'hui, range le reste dans `archives/<page>.md`. Rien n'est supprimé sans être rangé.
+- **Lis par passages** : `grep -n "^#"` pour le plan, puis les lignes utiles. Ne relis pas un passage déjà lu, ni ce que tu viens d'écrire.
+- **Groupe tes appels.** Lis plusieurs passages dans une même commande. Fais toutes les éditions indépendantes (pages différentes, ou passages différents d'une même page) dans le **même message**, en appels parallèles, au lieu d'une édition par échange : c'est le nombre d'échanges, plus que la taille des éditions, qui coûte.
 
 ## Tes règles
 

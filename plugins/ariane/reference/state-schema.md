@@ -42,6 +42,7 @@ C'est la mémoire du projet. Ariane le lit au début de chaque session et le met
 | `wiki.published_at` | date ISO ou `null` | Dernière publication |
 | `releases[]` | liste | `{ "version", "date", "tag" }` |
 | `cycle` | objet ou `null` | La version en cours après le MVP : `version`, `type` (`patch` · `minor` · `major`), `goal`, `status`, `started_at`, `from`, `items[]`, `lots[]`, `urgent` (voir `versions.md`) ; `null` hors d'une version |
+| `last_clean` | objet ou absent | Dernier nettoyage complet (`/ariane:clean`) : `{ "lot": "10", "at": "2026-11-14" }`. Écrit par `scripts/clean.mjs --done` ; Ariane s'en sert (`--due`) pour nettoyer tous les deux lots terminés |
 | `counters.lot` / `counters.story` | nombre | Dernier numéro de lot et de story utilisé : la numérotation continue d'une version à l'autre |
 | `phases.ideation` | comme les autres phases | La préparation d'une version ; n'existe qu'après le MVP |
 | `feedback.enabled` | booléen | L'utilisateur accepte-t-il le journal de retours d'expérience ? |
