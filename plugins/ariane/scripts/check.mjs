@@ -7,6 +7,8 @@
 //   node check.mjs --test src/lib/x.test.ts → tests unitaires d'un fichier
 //   node check.mjs --e2e tests/e2e/lot-08/024-x.spec.ts
 //                                           → un test de bout en bout, sur ordinateur
+//                                           (le projet « ordinateur » est lu dans playwright.config ;
+//                                            --device <nom> pour en forcer un)
 //   node check.mjs --e2e tests/e2e/lot-08 --all-devices
 //   node check.mjs --only test -- -t "nom"  → ce qui suit « -- » est passé à l'outil
 //
@@ -44,12 +46,26 @@ const scripts = pkg.scripts || {};
 const quote = (s) => (/[\s"']/.test(s) ? `"${s.replace(/"/g, '\\"')}"` : s);
 const extra = (list) => (list.length ? " -- " + list.map(quote).join(" ") : "");
 
+// Le projet Playwright « ordinateur » : lu dans la config du projet (desktop, bureau, chromium…),
+// pas supposé. --device <nom> force un nom. Sans projet reconnu, on ne filtre pas.
+const desktopProject = () => {
+  const forced = flag("--device");
+  if (forced) return forced;
+  const file = ["ts", "mts", "js", "mjs", "cjs"].map((e) => join(root, `playwright.config.${e}`)).find(existsSync);
+  if (!file) return undefined;
+  const source = readFileSync(file, "utf8");
+  const block = source.slice(Math.max(0, source.indexOf("projects")));
+  const names = [...block.matchAll(/name:\s*["'`]([^"'`]+)["'`]/g)].map((m) => m[1]);
+  return names.find((n) => /desktop|bureau|ordinateur|chrom/i.test(n)) || names.find((n) => !/mobile|phone|pixel|iphone/i.test(n));
+};
+
 // Les étapes à lancer.
 const steps = [];
 const e2e = flag("--e2e");
 const unit = flag("--test");
 if (e2e) {
-  const device = has("--all-devices") ? [] : ["--project=desktop"];
+  const project = has("--all-devices") ? undefined : desktopProject();
+  const device = project ? [`--project=${project}`] : [];
   steps.push({ name: "e2e", script: "test:e2e", cmd: "npm run test:e2e" + extra([...device, e2e, ...passthrough]) });
 } else if (unit) {
   steps.push({ name: "test", script: "test", cmd: "npm test" + extra([unit, ...passthrough]) });

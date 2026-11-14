@@ -25,6 +25,8 @@ Ada et Thomas lancent tout par le script `scripts/check.mjs` du plugin, jamais p
 | Un test de bout en bout, sur ordinateur | `node <check.mjs> --e2e <fichier>` (un test précis : `-- -g "<nom>"`) |
 | Les deux appareils | ajoute `--all-devices` |
 
+Le projet « ordinateur » est lu dans `playwright.config` (`desktop`, `bureau`…) : n'écris pas `--project=…` à la main. Si le script ne le trouve pas, `--device <nom>` en force un.
+
 Il s'arrête à la première étape en échec et n'en montre que l'extrait utile. La sortie complète est dans `.ariane/tmp/check-<étape>.log` (non versionné) : on y cherche avec Grep au lieu de relancer. Une commande qui dure plus de deux minutes (build, tests de bout en bout) se lance en tâche de fond.
 
 ## Vitest

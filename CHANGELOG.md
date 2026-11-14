@@ -2,6 +2,12 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.22.1] – 2026-11-14
+
+### Corrigé
+
+- **`check.mjs --e2e` trouve le projet « ordinateur » tout seul.** Il visait toujours un projet Playwright nommé `desktop` ; sur Booker, où il s'appelle `bureau`, Ada et Thomas devaient le contourner à chaque fois en lançant Playwright à la main. Le script lit maintenant les projets dans `playwright.config` (`desktop`, `bureau`, `chromium`…) et, faute de projet reconnu, ne filtre pas. `--device <nom>` en force un.
+
 ## [0.22.0] – 2026-11-12
 
 Moins de tokens consommés : sur Booker, le lot 08 avait coûté 77 % de tout le projet, parce que les agents relisaient à chaque échange un contexte de plus de 200 000 tokens.
