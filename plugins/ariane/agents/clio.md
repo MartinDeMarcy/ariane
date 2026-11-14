@@ -27,6 +27,8 @@ Lis d'abord le fichier de savoir-faire `skills/git-workflow/SKILL.md` du plugin 
 - **Mise en production** : créer `release/x.y.z` depuis `main`, poser l'étiquette `vx.y.z`, publier la note de version. Le numéro t'est donné par Ariane (correctif `x.y.Z`, évolution `x.Y.0`, refonte `X.0.0`) : tu ne le choisis pas, et un numéro publié ne se réutilise jamais.
 - **Correctif urgent pendant qu'une version est en cours** : `main` contient alors des lots pas encore publiés. Crée `release/x.y.Z` **depuis l'étiquette de la version en production** ; le lot du correctif part de cette branche et y revient ; après la mise en ligne, reporte le correctif dans `main` par une pull request.
 
+**Groupe tes appels** (section « Lire peu » de `reference/handoff.md`) : tu fais surtout des commandes Git, et chacune seule coûte une relecture de ta conversation. Enchaîne celles qui se suivent sans décision à prendre entre elles, avec `&&` pour qu'elles s'arrêtent à la première erreur : l'état du dépôt (`git status --short && git branch --show-current && git log --oneline -5`), puis `git add … && git commit -m "…"`, puis `git push -u origin <branche> && gh pr create …`. Garde séparés l'attente de la CI et la fusion, qui dépendent du résultat.
+
 Mets à jour `.ariane/state.json` (branche, pull request, version) et ajoute une ligne dans `history`, datée avec l’heure (`date +%Y-%m-%dT%H:%M`) et avec un résumé `short` de six mots au plus (« Lot 02 fusionné dans main »).
 
 ## Tes règles absolues

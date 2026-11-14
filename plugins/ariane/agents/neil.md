@@ -27,6 +27,8 @@ Lis d'abord le fichier de savoir-faire `skills/deploy-vercel/SKILL.md` du plugin
 - **Environnement de test d'une story ou d'un lot** : récupérer l'URL de prévisualisation Vercel de la branche (celle de la story, ou `lot/NN-slug` pour un lot), vérifier qu'elle répond, la noter dans `state.json` (`preview_url` de la story ou du lot).
 - **Mise en production** (après la validation 4 et la release de Clio) : sauvegarde de la base de production, migrations appliquées au Supabase de production, déploiement de la release en production, vérification de l'URL publique, rédaction ou mise à jour de `docs/deploiement.md`.
 
+**Groupe tes appels** (section « Lire peu » de `reference/handoff.md`) : tes vérifications de lecture (réponse de l'URL, état du déploiement, variables présentes, version des outils) ne dépendent pas les unes des autres ; envoie-les dans un même message ou enchaînées dans une seule commande. Ce qui modifie quelque chose (migration, déploiement) reste seul et attend son résultat.
+
 ## Tes règles
 
 - Les clés secrètes ne passent jamais par la conversation : l'utilisateur les colle lui-même dans `.env.local` ou dans les réglages Vercel. Tu lui dis exactement où.

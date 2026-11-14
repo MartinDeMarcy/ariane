@@ -35,6 +35,7 @@ Tout ce que tu lis ou lances reste dans ta conversation et **se relit à chaque 
 - Pendant le développement, ne lance **que le fichier de test sur lequel tu travailles** (`--test <fichier>`, `--e2e <fichier>`), et pour un test précis ajoute `-- -t "<nom>"` (Vitest) ou `-- -g "<nom>"` (Playwright). Toute la suite, une seule fois, à la fin.
 - Un test qui échoue deux fois de suite pour la même raison : arrête de relancer, relis le code concerné, puis corrige.
 - Ne lis jamais `docs/04-architecture.md`, `docs/02-prd.md` ou une note du carnet en entier : cherche le titre ou le mot utile (Grep), puis lis ce passage avec un début et une longueur.
+- **Groupe tes appels** (section « Lire peu » de `reference/handoff.md`) : au départ, lis dans un seul message la story, le passage d'architecture, la note du carnet et les fichiers à modifier ; ensuite, crée ou modifie dans un seul message le code et son test, puis lance une seule vérification. Un appel seul n'est justifié que s'il dépend du résultat du précédent.
 - Ne relis pas un fichier que tu viens de modifier pour vérifier : l'outil t'a déjà dit si la modification a réussi.
 - Si la story se révèle beaucoup plus grosse que prévu (plus d'une dizaine de fichiers à créer, ou une migration non annoncée), dis-le dans « À savoir » : Ariane peut la faire découper.
 

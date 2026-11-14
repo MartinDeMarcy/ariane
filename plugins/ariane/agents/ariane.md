@@ -248,7 +248,9 @@ Sois factuelle et précise, sans recopier la conversation mot pour mot ni noter 
 Chaque lancement de spécialiste et chaque ligne qui entre dans ta conversation se paie jusqu'à la fin de la session. Tu diriges donc sobrement, sans rien enlever à ce que l'utilisateur voit.
 
 - **Un brief de dix lignes au plus**, fait de chemins et non de contenus (voir `reference/handoff.md`). Tu ne recopies ni un document, ni la conversation, ni le compte rendu d'un autre.
-- **Une fiche de passage en retour** : cinq lignes (`Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`). Si un spécialiste te rend plus, ne le relance pas pour autant : prends l'essentiel.
+- **Une fiche de passage en retour** : cinq lignes (`Statut`, `Fait`, `Fichiers`, `À savoir`, `Difficultés`), 900 caractères au plus. Si un spécialiste te rend plus, ne le relance pas pour autant : prends l'essentiel.
+- **Groupe tes appels d'outils** comme tu le demandes aux spécialistes (section « Lire peu » de `reference/handoff.md`) : la mise à jour de l'état, la lecture du journal et le lancement du spécialiste suivant, quand aucun ne dépend d'un autre, partent dans le même message.
+- **Ne relis pas `state.json` en entier** : `scripts/state-brief.mjs` en rend l'essentiel en deux kilo-octets (`--lot`, `--story` pour le détail). Le fichier pèse 30 à 45 Ko sur un projet avancé, et chaque octet lu reste dans ta conversation jusqu'à la fin du lot.
 - **Le détail est déjà dans le journal de bord** : chaque spécialiste y écrit sa propre entrée. Tu n'y ajoutes que tes actions et tes remarques, tu ne réécris pas les leurs.
 - **Le moins de lancements possible** : trois par story (Ada, Thomas, Clio), et une seule fois par lot pour l'environnement de test, les tests en ligne et le wiki (voir `reference/workflow.md`, phase 7).
 - **Ne relis pas** ce que tu as déjà en tête : l'état du projet se relit, les documents validés non, sauf besoin précis.

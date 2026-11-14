@@ -2,6 +2,20 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.24.0] – 2026-11-14
+
+La conversation d'Ariane relit environ 30 millions de tokens par lot sur Booker : un tiers pour le socle de l'application, un quart à un tiers pour sa mise en route (plus de 60 000 tokens chargés au démarrage), le reste pour ce qui s'ajoute pendant le lot. Cette version allège la mise en route et ce qui entre dans la conversation.
+
+### Ajouté
+
+- **`scripts/state-brief.mjs`** : un résumé de `state.json` en deux kilo-octets (phase, lot en cours et ses stories, dernières étapes, version en cours, compteurs), au lieu des 30 à 45 Ko du fichier entier. `--lot <NN>` et `--story <NNN>` donnent le détail d'un lot ou d'une story, `--history <n>` plus d'étapes.
+
+### Modifié
+
+- **`/ariane:next` charge moins au démarrage** : Ariane lit `state-brief.mjs` au lieu de `state.json`, et cherche dans `workflow.md` et `user-profile.md` (30 Ko à eux deux) la seule section dont elle a besoin, au lieu de les lire en entier. Elle garde sa fiche, sa voix et le guide de communication.
+- **Les spécialistes groupent leurs appels d'outils** : sur Booker (lots 09 et 10), Ada faisait 1,39 outil par échange avec le modèle (25 % d'échanges groupés), Clio 1,62, Thomas 1,43, Neil 1,18, et chaque échange relit toute la conversation (100 000 tokens ou plus). La section « Lire peu » de `handoff.md` demande maintenant d'envoyer dans un même message tout ce qui ne dépend pas du résultat précédent (lectures de départ, fichiers à écrire, commandes Git enchaînées avec `&&`, vérifications de lecture), avec les cas à ne pas grouper ; Ada, Thomas, Clio, Neil et Ariane la rappellent. À vérifier au lot suivant : le nombre d'outils par échange doit monter vers 1,7.
+- **Les fiches de passage sont plafonnées** : 300 caractères par ligne, 900 pour la fiche entière (elles atteignaient 2 500 à 5 000 caractères). Le détail reste dans le journal de bord et le rapport.
+
 ## [0.23.0] – 2026-11-14
 
 Diderot coûtait trop cher en fin de lot : sur Booker, la mise à jour du wiki du lot 10 a pris 102 échanges avec un contexte de 200 000 tokens (168 éditions une par une), parce que le wiki avait atteint 1,2 Mo et que chaque lot y ajoutait des encadrés « Version » et des sections d'historique.
