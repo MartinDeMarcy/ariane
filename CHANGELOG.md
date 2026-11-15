@@ -2,6 +2,27 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [0.26.0] – 2026-11-15
+
+Booker est en ligne en 1.0.0. Les lots 11 et 12 (plugin 0.25.0) ont coûté 36 millions de tokens chacun, contre 151 millions pour le lot 10 (plugin 0.22.0), soit environ 70 % de moins en coût pondéré : Diderot passe de 21 à 1,3 puis 7,2 millions, le contexte moyen d'Ada de 127 000 à 56 000 puis 92 000 tokens. Les mesures ont aussi montré ce qui ne marchait pas. Cette version s'y attaque.
+
+### Corrigé
+
+- **Le nettoyage automatique ne se lançait pas.** `/ariane:next` disait de « dérouler `/ariane:clean` », mais la commande est réservée à l'utilisateur : Ariane a essayé de l'appeler et l'appel a été refusé (Booker, lot 12). `/ariane:next` lui demande maintenant de lire `skills/clean/SKILL.md` et d'en suivre les étapes ; `clean/SKILL.md` le dit aussi, et lit l'état par `state-brief.mjs`.
+- **Les appels groupés n'avaient rien changé** : outils par échange avant/après 0.24.0, Ada 1,55 → 1,74, Thomas 1,30 → 1,28, Clio 1,37 → 1,37, Neil 1,64 → 1,38. Une consigne écrite ne suffit pas ; l'effort passe aux scripts ci-dessous, là où les échanges répétés sont connus.
+
+### Ajouté
+
+- **`scripts/pr.mjs`** : l'attente de la CI et la fusion d'une pull request en une commande chacune (`wait <n>` : jusqu'à neuf minutes, une ligne de réponse ; `merge <n>` : CI verte, pas de conflit, rien de non enregistré, puis fusion, suppression de la branche et retour à jour sur la branche de base ; `--dry-run`). Sur Booker, chaque attente de Clio était une boucle `gh` relancée quatre ou cinq fois, chaque relance relisant toute sa conversation. Seule la vérification `ci` décide : un déploiement de prévisualisation Vercel en retard ne bloque plus la fusion. Clio et `git-workflow` s'en servent.
+- **La conversation neuve aussi aux phases lourdes** : le bouton « Ouvrir la session suivante » est aussi proposé quand le wiki final est fusionné (avant la grande passe) et quand un lot de corrections demandé pendant la validation 4 est fusionné. Sur Booker, une seule conversation avait traversé la relecture du wiki, la grande passe, le lot 12 et la mise en production : son contexte est monté de 113 000 à 262 000 tokens. La phase `release` sait reprendre dans une conversation neuve (elle ne rejoue pas une grande passe déjà « Prête »).
+- Des consignes sans double lecture dans `handoff.md`, tirées du journal de Booker : nommer la commande interdite plutôt que son effet (« ne lance pas `supabase config push` », pas « ne pousse pas »), jamais la production dans un brief de vérification, `ListAgents` avant de relancer un spécialiste interrompu, les scripts jetables supprimés par leur auteur.
+
+### Modifié
+
+- **Les gros travaux sont découpés en missions courtes, chacune avec un contexte neuf**, parce que le coût d'un agent croît plus vite que sa durée (chaque échange relit toute sa conversation). La relecture du wiki avant la mise en production (24 millions de tokens à Booker : 111 échanges, 213 000 tokens de contexte) est confiée à Diderot en trois missions (pages pour les utilisateurs, pages techniques, écarts/historique/README/CHANGELOG) ; la grande passe de tests de Thomas (12 millions : 113 échanges) en trois aussi (4a en local, 4b en ligne par tranches, 4c revue d'ensemble, rapport et verdict). Diderot et Thomas s'arrêtent à une quarantaine d'échanges avec `Statut : à reprendre`.
+- **Le nettoyage condense un fichier par passage** (deux s'ils sont petits), huit passages au plus par commande, au lieu de trois fichiers et quatre passages : sur Booker, un passage de trois fichiers faisait 60 à 90 échanges avec 150 000 tokens de contexte (10 millions) ; Diderot réécrit le fichier d'un seul coup (`Write`, archive dans le même message) au lieu de 52 à 93 éditions l'une après l'autre. Le premier nettoyage de Booker avait coûté 38,5 millions de tokens, dont 34,5 pour Diderot.
+- **Le savoir-faire des tests est allégé** : la « grande passe » passe de `skills/testing/SKILL.md` à `skills/testing/release.md`, lu seulement pour le temps 4. Chaque Thomas relisait les 18 Ko du premier à chaque lancement ; il en lit maintenant 15 Ko.
+
 ## [0.25.0] – 2026-11-14
 
 ### Ajouté

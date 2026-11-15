@@ -53,7 +53,7 @@ Les tests de bout en bout de chaque story existent déjà : Ada les a écrits et
 
 ### Temps 4 : la grande passe d'avant mise en production
 
-La seule validation complète du projet : rien ne part en production sans elle. Suis « La grande passe d'avant mise en production » dans le savoir-faire des tests.
+La seule validation complète du projet : rien ne part en production sans elle. Elle est confiée en **trois missions successives**, chacune dans une conversation neuve (une seule mission de 113 échanges a coûté 12 millions de tokens à Booker) : **4a** (local), **4b** (en ligne, par tranches), **4c** (revue d'ensemble, rapport et verdict). Le message de délégation dit laquelle tu fais : ne fais que celle-là, écris ta section dans `docs/qa/release-<version>-rapport.md` (crée le fichier en 4a, complète-le ensuite), et rends `Statut : à reprendre` si tu n'as pas fini en une quarantaine d'échanges. Suis « La grande passe d'avant mise en production » dans `skills/testing/release.md` du plugin (ce fichier-là, pas `SKILL.md` : il n'est utile qu'ici).
 
 1. **Tout en local**, sur l'app construite pour la production : lint, types, tests unitaires, build, puis **toute** la suite de bout en bout, ordinateur et mobile (`E2E_FULL=1 npm run test:e2e`).
 2. **En ligne**, sur la prévisualisation de la branche qui part en production : les parcours principaux et toutes les démos de lots, sur les deux appareils. C'est le seul moment où les tranches et les pauses sont permises (30 tests navigateur par tranche au plus).

@@ -6,7 +6,9 @@ disable-model-invocation: true
 
 # /ariane:clean : remettre le projet d'aplomb
 
-Tu es **Ariane** (`${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`). Lis `.ariane/state.json`.
+Tu es **Ariane** (`${CLAUDE_PLUGIN_ROOT}/agents/ariane.md`). Lance `node "${CLAUDE_PLUGIN_ROOT}/scripts/state-brief.mjs"` (l'essentiel de `.ariane/state.json`, sans le lire en entier).
+
+*Quand c'est `/ariane:next` qui te l'a demandé* (un lot vient d'être fusionné et le nettoyage est dû), ce fichier est ta consigne : lis-le avec `Read` et suis-le. N'appelle pas l'outil `Skill` : la commande est réservée à l'utilisateur, et l'appel serait refusé (c'est arrivé à Booker au lot 12).
 
 Les fichiers du projet grossissent à chaque lot, et les agents les relisent à chaque échange : plus ils sont gros, plus chaque lot coûte. Cette commande range ce qui est ancien, puis condense ce qui est resté trop gros, sans rien supprimer sans le ranger ailleurs.
 
@@ -27,9 +29,9 @@ Dis à l'utilisateur, en deux phrases simples, ce qui a été rangé et combien 
 
 S'il n'y a rien dans `to_condense` (ou rien qui corresponde à la portée demandée), passe à l'étape 4.
 
-Délègue à `ariane:diderot` les fichiers de `to_condense`, **trois à la fois**, en commençant par les plus gros. Un seul passage sur tout lui ferait relire des centaines de milliers de caractères dans la même conversation : par petits groupes, chacun repart d'un contexte neuf. **Quatre passages au plus par commande** ; s'il en reste, dis combien et que `/ariane:clean` les reprendra.
+Délègue à `ariane:diderot` les fichiers de `to_condense`, **un par passage** (deux quand ils font moins de 20 000 caractères à eux deux), en commençant par les plus gros. Chaque échange de Diderot relit toute sa conversation : sur Booker, trois fichiers dans le même passage ont coûté 10 millions de tokens (60 à 90 échanges, un contexte de 150 000 tokens). Un fichier par passage repart d'un contexte neuf et se règle en une vingtaine d'échanges. **Huit passages au plus par commande** ; s'il en reste, dis combien et que `/ariane:clean` les reprendra.
 
-Brief de chaque passage (dix lignes au plus, des chemins et pas de contenus, selon `${CLAUDE_PLUGIN_ROOT}/reference/handoff.md`) : le dossier du projet, la mission « nettoyage », les trois fichiers avec leur taille et leur plafond, la section « Garder le wiki léger » de `${CLAUDE_PLUGIN_ROOT}/agents/diderot.md`, et pour chaque type de fichier ce qu'on garde :
+Brief de chaque passage (dix lignes au plus, des chemins et pas de contenus, selon `${CLAUDE_PLUGIN_ROOT}/reference/handoff.md`) : le dossier du projet, la mission « nettoyage », le fichier avec sa taille et son plafond, la section « Garder le wiki léger » de `${CLAUDE_PLUGIN_ROOT}/agents/diderot.md`, la consigne de le réécrire d'un seul coup (`Write`) plutôt qu'en séries d'éditions, et pour ce type de fichier ce qu'on garde :
 
 | Fichier | On garde | On range (rien n'est supprimé) |
 |---|---|---|

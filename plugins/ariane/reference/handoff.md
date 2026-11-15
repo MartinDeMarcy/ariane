@@ -12,6 +12,12 @@ Chaque échange entre Ariane et un spécialiste coûte : ce qu'Ariane écrit pou
 
 Elle ne recopie ni la conversation, ni un document, ni le compte rendu d'un autre spécialiste : celui qui en a besoin le lit dans le journal de bord.
 
+**Des consignes qui ne se prêtent pas à deux lectures.** Retours du journal de Booker :
+
+- Dis **la commande interdite**, pas son effet supposé : « ne lance pas `supabase config push` », jamais « ne pousse pas la configuration » (Clio l'avait lu comme « ne commite pas `config.toml` », d'où une CI rouge).
+- **Jamais la production dans un brief de test ou de vérification**, même en lecture : les permissions la refusent et le spécialiste perd une relance.
+- **Avant de relancer un spécialiste « interrompu »**, regarde s'il tourne encore (`ListAgents`) : deux Clio en même temps sur la même pull request se sont déjà gênés.
+- **Un script jetable** (pilote, essai, sonde) est supprimé par le spécialiste qui l'a créé, avant sa fiche ; sinon il reste dans le dépôt et fait échouer le lint de la story suivante.
 ## Ce que le spécialiste rend : cinq lignes
 
 ```

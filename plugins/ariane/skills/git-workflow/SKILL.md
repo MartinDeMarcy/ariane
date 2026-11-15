@@ -83,12 +83,11 @@ git switch -c feature/NNN-slug
 ```bash
 gh pr create --base lot/NN-slug --head feature/NNN-slug \
   --title "feat: <titre de la story> (NNN)" --body-file <fichier rempli depuis .github/pull_request_template.md>
-gh pr checks <numéro> --watch          # attendre la CI
-gh pr merge <numéro> --merge --delete-branch
-git switch lot/NN-slug && git pull --ff-only
+node <pr.mjs> wait <numéro>            # attendre la CI : une seule commande, une ligne de réponse
+node <pr.mjs> merge <numéro>           # fusionne (CI verte exigée), supprime la branche, remet la branche du lot à jour
 ```
 
-Fusion par **commit de fusion** (`--merge`) : l'historique de la story est conservé tel quel. Note la pull request dans `stories[].pull_request` et passe la story à `in_lot`.
+`<pr.mjs>` est `scripts/pr.mjs` du plugin (chemin fourni dans le message de délégation) : n'écris pas de boucle `gh` à la main, chaque relance coûte une relecture de ta conversation. Fusion par **commit de fusion** (`--merge`) : l'historique de la story est conservé tel quel. Note la pull request dans `stories[].pull_request` et passe la story à `in_lot`.
 
 Si la CI échoue : ne fusionne pas. Lis le journal (`gh run view --log-failed`), résume la cause à Ariane : la correction revient à Ada.
 
@@ -99,9 +98,8 @@ Uniquement quand Ariane te confirme que l'utilisateur a validé le lot :
 ```bash
 gh pr create --base main --head lot/NN-slug \
   --title "feat: <titre du lot> (lot NN)" --body-file <fichier rempli : liste des stories, rapport docs/qa/lot-NN-rapport.md, date de la validation>
-gh pr checks <numéro> --watch
-gh pr merge <numéro> --merge --delete-branch
-git switch main && git pull --ff-only
+node <pr.mjs> wait <numéro>
+node <pr.mjs> merge <numéro>
 ```
 
 Note la pull request dans `lots[].pull_request`. Si la CI échoue : ne fusionne pas, la correction revient à Ada sur une story de correction du lot.
