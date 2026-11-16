@@ -159,6 +159,21 @@ test("merge : CI verte, dossier propre → fusionne, supprime la branche, revien
   assert.equal(git(work, "branch", "--show-current"), "main");
 });
 
+test("merge : fonctionne quand le PATH s'appelle « Path » (PowerShell et cmd sous Windows)", { skip: process.platform !== "win32" }, (t) => {
+  const work = repo(t);
+  const dir = tempDir("ariane-fakegh-");
+  t.after(() => cleanup(dir));
+  writeFileSync(join(dir, "state.json"), JSON.stringify({ views: [pr([ok()])] }));
+  // Une seule variable, nommée « Path » comme dans un PowerShell ou un cmd ordinaire. Sans le correctif de pr.mjs,
+  // Windows rend `git` introuvable ou non selon l'ordre dans lequel il trie deux variables de même nom : ce test a
+  // échoué à chaque fois dans la CI, mais peut passer en local ; il garde le cas contre un retour en arrière.
+  const r = runScript("pr.mjs", ["merge", "12"], {
+    cwd: work,
+    env: { PATH: undefined, Path: process.env.PATH, ARIANE_GH_SCRIPT: FAKE_GH, FAKE_GH_STATE: join(dir, "state.json") },
+  });
+  assert.equal(r.json?.status, "merged", r.stdout + r.stderr);
+});
+
 test("merge : sans dépôt distant, la fusion réussit quand même mais pulled est faux", (t) => {
   const work = repo(t);
   git(work, "remote", "remove", "origin");

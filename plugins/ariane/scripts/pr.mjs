@@ -31,9 +31,12 @@ if (!cmd || !number) out({ status: "error", message: "Usage : node pr.mjs wait|m
 const root = resolve(flag("--project") || process.cwd());
 
 // `gh` est parfois installé hors du PATH (Windows) : on ajoute son dossier habituel.
+// Sous Windows la variable s'appelle souvent `Path` : écrire `env.PATH` en créerait une seconde, vide hors notre
+// ajout, qui masquerait la vraie et rendrait `git` introuvable. On garde le nom que l'environnement utilise.
 const env = { ...process.env, GH_PROMPT_DISABLED: "1" };
+const pathKey = Object.keys(env).find((k) => k.toLowerCase() === "path") || "PATH";
 for (const dir of ["C:\\Program Files\\GitHub CLI", "/usr/local/bin", "/opt/homebrew/bin"]) {
-  if (existsSync(dir)) env.PATH = `${env.PATH || ""}${delimiter}${dir}`;
+  if (existsSync(dir) && !(env[pathKey] || "").split(delimiter).includes(dir)) env[pathKey] = `${env[pathKey] || ""}${delimiter}${dir}`;
 }
 // Pour les tests : ARIANE_GH_SCRIPT remplace `gh` par un script node, ARIANE_PR_POLL_MS et ARIANE_PR_EMPTY_MS
 // raccourcissent l'intervalle entre deux relevés (20 s) et l'attente d'une première vérification (90 s).
@@ -94,7 +97,9 @@ if (pr.state !== "OPEN") out({ status: "refused", pr: Number(number), message: `
 const s = summarize(pr);
 if (s.failing.length || s.pending.length) out({ status: "refused", pr: Number(number), message: "La CI n'est pas verte.", failing: s.failing.map((c) => c.name), pending: s.pending.map((c) => c.name) }, 1);
 if (pr.mergeable === "CONFLICTING") out({ status: "refused", pr: Number(number), message: "Conflit avec la branche de base : à résoudre avant la fusion." }, 1);
-const dirty = run("git", ["status", "--porcelain", "--untracked-files=no"], 15_000).stdout.trim();
+const status = run("git", ["status", "--porcelain", "--untracked-files=no"], 15_000);
+if (status.error || status.status !== 0) out({ status: "error", pr: Number(number), message: `git status a échoué : ${(status.error?.code || status.stderr || "").toString().trim().split("\n")[0]}` }, 1);
+const dirty = status.stdout.trim();
 if (dirty) out({ status: "refused", pr: Number(number), message: "Des changements ne sont pas enregistrés dans le dossier : enregistre-les ou mets-les de côté avant la fusion." }, 1);
 if (args.includes("--dry-run")) out({ status: "dry_run", pr: Number(number), would_merge: `${pr.headRefName} -> ${pr.baseRefName}`, message: "Essai à blanc : rien n'a été fait." }, 0);
 

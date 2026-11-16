@@ -1,7 +1,7 @@
 // Outils communs aux tests des scripts d'Ariane : un projet jetable dans un dossier temporaire,
 // et le lancement d'un script comme le fait Ariane (en ligne de commande, sortie JSON).
 import { spawn, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,7 +9,8 @@ import { fileURLToPath } from "node:url";
 export const SCRIPTS = resolve(dirname(fileURLToPath(import.meta.url)), "..", "plugins", "ariane", "scripts");
 
 /** Un dossier temporaire, à supprimer avec `t.after(() => cleanup(dir))`. */
-export const tempDir = (prefix = "ariane-test-") => mkdtempSync(join(tmpdir(), prefix));
+// realpath : sous Windows, tmpdir() peut être un nom court (RUNNER~1) alors que les outils rendent le nom long.
+export const tempDir = (prefix = "ariane-test-") => realpathSync.native(mkdtempSync(join(tmpdir(), prefix)));
 export const cleanup = (dir) => rmSync(dir, { recursive: true, force: true, maxRetries: 3 });
 
 /** Écrit des fichiers (chemin relatif → contenu ; un objet est écrit en JSON) sous `root`. */

@@ -11,6 +11,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [S
 
 ### Corrigé
 
+- **`pr.mjs merge` ne trouvait plus `git` sous Windows** quand la variable d'environnement s'appelle `Path` (PowerShell, cmd) : le script écrivait `PATH`, une seconde variable qui masquait la vraie, et plantait sur `git status` (`Cannot read properties of undefined`). Il garde maintenant le nom de la variable de l'environnement, et rend une erreur claire si `git status` échoue. Trouvé par la CI de cette PR.
 - **`check.mjs --e2e` ne choisit plus un projet « mobile ».** Avec les projets `Mobile Chrome` puis `Desktop Chrome`, le script prenait le premier, parce que « Mobile Chrome » contient « chrom ». Il écarte maintenant les projets mobiles avant de chercher un nom d'ordinateur, puis Chrome.
 
 ## [0.26.0] – 2026-11-15
