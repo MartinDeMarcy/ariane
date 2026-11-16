@@ -35,7 +35,15 @@ const env = { ...process.env, GH_PROMPT_DISABLED: "1" };
 for (const dir of ["C:\\Program Files\\GitHub CLI", "/usr/local/bin", "/opt/homebrew/bin"]) {
   if (existsSync(dir)) env.PATH = `${env.PATH || ""}${delimiter}${dir}`;
 }
-const run = (bin, a, timeout = 90_000) => spawnSync(bin, a, { cwd: root, env, encoding: "utf8", timeout, stdio: ["ignore", "pipe", "pipe"], shell: false });
+// Pour les tests : ARIANE_GH_SCRIPT remplace `gh` par un script node, ARIANE_PR_POLL_MS et ARIANE_PR_EMPTY_MS
+// raccourcissent l'intervalle entre deux relevés (20 s) et l'attente d'une première vérification (90 s).
+const fakeGh = process.env.ARIANE_GH_SCRIPT;
+const run = (bin, a, timeout = 90_000) =>
+  bin === "gh" && fakeGh
+    ? spawnSync(process.execPath, [fakeGh, ...a], { cwd: root, env, encoding: "utf8", timeout, stdio: ["ignore", "pipe", "pipe"], shell: false })
+    : spawnSync(bin, a, { cwd: root, env, encoding: "utf8", timeout, stdio: ["ignore", "pipe", "pipe"], shell: false });
+const POLL_MS = Number(process.env.ARIANE_PR_POLL_MS) || 20_000;
+const EMPTY_MS = Number(process.env.ARIANE_PR_EMPTY_MS) || 90_000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const view = () => {
@@ -64,7 +72,7 @@ const summarize = (pr) => {
 if (cmd === "wait") {
   const deadline = Date.now() + Math.min(9.5, Number(flag("--minutes")) || 9) * 60_000;
   let seenChecks = false;
-  const emptyUntil = Date.now() + 90_000; // les vérifications mettent parfois un moment à apparaître après le push
+  const emptyUntil = Date.now() + EMPTY_MS; // les vérifications mettent parfois un moment à apparaître après le push
   for (;;) {
     const pr = view();
     if (pr.error) out({ status: "error", pr: Number(number), message: pr.error }, 1);
@@ -75,7 +83,7 @@ if (cmd === "wait") {
     if (seenChecks && !s.pending.length) out({ status: "success", pr: Number(number), checks: s.checks.length, mergeable: pr.mergeable, url: pr.url }, 0);
     if (!seenChecks && Date.now() > emptyUntil) out({ status: "no_checks", pr: Number(number), url: pr.url }, 1);
     if (Date.now() > deadline) out({ status: "pending", pr: Number(number), waiting_for: s.pending.map((c) => c.name), url: pr.url }, 1);
-    await sleep(20_000);
+    await sleep(POLL_MS);
   }
 }
 

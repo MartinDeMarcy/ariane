@@ -56,7 +56,9 @@ const desktopProject = () => {
   const source = readFileSync(file, "utf8");
   const block = source.slice(Math.max(0, source.indexOf("projects")));
   const names = [...block.matchAll(/name:\s*["'`]([^"'`]+)["'`]/g)].map((m) => m[1]);
-  return names.find((n) => /desktop|bureau|ordinateur|chrom/i.test(n)) || names.find((n) => !/mobile|phone|pixel|iphone/i.test(n));
+  // Jamais un projet « mobile » (« Mobile Chrome » contient « chrom ») : d'abord un nom d'ordinateur, puis Chrome, puis le premier restant.
+  const computers = names.filter((n) => !/mobile|phone|pixel|iphone|android/i.test(n));
+  return computers.find((n) => /desktop|bureau|ordinateur/i.test(n)) || computers.find((n) => /chrom/i.test(n)) || computers[0];
 };
 
 // Les étapes à lancer.

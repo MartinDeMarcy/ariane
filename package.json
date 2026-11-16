@@ -1,0 +1,11 @@
+{
+  "name": "ariane-dev",
+  "private": true,
+  "description": "Outils de développement du dépôt Ariane (les tests des scripts du plugin). Le plugin lui-même n'a aucune dépendance.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

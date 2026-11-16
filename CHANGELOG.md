@@ -2,6 +2,17 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions : [SemVer](https://semver.org/lang/fr/).
 
+## [Non publié]
+
+### Ajouté
+
+- **Des tests pour les scripts du plugin** (`tests/`, `npm test`, aucune dépendance) : `state-brief`, `archive-state`, `clean`, `check`, `pr`, `check-update`, `update-plugin` et `qr-code`, soit 109 tests. `pr.mjs` est testé contre un faux `gh` et un vrai dépôt Git jetable. Ils tournent en CI GitHub Actions (Linux et Windows, Node 20 et 22).
+- `pr.mjs` lit trois variables pour les tests (`ARIANE_GH_SCRIPT`, `ARIANE_PR_POLL_MS`, `ARIANE_PR_EMPTY_MS`) ; sans elles, rien ne change.
+
+### Corrigé
+
+- **`check.mjs --e2e` ne choisit plus un projet « mobile ».** Avec les projets `Mobile Chrome` puis `Desktop Chrome`, le script prenait le premier, parce que « Mobile Chrome » contient « chrom ». Il écarte maintenant les projets mobiles avant de chercher un nom d'ordinateur, puis Chrome.
+
 ## [0.26.0] – 2026-11-15
 
 Booker est en ligne en 1.0.0. Les lots 11 et 12 (plugin 0.25.0) ont coûté 36 millions de tokens chacun, contre 151 millions pour le lot 10 (plugin 0.22.0), soit environ 70 % de moins en coût pondéré : Diderot passe de 21 à 1,3 puis 7,2 millions, le contexte moyen d'Ada de 127 000 à 56 000 puis 92 000 tokens. Les mesures ont aussi montré ce qui ne marchait pas. Cette version s'y attaque.
