@@ -234,6 +234,12 @@ claude --plugin-dir ./ariane/plugins/ariane
 claude plugin validate ./ariane
 ```
 
+Les scripts du plugin ont leurs tests (Node 20 ou plus, rien à installer) :
+
+```bash
+npm test
+```
+
 Structure du dépôt :
 
 ```
